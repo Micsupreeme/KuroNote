@@ -1,0 +1,1 @@
+Version 2 of KuroNote - rebuild of old VB.NET WinForms project in C# WPF!
