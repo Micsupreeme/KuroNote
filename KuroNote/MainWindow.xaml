@@ -1,0 +1,67 @@
+﻿<Window x:Class="KuroNote.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KuroNote"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="700"
+        WindowStartupLocation="CenterScreen">
+    <Window.CommandBindings>
+        <!--File-->
+        <CommandBinding Command="local:CustomCommands.Open" Executed="Open_Executed" />
+        <CommandBinding Command="local:CustomCommands.Save" Executed="Save_Executed" />
+        <CommandBinding Command="local:CustomCommands.SaveAs" Executed="SaveAs_Executed" />
+        <CommandBinding Command="local:CustomCommands.Exit" Executed="Exit_Executed" />
+
+        <!--Edit-->
+        <CommandBinding Command="local:CustomCommands.Font" Executed="Font_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="O" Command="local:CustomCommands.Open"/>
+        <KeyBinding Modifiers="Ctrl" Key="S" Command="local:CustomCommands.Save"/>
+        <KeyBinding Modifiers="Ctrl+Shift" Key="S" Command="local:CustomCommands.SaveAs"/>
+        <KeyBinding Modifiers="Alt" Key="F4" Command="local:CustomCommands.Exit"/>
+    </Window.InputBindings>
+    <DockPanel LastChildFill="True">
+        <Menu Name="MainMenu" DockPanel.Dock="Top">
+            <MenuItem Name="FileMi" Header="_File">
+                <MenuItem Name="NewMi" Header="_New" >
+                    <MenuItem Name="NewFileMi" Header="_New File" />
+                    <MenuItem Name="NewWinMi" Header="_New Window" />
+                    <MenuItem Name="NewAdminWinMi" Header="_New Administrator Window" />
+                </MenuItem>
+                <MenuItem Name="OpenMi" Header="_Open" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O"/>
+                <MenuItem Name="SaveMi" Header="_Save" Command="local:CustomCommands.Save" InputGestureText="Ctrl+S"/>
+                <MenuItem Name="SaveAsMi" Header="_Save As..." Command="local:CustomCommands.SaveAs" InputGestureText="Ctrl+Shift+S"/>
+                <Separator/>
+                <MenuItem Name="ExitMi" Header="_Exit" Command="local:CustomCommands.Exit" InputGestureText="Alt+F4"/>
+            </MenuItem>
+            <MenuItem Name="EditMi" Header="_Edit">
+                <MenuItem Name="CutMi" Header="_Cut" Command="ApplicationCommands.Cut"/>
+                <MenuItem Name="CopyMi" Header="_Copy" Command="ApplicationCommands.Copy"/>
+                <MenuItem Name="PasteMi" Header="_Paste" Command="ApplicationCommands.Paste"/>
+                <MenuItem Name="SpellCheckMi" Header="_Spell Check" IsCheckable="True"/>
+            </MenuItem>
+            <MenuItem Name="FormatMi" Header="_Format">
+                <MenuItem Name="FontMi" Header="_Font..." Command="local:CustomCommands.Font">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/Img/kuro.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <StatusBar Name="MainStatus" DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <Label Name="SaveStatusLbl" Content="Safe to Exit"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <Label Name="SelectLengthLbl" Content="Selection is 0 characters long"/>
+            </StatusBarItem>
+        </StatusBar>
+        <RichTextBox Name="MainRtb" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" VerticalScrollBarVisibility="Auto" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
+            <FlowDocument/>
+        </RichTextBox>
+    </DockPanel>
+</Window>
