@@ -47,6 +47,12 @@ namespace KuroNote
 
         //MessageBoxResult result = MessageBox.Show("My Message Question", "My Title", MessageBoxButton.YesNo, MessageBoxImage.Question);
         
+        Function GenerateWordCount()
+            Dim Words As MatchCollection = Regex.Matches(rtb.Text, "\S+")
+            txtWc.Text = Words.Count & " Words"
+            Return (CInt(Words.Count))
+        End Function
+
         */
         #endregion
 
@@ -57,9 +63,35 @@ namespace KuroNote
             appSettings.RetrieveSettings();
             InitialiseFont();
             InitialiseTheme();
-            //open file in cmd line args
+            processCmdLineArgs();
             toggleEdited(false);
             //Ready!
+        }
+
+        /// <summary>
+        /// Determines whether or not there is a file in the command line args to be opened automatically
+        /// </summary>
+        /// <returns>True if there's a file in command line argument 1, false otherwise</returns>
+        private bool hasCmdLineFile()
+        {
+            //The file arg is arg[1]. arg[0] contains the KuroNote dll
+            if(Environment.GetCommandLineArgs().Length == 2) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// If there is one, opens the file stored in command line argument 1
+        /// </summary>
+        private void processCmdLineArgs()
+        {
+            if(hasCmdLineFile())
+            {
+                string[] args = Environment.GetCommandLineArgs();
+                doOpen(args[1]);
+            }
         }
 
         /// <summary>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "KuroNote": {
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\Home\\Documents\\Minecraft\\spider grinder.txt\""
+    }
+  }
+}
