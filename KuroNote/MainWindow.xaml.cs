@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 
 namespace KuroNote
 {
@@ -30,10 +22,13 @@ namespace KuroNote
         public string appName = "KuroNote";
         private string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private KuroNoteSettings appSettings;
+        private Log log;
         private string fileName = string.Empty;             //Name of the loaded file - null if no file loaded
 
         private bool editedFlag = false;                    //Are there any unsaved changes?
         private Encoding selectedEncoding = Encoding.UTF8;  //Encoding for opening and saving files (Encoding.ASCII blocks unicode)
+
+        private bool temporaryLogEnabledFlag = true;
 
         #region Code for reference
         /*
@@ -59,13 +54,39 @@ namespace KuroNote
         public MainWindow()
         {
             InitializeComponent();
-            appSettings = new KuroNoteSettings();
-            appSettings.RetrieveSettings();
+            InitialiseLog();
+            InitialiseSettings();
             InitialiseFont();
             InitialiseTheme();
             processCmdLineArgs();
+
             toggleEdited(false);
-            //Ready!
+            log.addLog(
+                Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " +
+                "Ready! Awaiting instructions"
+            , true);
+        }
+
+        /// <summary>
+        /// Starts retrieving settings
+        /// </summary>
+        private void InitialiseSettings()
+        {
+            appSettings = new KuroNoteSettings(log);
+            appSettings.RetrieveSettings();
+            log.addLog("Settings initialised");
+        }
+
+        /// <summary>
+        /// Starts logging if logging is enabled
+        /// </summary>
+        private void InitialiseLog()
+        {
+            log = new Log(this, temporaryLogEnabledFlag);
+            if (temporaryLogEnabledFlag)
+            {
+                log.beginLog();
+            }
         }
 
         /// <summary>
@@ -76,8 +97,10 @@ namespace KuroNote
         {
             //The file arg is arg[1]. arg[0] contains the KuroNote dll
             if(Environment.GetCommandLineArgs().Length == 2) {
+                log.addLog("File specified in command line arg[1]");
                 return true;
             } else {
+                log.addLog("No file specified in command line arg[1]");
                 return false;
             }
         }
@@ -87,8 +110,7 @@ namespace KuroNote
         /// </summary>
         private void processCmdLineArgs()
         {
-            if(hasCmdLineFile())
-            {
+            if(hasCmdLineFile()) {
                 string[] args = Environment.GetCommandLineArgs();
                 doOpen(args[1]);
             }
@@ -103,6 +125,7 @@ namespace KuroNote
             MainRtb.FontSize = appSettings.fontSize;
             MainRtb.FontWeight = appSettings.fontWeight;
             MainRtb.FontStyle = appSettings.fontStyle;
+            log.addLog("Font initialised");
         }
 
         /// <summary>
@@ -110,7 +133,7 @@ namespace KuroNote
         /// </summary>
         private void InitialiseTheme()
         {
-            this.Title = appName;
+            this.Title = "New File - " + appName;
 
             //Background for the whole window
             SolidColorBrush backgroundBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
@@ -145,9 +168,9 @@ namespace KuroNote
         /// <summary>
         /// Set the edited state to on/off
         /// </summary>
-        private void toggleEdited(bool edited)
+        private void toggleEdited(bool _edited)
         {
-            if (edited)
+            if (_edited)
             {
                 editedFlag = true;
                 SaveStatusLbl.Content = "Unsaved Changes";
@@ -159,16 +182,34 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// Closes the current file and opens a new file
+        /// </summary>
+        private void doNew()
+        {
+            log.addLog("Request: New File");
+            MessageBox.Show("something");
+        }
+
+        /// <summary>
+        /// Menu > File > New > New File (or CTRL+N)
+        /// </summary>
+        private void New_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            doNew();
+        }
+
         #region Open, Save and Save As...
         /// <summary>
         /// Loads a file into the RTB
         /// </summary>
         /// <param name="path">Optional: specify file to open instead of using file open dialog</param>
-        private void doOpen(string path = "")
+        private void doOpen(string _path = "")
         {
-            if (path.Equals(""))
+            if (_path.Equals(""))
             {
                 //No file specified - use dialog
+                log.addLog("Request: Open");
                 OpenFileDialog dlg = new OpenFileDialog
                 {
                     Filter = FILE_FILTER
@@ -187,26 +228,29 @@ namespace KuroNote
 
                         TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
                         range.Text = selectedEncoding.GetString(ms.ToArray());
+                        log.addLog("Successfully opened " + dlg.FileName);
                         ms.Close();
 
                         fileName = dlg.FileName;
                         this.Title = fileName + " - " + appName;
                         toggleEdited(false);
                     }
-                    catch (IOException ioEx)
+                    catch (Exception ex)
                     {
                         //File cannot be accessed (e.g. used by another process)
-                        MessageBox.Show(ioEx.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        log.addLog(ex.ToString());
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
             else
             {
                 //File specified - open without using a dialog
+                log.addLog("Request: Open from cmd - " + _path);
                 MemoryStream ms = new MemoryStream();
                 try
                 {
-                    using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
+                    using (FileStream file = new FileStream(_path, FileMode.Open, FileAccess.Read))
                     {
                         byte[] bytes = new byte[file.Length];
                         file.Read(bytes, 0, (int)file.Length);
@@ -215,16 +259,18 @@ namespace KuroNote
 
                     TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
                     range.Text = selectedEncoding.GetString(ms.ToArray());
+                    log.addLog("Successfully opened " + _path);
                     ms.Close();
 
-                    fileName = path;
+                    fileName = _path;
                     this.Title = fileName + " - " + appName;
                     toggleEdited(false);
                 }
-                catch (IOException ioEx)
+                catch (Exception ex)
                 {
                     //File cannot be accessed (e.g. used by another process)
-                    MessageBox.Show(ioEx.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    log.addLog(ex.ToString());
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -236,6 +282,7 @@ namespace KuroNote
         {
             if (editedFlag)
             {
+                log.addLog("Request: Save");
                 TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
                 MemoryStream ms = new MemoryStream(selectedEncoding.GetBytes(range.Text));
 
@@ -246,14 +293,16 @@ namespace KuroNote
                         byte[] bytes = new byte[ms.Length];
                         ms.Read(bytes, 0, (int)ms.Length);
                         file.Write(bytes, 0, bytes.Length);
+                        log.addLog("Successfully saved " + fileName);
                         ms.Close();
                     }
                     toggleEdited(false);
                 }
-                catch (IOException ioEx)
+                catch (Exception ex)
                 {
                     //File cannot be accessed (e.g. used by another process)
-                    MessageBox.Show(ioEx.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    log.addLog(ex.ToString());
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -263,6 +312,7 @@ namespace KuroNote
         /// </summary>
         private void doSaveAs()
         {
+            log.addLog("Request: Save As");
             SaveFileDialog dlg = new SaveFileDialog
             {
                 DefaultExt = ".txt",
@@ -282,6 +332,7 @@ namespace KuroNote
                         byte[] bytes = new byte[ms.Length];
                         ms.Read(bytes, 0, (int)ms.Length);
                         file.Write(bytes, 0, bytes.Length);
+                        log.addLog("Successfully saved " + dlg.FileName);
                         ms.Close();
                     }
 
@@ -289,10 +340,11 @@ namespace KuroNote
                     this.Title = fileName + " - " + appName;
                     toggleEdited(false);
                 }
-                catch (IOException ioEx)
+                catch (Exception ex)
                 {
                     //File cannot be accessed (e.g. used by another process)
-                    MessageBox.Show(ioEx.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    log.addLog(ex.ToString());
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -322,20 +374,27 @@ namespace KuroNote
         }
         #endregion
 
+        private void doExit()
+        {
+            log.addLog("Exiting");
+            Application.Current.Shutdown();
+        }
+
         /// <summary>
         /// Menu > File > Exit (or ALT+F4)
         /// </summary>
         private void Exit_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            doExit();
         }
 
-        #region Cut, Copy and Paste
+        #region Cut, Copy, Paste, Undo, Redo and Select All
         /// <summary>
         /// Custom plaintext implementation of "Cut"
         /// </summary>
         private void Cut()
         {
+            log.addLog("Request: Cut");
             TextRange cutRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
             string textToCut = cutRange.Text;
             cutRange.Text = String.Empty;
@@ -347,6 +406,7 @@ namespace KuroNote
         /// </summary>
         private void Copy()
         {
+            log.addLog("Request: Copy");
             TextRange copyRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
             string textToCopy = copyRange.Text;
             Clipboard.SetData(DataFormats.UnicodeText, textToCopy);
@@ -357,6 +417,7 @@ namespace KuroNote
         /// </summary>
         private void Paste()
         {
+            log.addLog("Request: Paste");
             string textToPaste = Clipboard.GetText();
             Clipboard.SetData(DataFormats.UnicodeText, textToPaste);
             //Default paste operation runs
@@ -370,17 +431,32 @@ namespace KuroNote
             if (e.Command == ApplicationCommands.Cut)
             {
                 e.Handled = true; //Disable default Cut operation - use my own
-                //cut()
+                Cut();
             }
             else if (e.Command == ApplicationCommands.Copy)
             {
                 e.Handled = true; //Disable default Copy operation - use my own
-                //copy()
+                Copy();
             }
             else if (e.Command == ApplicationCommands.Paste)
             {
-                //paste()
+                Paste();
                 //Allow default Paste operation afterwards
+            }
+            else if (e.Command == ApplicationCommands.SelectAll)
+            {
+                log.addLog("Request: Select All");
+                //Allow default Select All operation
+            }
+            else if (e.Command == ApplicationCommands.Undo)
+            {
+                log.addLog("Request: Undo");
+                //Allow default Undo operation
+            }
+            else if (e.Command == ApplicationCommands.Redo)
+            {
+                log.addLog("Request: Redo");
+                //Allow default Redo operation
             }
         }
         #endregion
@@ -389,12 +465,12 @@ namespace KuroNote
         /// <summary>
         /// FontDialog uses this method to change the font
         /// </summary>
-        public void setFont(String fontFamily, short fontSize, FontWeight fontWeight, FontStyle fontStyle)
+        public void setFont(String _fontFamily, short _fontSize, FontWeight _fontWeight, FontStyle _fontStyle)
         {
-            MainRtb.FontFamily = new FontFamily(fontFamily);
-            MainRtb.FontSize = fontSize;
-            MainRtb.FontWeight = fontWeight;
-            MainRtb.FontStyle = fontStyle;
+            MainRtb.FontFamily = new FontFamily(_fontFamily);
+            MainRtb.FontSize = _fontSize;
+            MainRtb.FontWeight = _fontWeight;
+            MainRtb.FontStyle = _fontStyle;
         }
 
         /// <summary>
@@ -402,9 +478,26 @@ namespace KuroNote
         /// </summary>
         private void Font_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            FontDialog fontDialog = new FontDialog(this, appSettings);
+            log.addLog("Request: Font");
+            FontDialog fontDialog = new FontDialog(this, appSettings, log);
+            fontDialog.toggleVisibility(true);
         }
         #endregion
+
+        private void ShowLog_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (temporaryLogEnabledFlag)
+            {
+                log.addLog("Request: Show Log");
+                log.toggleVisibility(true);
+            }
+        }
+
+        private void About_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: About");
+            MessageBox.Show("abt");
+        }
 
         /// <summary>
         /// When the RTB caret moves
@@ -431,7 +524,7 @@ namespace KuroNote
         /// </summary>
         private void Win_Closed(object sender, EventArgs e)
         {
-            Application.Current.Shutdown();
+            doExit();
         }
     }
 
@@ -441,6 +534,7 @@ namespace KuroNote
     public static class CustomCommands
     {
         //File
+        public static RoutedCommand New = new RoutedCommand();
         public static RoutedCommand Open = new RoutedCommand();
         public static RoutedCommand Save = new RoutedCommand();
         public static RoutedCommand SaveAs = new RoutedCommand();
@@ -451,9 +545,11 @@ namespace KuroNote
         public static RoutedCommand Copy = new RoutedCommand();
         public static RoutedCommand Paste = new RoutedCommand();
 
-        //Foramat
+        //Format
         public static RoutedCommand Font = new RoutedCommand();
 
-        //Define more commands here
+        //Options
+        public static RoutedCommand ShowLog = new RoutedCommand();
+        public static RoutedCommand About = new RoutedCommand();
     }
 }

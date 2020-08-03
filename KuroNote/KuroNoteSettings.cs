@@ -10,13 +10,19 @@ namespace KuroNote
     /// </summary>
     public class KuroNoteSettings
     {
+        private Log log;
         private string appPath = AppDomain.CurrentDomain.BaseDirectory;
 
         //attributes with default values
-        public string fontFamily = "Verdana";
+        public string fontFamily = "Arial";
         public int fontSize = 14;
         public FontWeight fontWeight = FontWeights.Normal;
         public FontStyle fontStyle = FontStyles.Normal;
+
+        public KuroNoteSettings(Log mainLog)
+        {
+            log = mainLog;
+        }
 
         /// <summary>
         /// Update this object according to the settings stored in conf.json
@@ -25,6 +31,7 @@ namespace KuroNote
         {
             try
             {
+                log.addLog("Reading conf.json");
                 using (StreamReader sr = new StreamReader(appPath + "conf/conf.json"))
                 {
                     string json = sr.ReadToEnd();
@@ -34,11 +41,12 @@ namespace KuroNote
                     this.fontSize = knsFile.fontSize;
                     this.fontWeight = knsFile.fontWeight;
                     this.fontStyle = knsFile.fontStyle;
+                    log.addLog("Successfully read conf.json");
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
+                log.addLog(e.ToString());
             }
         }
 
@@ -49,11 +57,13 @@ namespace KuroNote
         {
             try
             {
+                log.addLog("Updating conf.json");
                 using (StreamWriter sw = new StreamWriter(appPath + "conf/conf.json"))
                 {
                     string json = JsonConvert.SerializeObject(this);
 
                     sw.Write(json);
+                    log.addLog("Successfully updated conf.json");
                 }
             }
             catch (Exception e)

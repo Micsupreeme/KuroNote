@@ -25,23 +25,26 @@ namespace KuroNote
         private string appName;
         MainWindow main;
         KuroNoteSettings settings;
+        Log log;
+
         private string selectedFontFamily;
         private FontWeight selectedFontWeight;
         private FontStyle selectedFontStyle;
         private short selectedFontSize;
 
-        public FontDialog(MainWindow mainWin, KuroNoteSettings currentSettings)
+        public FontDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog)
         {
             InitializeComponent();
-            this.Visibility = Visibility.Visible;
-            main = mainWin;
-            settings = currentSettings;
+            main = _mainWin;
+            settings = _currentSettings;
+            log = _mainLog;
             appName = main.appName;
             this.Title = WINDOW_NAME + " - " + appName;
 
             loadFontFamilies();
             loadFontStyles();
             loadFontSizes();
+            log.addLog("Font lists loaded");
         }
 
         /// <summary>
@@ -59,6 +62,7 @@ namespace KuroNote
                 //Select the font family that is currently in settings
                 if (item.Content.Equals(settings.fontFamily))
                 {
+                    log.addLog("Selected family: " + item.Content);
                     item.IsSelected = true;
                 }
 
@@ -89,15 +93,19 @@ namespace KuroNote
             if(settings.fontWeight == FontWeights.Bold){
                 if(settings.fontStyle == FontStyles.Italic)
                 {
+                    log.addLog("Selected Style: " + lbiBoldItalic.Content);
                     lbiBoldItalic.IsSelected = true;
                 } else {
+                    log.addLog("Selected Style: " + lbiBold.Content);
                     lbiBold.IsSelected = true;
                 } 
             } else {
                 if(settings.fontStyle == FontStyles.Italic)
                 {
+                    log.addLog("Selected Style: " + lbiItalic.Content);
                     lbiItalic.IsSelected = true;
                 } else {
+                    log.addLog("Selected Style: " + lbiNormal.Content);
                     lbiNormal.IsSelected = true;
                 }
             }
@@ -122,6 +130,7 @@ namespace KuroNote
                 //Select the font size that is currently in settings
                 if (size == settings.fontSize)
                 {
+                    log.addLog("Selected Size: " + item.Content);
                     item.IsSelected = true;
                     selectedFontSize = size;
                 }
@@ -135,6 +144,7 @@ namespace KuroNote
         /// </summary>
         private void updateFont()
         {
+            log.addLog("Updating Font Preview");
             //Get values from field selection
             selectedFontFamily = txtFontFamily.Text;
             switch (txtFontStyle.Text)
@@ -192,6 +202,7 @@ namespace KuroNote
         /// </summary>
         private void applyFont()
         {
+            log.addLog("Applying font: " + selectedFontFamily + " (" + txtFontStyle.Text + ") " + selectedFontSize);
             main.setFont(selectedFontFamily, selectedFontSize, selectedFontWeight, selectedFontStyle);
 
             settings.fontFamily = selectedFontFamily;
@@ -208,10 +219,12 @@ namespace KuroNote
         {
             if (vis)
             {
+                log.addLog("Open FontDialog");
                 this.Visibility = Visibility.Visible;
             }
             else
             {
+                log.addLog("Collapse FontDialog");
                 this.Visibility = Visibility.Collapsed;
             }
         }
@@ -239,6 +252,11 @@ namespace KuroNote
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             toggleVisibility(false);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            log.addLog("Close FontDialog");
         }
     }
 }

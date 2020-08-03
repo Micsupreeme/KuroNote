@@ -5,18 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="FontDialog" Height="484" Width="550" MinHeight="484" MinWidth="550"
+        Title="FontDialog" Height="515" Width="550" MinHeight="515" MinWidth="550"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
-        Background="#404040">
+        Background="#404040"
+        Closing="Window_Closing">
     <DockPanel LastChildFill="True">
         <StackPanel Margin="10,0,10,10" DockPanel.Dock="Bottom">
-            <Label Content="Preview:" Foreground="#EEEEEE"/>
+            <Label Content="Preview:" Foreground="#EEEEEE" FontSize="14"/>
             <Label Name="lblFontPreview" Height="50" Width="500" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Foreground="#EEEEEE"/>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft">
-                <Button Name="btnCancel" Click="btnCancel_Click" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" Content="Cancel" IsCancel="True"/>
-                <Button Name="btnOk" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="OK" IsDefault="True"/>
+                <Button Name="btnCancel" Click="btnCancel_Click" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" Content="Cancel" IsCancel="True" FontSize="14"/>
+                <Button Name="btnOk" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="OK" IsDefault="True" FontSize="14"/>
             </StackPanel>
         </StackPanel>
         <Grid Margin="10px">
@@ -32,19 +33,19 @@
             </Grid.RowDefinitions>
 
             <!--Labels-->
-            <Label Grid.Column="0" Grid.Row="0" Content="Font:" Foreground="#EEEEEE"/>
-            <Label Grid.Column="1" Grid.Row="0" Content="Style:" Foreground="#EEEEEE"/>
-            <Label Grid.Column="2" Grid.Row="0" Content="Size:" Foreground="#EEEEEE"/>
+            <Label Grid.Column="0" Grid.Row="0" Content="Font:" Foreground="#EEEEEE" FontSize="14"/>
+            <Label Grid.Column="1" Grid.Row="0" Content="Style:" Foreground="#EEEEEE" FontSize="14"/>
+            <Label Grid.Column="2" Grid.Row="0" Content="Size:" Foreground="#EEEEEE" FontSize="14"/>
 
             <!--Currently Selected-->
-            <TextBox Grid.Column="0" Grid.Row="1" Name="txtFontFamily" Padding="2,0,0,0" IsReadOnly="True" Text="{Binding ElementName=lisFontFamilies, Path=SelectedValue}"/>
-            <TextBox Grid.Column="1" Grid.Row="1" Name="txtFontStyle" Padding="2,0,0,0" IsReadOnly="True" Text="{Binding ElementName=lisFontStyles, Path=SelectedValue}"/>
-            <TextBox Grid.Column="2" Grid.Row="1" Name="txtFontSize" Padding="2,0,0,0" IsReadOnly="True" Text="{Binding ElementName=lisFontSizes, Path=SelectedValue}"/>
+            <TextBox Grid.Column="0" Grid.Row="1" Name="txtFontFamily" Padding="2,0,0,0" IsReadOnly="True" FontSize="14" Text="{Binding ElementName=lisFontFamilies, Path=SelectedValue}"/>
+            <TextBox Grid.Column="1" Grid.Row="1" Name="txtFontStyle" Padding="2,0,0,0" IsReadOnly="True" FontSize="14" Text="{Binding ElementName=lisFontStyles, Path=SelectedValue}"/>
+            <TextBox Grid.Column="2" Grid.Row="1" Name="txtFontSize" Padding="2,0,0,0" IsReadOnly="True" FontSize="14" Text="{Binding ElementName=lisFontSizes, Path=SelectedValue}"/>
 
             <!--Lists-->
-            <ListBox Grid.Column="0" Grid.Row="2" Name="lisFontFamilies" SelectionChanged="lis_SelectionChanged" SelectedValuePath="Content"/>
-            <ListBox Grid.Column="1" Grid.Row="2" Name="lisFontStyles" SelectionChanged="lis_SelectionChanged" SelectedValuePath="Content"/>
-            <ListBox Grid.Column="2" Grid.Row="2" Name="lisFontSizes" SelectionChanged="lis_SelectionChanged" SelectedValuePath="Content"/>
+            <ListBox Grid.Column="0" Grid.Row="2" Name="lisFontFamilies" SelectionChanged="lis_SelectionChanged" FontSize="14" SelectedValuePath="Content"/>
+            <ListBox Grid.Column="1" Grid.Row="2" Name="lisFontStyles" SelectionChanged="lis_SelectionChanged" FontSize="14" SelectedValuePath="Content"/>
+            <ListBox Grid.Column="2" Grid.Row="2" Name="lisFontSizes" SelectionChanged="lis_SelectionChanged" FontSize="14" SelectedValuePath="Content"/>
         </Grid>
     </DockPanel>
 </Window>

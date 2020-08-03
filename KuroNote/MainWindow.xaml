@@ -9,6 +9,7 @@
         WindowStartupLocation="CenterScreen">
     <Window.CommandBindings>
         <!--File-->
+        <CommandBinding Command="local:CustomCommands.New" Executed="New_Executed" />
         <CommandBinding Command="local:CustomCommands.Open" Executed="Open_Executed" />
         <CommandBinding Command="local:CustomCommands.Save" Executed="Save_Executed" />
         <CommandBinding Command="local:CustomCommands.SaveAs" Executed="SaveAs_Executed" />
@@ -16,20 +17,31 @@
 
         <!--Edit-->
         <CommandBinding Command="local:CustomCommands.Font" Executed="Font_Executed" />
+        
+        <!--Options-->
+        <CommandBinding Command="local:CustomCommands.ShowLog" Executed="ShowLog_Executed" />
+        <CommandBinding Command="local:CustomCommands.About" Executed="About_Executed" />
     </Window.CommandBindings>
     <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="N" Command="local:CustomCommands.New"/>
         <KeyBinding Modifiers="Ctrl" Key="O" Command="local:CustomCommands.Open"/>
         <KeyBinding Modifiers="Ctrl" Key="S" Command="local:CustomCommands.Save"/>
         <KeyBinding Modifiers="Ctrl+Shift" Key="S" Command="local:CustomCommands.SaveAs"/>
         <KeyBinding Modifiers="Alt" Key="F4" Command="local:CustomCommands.Exit"/>
+        <KeyBinding Key="F1" Command="local:CustomCommands.About"/>
     </Window.InputBindings>
     <DockPanel LastChildFill="True">
         <Menu Name="MainMenu" DockPanel.Dock="Top">
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <DockPanel HorizontalAlignment="Stretch"></DockPanel>
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
             <MenuItem Name="FileMi" Header="_File">
                 <MenuItem Name="NewMi" Header="_New" >
-                    <MenuItem Name="NewFileMi" Header="_New File" />
+                    <MenuItem Name="NewFileMi" Header="_New File" Command="local:CustomCommands.New" InputGestureText="Ctrl+N"/>
                     <MenuItem Name="NewWinMi" Header="_New Window" />
-                    <MenuItem Name="NewAdminWinMi" Header="_New Administrator Window" />
+                    <MenuItem Name="NewAdminWinMi" Header="_New Administrator Window"/>
                 </MenuItem>
                 <MenuItem Name="OpenMi" Header="_Open" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O"/>
                 <MenuItem Name="SaveMi" Header="_Save" Command="local:CustomCommands.Save" InputGestureText="Ctrl+S"/>
@@ -41,6 +53,11 @@
                 <MenuItem Name="CutMi" Header="_Cut" Command="ApplicationCommands.Cut"/>
                 <MenuItem Name="CopyMi" Header="_Copy" Command="ApplicationCommands.Copy"/>
                 <MenuItem Name="PasteMi" Header="_Paste" Command="ApplicationCommands.Paste"/>
+                <Separator/>
+                <MenuItem Name="UndoMi" Header="_Undo" Command="ApplicationCommands.Undo"/>
+                <MenuItem Name="RedoMi" Header="_Redo" Command="ApplicationCommands.Redo"/>
+                <Separator/>
+                <MenuItem Name="SelectAllMi" Header="_Select All" Command="ApplicationCommands.SelectAll"/>
                 <MenuItem Name="SpellCheckMi" Header="_Spell Check" IsCheckable="True"/>
             </MenuItem>
             <MenuItem Name="FormatMi" Header="_Format">
@@ -50,8 +67,17 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Name="OptionsMi" Header="_Options" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                <MenuItem Name="LoggingMi" Header="_Logging">
+                    <MenuItem Name="ShowLogMi" Header="_Show Log" Command="local:CustomCommands.ShowLog"/>
+                </MenuItem>
+                <MenuItem Name="AboutMi" Header="_About KuroNote" Command="local:CustomCommands.About" InputGestureText="F1"/>
+            </MenuItem>
         </Menu>
         <StatusBar Name="MainStatus" DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <Label Name="LogLbl" Content="Log"/>
+            </StatusBarItem>
             <StatusBarItem>
                 <Label Name="SaveStatusLbl" Content="Safe to Exit"/>
             </StatusBarItem>
