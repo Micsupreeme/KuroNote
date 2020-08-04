@@ -7,6 +7,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
 using Microsoft.Win32;
+using System.Windows.Markup;
+using System.Xml;
+using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace KuroNote
 {
@@ -30,6 +34,9 @@ namespace KuroNote
 
         private bool temporaryLogEnabledFlag = true;
 
+        //UI Dictionaries for different languages
+        public Dictionary<string, object> EnUIDict;
+
         #region Code for reference
         /*
         foreach (string arg in Environment.GetCommandLineArgs())
@@ -48,14 +55,21 @@ namespace KuroNote
             Return (CInt(Words.Count))
         End Function
 
+            JpUIDict = new Dictionary<string, object>();
+                JpUIDict["NewMi"] = "しんき";
+                JpUIDict["OpenMi"] = "あく";
+                //etc.
+                this.DataContext = JpUIDict;
+
         */
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
-            InitialiseLog();
+            InitialiseLog(); 
             InitialiseSettings();
+            InitialiseUIDictionary();
             InitialiseFont();
             InitialiseTheme();
             processCmdLineArgs();
@@ -65,6 +79,41 @@ namespace KuroNote
                 Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " +
                 "Ready! Awaiting instructions"
             , true);
+            setStatus("Welcome");
+        }
+
+        private void InitialiseUIDictionary()
+        {
+            EnUIDict = new Dictionary<string, object>();
+            //File
+            EnUIDict["FileMi"] = "New";
+            EnUIDict["NewMi"] = "New";
+            EnUIDict["NewWinMi"] = "New Window";
+            EnUIDict["NewRegularWinMi"] = "New Window";
+            EnUIDict["NewAdminWinMi"] = "New Administrator Window";
+            EnUIDict["OpenMi"] = "Open...";
+            EnUIDict["SaveMi"] = "Save";
+            EnUIDict["SaveAsMi"] = "Save As...";
+            EnUIDict["PrintMi"] = "Print...";
+            EnUIDict["ExitMi"] = "Exit";
+            //Edit
+            EnUIDict["EditMi"] = "Edit";
+            EnUIDict["CutMi"] = "Cut";
+            EnUIDict["CopyMi"] = "Copy";
+            EnUIDict["PasteMi"] = "Paste";
+            EnUIDict["UndoMi"] = "Undo";
+            EnUIDict["RedoMi"] = "Redo";
+            EnUIDict["SelectAllMi"] = "Select All";
+            //Format
+            EnUIDict["FormatMi"] = "Format";
+            EnUIDict["FontMi"] = "Font...";
+            //Options
+            EnUIDict["OptionsMi"] = "Options";
+            EnUIDict["LoggingMi"] = "Logging";
+            EnUIDict["ShowLogMi"] = "Show Log";
+            EnUIDict["ShowLogFilesMi"] = "Show Log Files";
+            EnUIDict["AboutMi"] = "About " + appName;
+            this.DataContext = EnUIDict;
         }
 
         /// <summary>
@@ -125,7 +174,11 @@ namespace KuroNote
             MainRtb.FontSize = appSettings.fontSize;
             MainRtb.FontWeight = appSettings.fontWeight;
             MainRtb.FontStyle = appSettings.fontStyle;
-            log.addLog("Font initialised");
+
+            log.addLog("Font initialised: " +
+                appSettings.fontFamily +
+                " (" + appSettings.fontWeight + " " + appSettings.fontStyle + ") " +
+                appSettings.fontSize);
         }
 
         /// <summary>
@@ -141,7 +194,7 @@ namespace KuroNote
 
             
             //Load image from file
-            var resCustomBackground = new BitmapImage(new Uri(appPath + "conf/custom.jpg", UriKind.Absolute));
+            var resCustomBackground = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute));
 
             //Static resource
             BitmapImage bmi = new BitmapImage(new Uri("pack://application:,,,/img/water.png"));
@@ -166,6 +219,15 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Sets the status text in the bottom-left corner to the specified text
+        /// </summary>
+        /// <param name="_text">The status text to display</param>
+        private void setStatus(string _text)
+        {
+            StatusTb.Text = DateTime.Now.ToShortTimeString() + ": " + _text;
+        }
+
+        /// <summary>
         /// Set the edited state to on/off
         /// </summary>
         private void toggleEdited(bool _edited)
@@ -173,12 +235,12 @@ namespace KuroNote
             if (_edited)
             {
                 editedFlag = true;
-                SaveStatusLbl.Content = "Unsaved Changes";
+                SaveStatusTb.Text = "Unsaved Changes";
             }
             else
             {
                 editedFlag = false;
-                SaveStatusLbl.Content = "Safe to Exit";
+                SaveStatusTb.Text = "Safe to Exit";
             }
         }
 
@@ -234,6 +296,7 @@ namespace KuroNote
                         fileName = dlg.FileName;
                         this.Title = fileName + " - " + appName;
                         toggleEdited(false);
+                        setStatus("Opened");
                     }
                     catch (Exception ex)
                     {
@@ -265,6 +328,7 @@ namespace KuroNote
                     fileName = _path;
                     this.Title = fileName + " - " + appName;
                     toggleEdited(false);
+                    setStatus("Opened");
                 }
                 catch (Exception ex)
                 {
@@ -297,6 +361,7 @@ namespace KuroNote
                         ms.Close();
                     }
                     toggleEdited(false);
+                    setStatus("Saved");
                 }
                 catch (Exception ex)
                 {
@@ -339,6 +404,7 @@ namespace KuroNote
                     fileName = dlg.FileName;
                     this.Title = fileName + " - " + appName;
                     toggleEdited(false);
+                    setStatus("Saved");
                 }
                 catch (Exception ex)
                 {
@@ -371,6 +437,54 @@ namespace KuroNote
         private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             doSaveAs();
+        }
+        #endregion
+
+        #region Print
+        /// <summary>
+        /// https://stackoverflow.com/users/1137199/dotnet's Simple Print Proccedure
+        /// If the font is small enough, the text will automatically use a multi-column layout
+        /// </summary>
+        private void doPrint()
+        {
+            log.addLog("Request: Print");
+            //Clone the source document
+            var str = XamlWriter.Save(MainRtb.Document);
+            var stringReader = new StringReader(str);
+            var xmlReader = XmlReader.Create(stringReader);
+            var CloneDoc = XamlReader.Load(xmlReader) as FlowDocument;
+            log.addLog("Successfully cloned FlowDocument");
+
+            //Now print using PrintDialog
+            log.addLog("Show PrintDialog");
+            var pd = new PrintDialog();
+
+            if (pd.ShowDialog().Value)
+            {
+                CloneDoc.PageHeight = pd.PrintableAreaHeight;
+                CloneDoc.PageWidth = pd.PrintableAreaWidth;
+                CloneDoc.PagePadding = new Thickness(10);
+
+                //Use the currently selected font
+                log.addLog("Using selected font");
+                CloneDoc.FontFamily = new FontFamily(appSettings.fontFamily);
+                CloneDoc.FontSize = appSettings.fontSize;
+                CloneDoc.FontWeight = appSettings.fontWeight;
+                CloneDoc.FontStyle = appSettings.fontStyle;
+
+                IDocumentPaginatorSource idocument = CloneDoc as IDocumentPaginatorSource;
+
+                pd.PrintDocument(idocument.DocumentPaginator, "Printing FlowDocument");
+                log.addLog("Successfully printed " + fileName);
+            }
+        }
+
+        /// <summary>
+        /// Menu > File > Print
+        /// </summary>
+        private void Print_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            doPrint();
         }
         #endregion
 
@@ -508,7 +622,7 @@ namespace KuroNote
             const string SELECT_LENGTH_POST = " character(s) long";
 
             TextRange tempRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Selection.Start);
-            SelectLengthLbl.Content = SELECT_LENGTH_PRE + MainRtb.Selection.Text.Length + SELECT_LENGTH_POST;
+            SelectLengthTb.Text = SELECT_LENGTH_PRE + MainRtb.Selection.Text.Length + SELECT_LENGTH_POST;
         }
 
         /// <summary>
@@ -538,6 +652,7 @@ namespace KuroNote
         public static RoutedCommand Open = new RoutedCommand();
         public static RoutedCommand Save = new RoutedCommand();
         public static RoutedCommand SaveAs = new RoutedCommand();
+        public static RoutedCommand Print = new RoutedCommand();
         public static RoutedCommand Exit = new RoutedCommand();
 
         //Edit

@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -20,11 +12,13 @@ namespace KuroNote
     {
         //Constants
         private const string WINDOW_NAME = "Log";
+        private const string LOG_EXT = ".log";
 
         //Globals
         private string appName;
         MainWindow main;
 
+        private string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\Logs\\";
         private bool loggingEnabled = true;
 
         public Log(MainWindow _mainWin, bool _enabled)
@@ -50,9 +44,12 @@ namespace KuroNote
             , true);
         }
 
+        /// <summary>
+        /// Adds an ASCII art prefix to the beginning of the log
+        /// </summary>
         private void addASCIIArt()
         {
-            addLog(
+            addLog(Environment.NewLine +
                 "888    d8P  888b    888" + Environment.NewLine +
                 "888   d8P   8888b   888" + Environment.NewLine +
                 "888  d8P    88888b  888" + Environment.NewLine +
@@ -62,6 +59,30 @@ namespace KuroNote
                 "888   Y88b  888   Y8888" + Environment.NewLine +
                 "888    Y88b 888    Y888" + Environment.NewLine + Environment.NewLine
             , true);
+        }
+
+        /// <summary>
+        /// Generates a date string to be used as the name for today's log file
+        /// </summary>
+        /// <returns>Today's log file name</returns>
+        private string generateLogFileName()
+        {
+            string logFileName = String.Format("{0:dd-MM-yy}", DateTime.Now); // "09-03-08"
+            logFileName += LOG_EXT;
+            return logFileName;
+        }
+
+        /// <summary>
+        /// Writes the specified text to the log file
+        /// </summary>
+        /// <param name="logEntry">The text to append</param>
+        private void writeToLogFile(string logEntry)
+        {
+            //Append to today's file if it exists, otherwise create a new one
+            using (StreamWriter sw = File.AppendText(logPath + generateLogFileName()))
+            {
+                sw.Write(logEntry);
+            }
         }
 
         /// <summary>
@@ -83,8 +104,11 @@ namespace KuroNote
             if(loggingEnabled) {
                 if (removeFormatting) {
                     LogTxt.Text += content;
+                    writeToLogFile(content);
                 } else {
-                    LogTxt.Text += Environment.NewLine + DateTime.Now.ToLongTimeString() + ": " + content;
+                    string logEntry = Environment.NewLine + DateTime.Now.ToLongTimeString() + ": " + content;
+                    LogTxt.Text += logEntry;
+                    writeToLogFile(logEntry);
                 }
             }
         }
@@ -106,6 +130,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the X button is clicked
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //Collapse instead of close - log must maintain its content during the session
