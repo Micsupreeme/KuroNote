@@ -78,10 +78,14 @@ namespace KuroNote
         /// <param name="logEntry">The text to append</param>
         private void writeToLogFile(string logEntry)
         {
-            //Append to today's file if it exists, otherwise create a new one
-            using (StreamWriter sw = File.AppendText(logPath + generateLogFileName()))
-            {
-                sw.Write(logEntry);
+            try {
+                //Append to today's file if it exists, otherwise create a new one
+                using (StreamWriter sw = File.AppendText(logPath + generateLogFileName()))
+                {
+                    sw.Write(logEntry);
+                }
+            } catch(Exception e) {
+                addLog(e.ToString());
             }
         }
 

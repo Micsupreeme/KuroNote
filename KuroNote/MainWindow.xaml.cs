@@ -244,13 +244,20 @@ namespace KuroNote
             }
         }
 
+        #region New, Open, Save and Save As...
         /// <summary>
         /// Closes the current file and opens a new file
         /// </summary>
         private void doNew()
         {
             log.addLog("Request: New File");
-            MessageBox.Show("something");
+            fileName = string.Empty;
+            TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+            range.Text = string.Empty;
+            this.Title = "New File - " + appName;
+            toggleEdited(false);
+            setStatus("New File");
+            log.addLog("Content deleted");
         }
 
         /// <summary>
@@ -261,7 +268,6 @@ namespace KuroNote
             doNew();
         }
 
-        #region Open, Save and Save As...
         /// <summary>
         /// Loads a file into the RTB
         /// </summary>
@@ -347,27 +353,32 @@ namespace KuroNote
             if (editedFlag)
             {
                 log.addLog("Request: Save");
-                TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-                MemoryStream ms = new MemoryStream(selectedEncoding.GetBytes(range.Text));
+                if(fileName.Equals(string.Empty)) {
+                    log.addLog("File does not exist yet");
+                    doSaveAs();
+                } else {
+                    TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                    MemoryStream ms = new MemoryStream(selectedEncoding.GetBytes(range.Text));
 
-                try
-                {
-                    using (FileStream file = new FileStream(fileName, FileMode.Create, System.IO.FileAccess.Write))
+                    try
                     {
-                        byte[] bytes = new byte[ms.Length];
-                        ms.Read(bytes, 0, (int)ms.Length);
-                        file.Write(bytes, 0, bytes.Length);
-                        log.addLog("Successfully saved " + fileName);
-                        ms.Close();
+                        using (FileStream file = new FileStream(fileName, FileMode.Create, System.IO.FileAccess.Write))
+                        {
+                            byte[] bytes = new byte[ms.Length];
+                            ms.Read(bytes, 0, (int)ms.Length);
+                            file.Write(bytes, 0, bytes.Length);
+                            log.addLog("Successfully saved " + fileName);
+                            ms.Close();
+                        }
+                        toggleEdited(false);
+                        setStatus("Saved");
                     }
-                    toggleEdited(false);
-                    setStatus("Saved");
-                }
-                catch (Exception ex)
-                {
-                    //File cannot be accessed (e.g. used by another process)
-                    log.addLog(ex.ToString());
-                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    catch (Exception ex)
+                    {
+                        //File cannot be accessed (e.g. used by another process)
+                        log.addLog(ex.ToString());
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
         }
