@@ -19,6 +19,10 @@
         <!--Edit-->
         <CommandBinding Command="local:CustomCommands.Font" Executed="Font_Executed" />
         
+        <!--Security-->
+        <CommandBinding Command="local:CustomCommands.AESEnc" Executed="AESEnc_Executed" />
+        <CommandBinding Command="local:CustomCommands.AESDec" Executed="AESDec_Executed" />
+        
         <!--Options-->
         <CommandBinding Command="local:CustomCommands.ShowLog" Executed="ShowLog_Executed" />
         <CommandBinding Command="local:CustomCommands.About" Executed="About_Executed" />
@@ -68,6 +72,12 @@
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/Img/kuro.png"/>
                     </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Name="SecurityMi" Header="Security">
+                <MenuItem Name="AESMi" Header="AES Encryption">
+                    <MenuItem Name="AESEncMi" Header="AES Encrypt..." Command="local:CustomCommands.AESEnc"/>
+                    <MenuItem Name="AESDecMi" Header="AES Decrypt..." Command="local:CustomCommands.AESDec"/>
                 </MenuItem>
             </MenuItem>
             <MenuItem Name="OptionsMi" Header="{Binding [OptionsMi], Mode=OneTime}" HorizontalAlignment="Right" FlowDirection="RightToLeft">

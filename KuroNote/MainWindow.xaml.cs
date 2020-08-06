@@ -609,6 +609,19 @@ namespace KuroNote
         }
         #endregion
 
+        private void AESEnc_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: AES Encrypt");
+            TextRange encRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+            EncryptDialog enc = new EncryptDialog(this, appSettings, log, encRange.Text);
+            enc.toggleVisibility(true);
+        }
+
+        private void AESDec_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: AES Decrypt");
+        }
+
         private void ShowLog_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (temporaryLogEnabledFlag)
@@ -673,6 +686,10 @@ namespace KuroNote
 
         //Format
         public static RoutedCommand Font = new RoutedCommand();
+
+        //Security
+        public static RoutedCommand AESEnc = new RoutedCommand();
+        public static RoutedCommand AESDec = new RoutedCommand();
 
         //Options
         public static RoutedCommand ShowLog = new RoutedCommand();

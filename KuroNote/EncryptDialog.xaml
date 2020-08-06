@@ -1,0 +1,21 @@
+﻿<Window x:Class="KuroNote.EncryptDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KuroNote"
+        mc:Ignorable="d"
+        Title="Encrypt" Height="250" Width="500"
+        Background="#404040">
+    <DockPanel LastChildFill="True" Margin="10">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" FlowDirection="RightToLeft">
+            <Button Name="btnCancel" Click="btnCancel_Click" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" Content="Cancel" IsCancel="True" FontSize="14"/>
+            <Button Name="btnOk" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="Encrypt" IsDefault="True" FontSize="14"/>
+            <Button Name="btnTempDec" Click="btnTempDec_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="TempDec" IsDefault="True" FontSize="14"/>
+        </StackPanel>
+        <StackPanel>
+            <Label Name="KeyLbl" Content="AES Decryption Password: " FontSize="14" Foreground="#EEEEEE"/>
+            <TextBox Name="KeyTxt" FontSize="14" Padding="2"/>
+        </StackPanel>
+    </DockPanel>
+</Window>
