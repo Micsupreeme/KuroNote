@@ -16,11 +16,17 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
+    /// 
+    /// TODO: Show log files
+    /// TODO: Password complexity measurer for AES Encryption
+    /// TODO: File Size Check (max 1MB?) before open or open with command line
+    /// TODO: Word count
+    /// 
     /// </summary>
     public partial class MainWindow : Window
     {
         //Constants
-        private const string FILE_FILTER = "Text files (*.txt)|*.txt|All files (*.*)|*.*";  //For opening and saving files
+        private const string FILE_FILTER = "Text files (*.txt)|*.txt|KuroNotes (*.kuro)|*.kuro|All files (*.*)|*.*";  //For opening and saving files
 
         //Globals
         public string appName = "KuroNote";
@@ -107,6 +113,11 @@ namespace KuroNote
             //Format
             EnUIDict["FormatMi"] = "Format";
             EnUIDict["FontMi"] = "Font...";
+            //Security
+            EnUIDict["SecurityMi"] = "Security";
+            EnUIDict["AESMi"] = "AES Encryption";
+            EnUIDict["AESEncMi"] = "AES Encrypt...";
+            EnUIDict["AESDecMi"] = "AES Decrypt...";
             //Options
             EnUIDict["OptionsMi"] = "Options";
             EnUIDict["LoggingMi"] = "Logging";
@@ -609,6 +620,9 @@ namespace KuroNote
         }
         #endregion
 
+        /// <summary>
+        /// Menu > Security > AES Encryption > AES Encrypt...
+        /// </summary>
         private void AESEnc_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: AES Encrypt");
@@ -617,11 +631,20 @@ namespace KuroNote
             enc.toggleVisibility(true);
         }
 
+        /// <summary>
+        /// Menu > Security > AES Encryption > AES Decrypt...
+        /// </summary>
         private void AESDec_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: AES Decrypt");
+            TextRange decRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+            DecryptDialog dec = new DecryptDialog(this, appSettings, log, decRange.Text);
+            dec.toggleVisibility(true);
         }
 
+        /// <summary>
+        /// Menu > Options > Logging > Show Log...
+        /// </summary>
         private void ShowLog_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (temporaryLogEnabledFlag)

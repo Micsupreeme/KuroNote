@@ -74,10 +74,10 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Name="SecurityMi" Header="Security">
-                <MenuItem Name="AESMi" Header="AES Encryption">
-                    <MenuItem Name="AESEncMi" Header="AES Encrypt..." Command="local:CustomCommands.AESEnc"/>
-                    <MenuItem Name="AESDecMi" Header="AES Decrypt..." Command="local:CustomCommands.AESDec"/>
+            <MenuItem Name="SecurityMi" Header="{Binding [SecurityMi], Mode=OneTime}">
+                <MenuItem Name="AESMi" Header="{Binding [AESMi], Mode=OneTime}">
+                    <MenuItem Name="AESEncMi" Header="{Binding [AESEncMi], Mode=OneTime}" Command="local:CustomCommands.AESEnc"/>
+                    <MenuItem Name="AESDecMi" Header="{Binding [AESDecMi], Mode=OneTime}" Command="local:CustomCommands.AESDec"/>
                 </MenuItem>
             </MenuItem>
             <MenuItem Name="OptionsMi" Header="{Binding [OptionsMi], Mode=OneTime}" HorizontalAlignment="Right" FlowDirection="RightToLeft">

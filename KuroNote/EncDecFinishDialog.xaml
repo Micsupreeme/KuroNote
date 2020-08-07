@@ -1,0 +1,22 @@
+﻿<Window x:Class="KuroNote.EncDecFinishDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KuroNote"
+        mc:Ignorable="d"
+        Title="EncDecFinishDialog" Height="250" Width="500"
+        Background="#404040"
+        WindowStyle="ToolWindow"
+        WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing">
+    <DockPanel LastChildFill="True" Margin="10">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" FlowDirection="RightToLeft">
+            <Button Name="btnDiscard" Click="btnDiscard_Click" Content="Discard" FontSize="14" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" IsCancel="True"/>
+            <Button Name="btnSave" Click="btnSave_Click" Content="Save" FontSize="14" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" IsDefault="True"/>
+        </StackPanel>
+        <StackPanel>
+            <Label Name="StatusLbl" Content="AES Encryption Complete" Foreground="#EEEEEE" FontSize="14"/>
+        </StackPanel>
+    </DockPanel>
+</Window>
