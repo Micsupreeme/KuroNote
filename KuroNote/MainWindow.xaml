@@ -25,6 +25,7 @@
         
         <!--Options-->
         <CommandBinding Command="local:CustomCommands.ShowLog" Executed="ShowLog_Executed" />
+        <CommandBinding Command="local:CustomCommands.ShowLogFiles" Executed="ShowLogFiles_Executed" />
         <CommandBinding Command="local:CustomCommands.About" Executed="About_Executed" />
     </Window.CommandBindings>
     <Window.InputBindings>
@@ -49,18 +50,18 @@
                     <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}"/>
                     <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}"/>
                 </MenuItem>
-                <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O"/>
+                <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold"/>
                 <MenuItem Name="SaveMi" Header="{Binding [SaveMi], Mode=OneTime}" Command="local:CustomCommands.Save" InputGestureText="Ctrl+S"/>
-                <MenuItem Name="SaveAsMi" Header="{Binding [SaveAsMi], Mode=OneTime}" Command="local:CustomCommands.SaveAs" InputGestureText="Ctrl+Shift+S"/>
+                <MenuItem Name="SaveAsMi" Header="{Binding [SaveAsMi], Mode=OneTime}" Command="local:CustomCommands.SaveAs" InputGestureText="Ctrl+Shift+S" FontWeight="DemiBold"/>
                 <Separator/>
                 <MenuItem Name="PrintMi" Header="{Binding [PrintMi], Mode=OneTime}" Command="local:CustomCommands.Print" InputGestureText="Ctrl+P"/>
                 <Separator/>
                 <MenuItem Name="ExitMi" Header="{Binding [ExitMi], Mode=OneTime}" Command="local:CustomCommands.Exit" InputGestureText="Alt+F4"/>
             </MenuItem>
             <MenuItem Name="EditMi" Header="{Binding [EditMi], Mode=OneTime}">
-                <MenuItem Name="CutMi" Header="{Binding [CutMi], Mode=OneTime}" Command="ApplicationCommands.Cut"/>
-                <MenuItem Name="CopyMi" Header="{Binding [CopyMi], Mode=OneTime}" Command="ApplicationCommands.Copy"/>
-                <MenuItem Name="PasteMi" Header="{Binding [PasteMi], Mode=OneTime}" Command="ApplicationCommands.Paste"/>
+                <MenuItem Name="CutMi" Header="{Binding [CutMi], Mode=OneTime}" Command="ApplicationCommands.Cut" FontWeight="DemiBold"/>
+                <MenuItem Name="CopyMi" Header="{Binding [CopyMi], Mode=OneTime}" Command="ApplicationCommands.Copy" FontWeight="DemiBold"/>
+                <MenuItem Name="PasteMi" Header="{Binding [PasteMi], Mode=OneTime}" Command="ApplicationCommands.Paste" FontWeight="DemiBold"/>
                 <Separator/>
                 <MenuItem Name="UndoMi" Header="{Binding [UndoMi], Mode=OneTime}" Command="ApplicationCommands.Undo"/>
                 <MenuItem Name="RedoMi" Header="{Binding [RedoMi], Mode=OneTime}" Command="ApplicationCommands.Redo"/>
@@ -80,10 +81,10 @@
                     <MenuItem Name="AESDecMi" Header="{Binding [AESDecMi], Mode=OneTime}" Command="local:CustomCommands.AESDec"/>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Name="OptionsMi" Header="{Binding [OptionsMi], Mode=OneTime}" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+            <MenuItem Name="OptionsMi" Header="{Binding [OptionsMi], Mode=OneTime}" HorizontalAlignment="Right" FlowDirection="LeftToRight">
                 <MenuItem Name="LoggingMi" Header="{Binding [LoggingMi], Mode=OneTime}">
                     <MenuItem Name="ShowLogMi" Header="{Binding [ShowLogMi], Mode=OneTime}" Command="local:CustomCommands.ShowLog"/>
-                    <MenuItem Name="ShowLogFilesMi" Header="{Binding [ShowLogFilesMi], Mode=OneTime}"/>
+                    <MenuItem Name="ShowLogFilesMi" Header="{Binding [ShowLogFilesMi], Mode=OneTime}" Command="local:CustomCommands.ShowLogFiles"/>
                 </MenuItem>
                 <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1"/>
             </MenuItem>
@@ -98,7 +99,7 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem Margin="5, 2">
-                <TextBlock Name="SelectLengthTb" Text="Selection is 0 character(s) long"/>
+                <TextBlock Name="WordCountTb" Text="0 Words"/>
             </StatusBarItem>
         </StatusBar>
         <RichTextBox Name="MainRtb" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" VerticalScrollBarVisibility="Auto" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">

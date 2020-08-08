@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -114,7 +115,22 @@ namespace KuroNote
                     LogTxt.Text += logEntry;
                     writeToLogFile(logEntry);
                 }
+                LogTxt.ScrollToEnd();
             }
+        }
+
+
+        /// <summary>
+        /// Starts a process to open the logs directory
+        /// </summary>
+        public void showLogFiles()
+        {
+            addLog("Request: Show Log Files");
+            Process proc = new Process();
+            proc.StartInfo.FileName = logPath;
+            proc.StartInfo.UseShellExecute = true;
+            //proc.StartInfo.Verb = "runas";
+            proc.Start();
         }
 
         /// <summary>
@@ -132,6 +148,14 @@ namespace KuroNote
                 addLog("Collapse Log");
                 this.Visibility = Visibility.Collapsed;
             }
+        }
+
+        /// <summary>
+        /// When the Show Files... button is clicked
+        /// </summary>
+        private void ShowFilesBtn_Click(object sender, RoutedEventArgs e)
+        {
+            showLogFiles();
         }
 
         /// <summary>

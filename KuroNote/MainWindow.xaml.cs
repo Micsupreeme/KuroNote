@@ -11,22 +11,25 @@ using System.Windows.Markup;
 using System.Xml;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Show log files
     /// TODO: Password complexity measurer for AES Encryption
     /// TODO: File Size Check (max 1MB?) before open or open with command line
-    /// TODO: Word count
+    /// TODO: Confirmation dialog when using Open or New or Exit with unsaved changes
     /// 
     /// </summary>
     public partial class MainWindow : Window
     {
         //Constants
-        private const string FILE_FILTER = "Text files (*.txt)|*.txt|KuroNotes (*.kuro)|*.kuro|All files (*.*)|*.*";  //For opening and saving files
+        private const string FILE_FILTER =  "Text Documents (*.txt, *.kuro)|*.txt; *.kuro|" +
+                                            "KuroNotes (*.kuro)|*.kuro|" +
+                                            "All Files (*.*)|*.*";  //For opening and saving files
+        private const long FILE_MAX_SIZE = 1048576; //Maximum supported file size in bytes
 
         //Globals
         public string appName = "KuroNote";
@@ -41,7 +44,11 @@ namespace KuroNote
         private bool temporaryLogEnabledFlag = true;
 
         //UI Dictionaries for different languages
-        public Dictionary<string, object> EnUIDict;
+        public Dictionary<string, string> EnUIDict;
+
+        //Error Dictionaries for different languages
+        public Dictionary<int, string> EnErrMsgDict;
+        public Dictionary<int, string> EnErrTitleDict;
 
         #region Code for reference
         /*
@@ -76,6 +83,7 @@ namespace KuroNote
             InitialiseLog(); 
             InitialiseSettings();
             InitialiseUIDictionary();
+            InitialiseErrorDictionary();
             InitialiseFont();
             InitialiseTheme();
             processCmdLineArgs();
@@ -88,9 +96,12 @@ namespace KuroNote
             setStatus("Welcome");
         }
 
+        /// <summary>
+        /// Defines UI strings
+        /// </summary>
         private void InitialiseUIDictionary()
         {
-            EnUIDict = new Dictionary<string, object>();
+            EnUIDict = new Dictionary<string, string>();
             //File
             EnUIDict["FileMi"] = "New";
             EnUIDict["NewMi"] = "New";
@@ -121,10 +132,35 @@ namespace KuroNote
             //Options
             EnUIDict["OptionsMi"] = "Options";
             EnUIDict["LoggingMi"] = "Logging";
-            EnUIDict["ShowLogMi"] = "Show Log";
-            EnUIDict["ShowLogFilesMi"] = "Show Log Files";
+            EnUIDict["ShowLogMi"] = "Show Log...";
+            EnUIDict["ShowLogFilesMi"] = "Show Log Files...";
             EnUIDict["AboutMi"] = "About " + appName;
             this.DataContext = EnUIDict;
+        }
+
+        /// <summary>
+        /// Defines error message strings
+        /// </summary>
+        private void InitialiseErrorDictionary ()
+        {
+            EnErrMsgDict = new Dictionary<int, string>();
+            EnErrTitleDict = new Dictionary<int, string>();
+
+            EnErrMsgDict[1] = "KuroNote is not designed to load files larger than " + FILE_MAX_SIZE + " B. " +
+                "Files of this size may significantly compromise performance. " +
+                "Are you sure you want to open this file which exceeds the limit?";
+            EnErrTitleDict[1] = "File size exceeds limit";
+        }
+
+        /// <summary>
+        /// Retrieves the specified error message and error message title
+        /// </summary>
+        /// <param name="_errorCode"></param>
+        /// <returns>An array containing the error message [0], and the error message title [1]</returns>
+        private string[] getErrorMessage(int _errorCode)
+        {
+            string[] errorMessage = new string[] {EnErrMsgDict[_errorCode], EnErrTitleDict[_errorCode]};
+            return errorMessage;
         }
 
         /// <summary>
@@ -146,6 +182,38 @@ namespace KuroNote
             if (temporaryLogEnabledFlag)
             {
                 log.beginLog();
+            }
+        }
+
+        /// <summary>
+        /// Determines whether or not the contents of a specified file exceed KuroNote's maximum file size
+        /// </summary>
+        /// <param name="_path">The path to the file that will be measured</param>
+        /// <returns>True if the path is valid and the file exceeds FILE_MAX_SIZE, false otherwise</returns>
+        private bool fileTooBig(string _path)
+        {
+            if (!_path.Equals(string.Empty))  {
+                if (getFileSize(_path) > FILE_MAX_SIZE) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the size of the contents of a specified file
+        /// </summary>
+        /// <param name="path">The path to the file that will be measured</param>
+        /// <returns>The number of bytes in the file</returns>
+        private long getFileSize(string _path)
+        {
+            if(!_path.Equals(string.Empty)) {
+                return new FileInfo(_path).Length;
+            } else {
+                return 0;
             }
         }
 
@@ -283,7 +351,8 @@ namespace KuroNote
         /// Loads a file into the RTB
         /// </summary>
         /// <param name="path">Optional: specify file to open instead of using file open dialog</param>
-        private void doOpen(string _path = "")
+        /// <returns>True if the file loaded successfully, false otherwise</returns>
+        private bool doOpen(string _path = "")
         {
             if (_path.Equals(""))
             {
@@ -298,6 +367,16 @@ namespace KuroNote
                     MemoryStream ms = new MemoryStream();
                     try
                     {
+                        if(fileTooBig(dlg.FileName))
+                        {
+                            log.addLog("WARNING: File size exceeds limit");
+                            var res = MessageBox.Show(getErrorMessage(1)[0], getErrorMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            if(res == MessageBoxResult.No)
+                            {
+                                log.addLog("Open cancelled due to file size");
+                                return false;
+                            }
+                        }
                         using (FileStream file = new FileStream(dlg.FileName, FileMode.Open, FileAccess.Read))
                         {
                             byte[] bytes = new byte[file.Length];
@@ -320,6 +399,7 @@ namespace KuroNote
                         //File cannot be accessed (e.g. used by another process)
                         log.addLog(ex.ToString());
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
                     }
                 }
             }
@@ -330,6 +410,16 @@ namespace KuroNote
                 MemoryStream ms = new MemoryStream();
                 try
                 {
+                    if (fileTooBig(_path))
+                    {
+                        log.addLog("WARNING: File size exceeds limit");
+                        var res = MessageBox.Show(getErrorMessage(1)[0], getErrorMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (res == MessageBoxResult.No)
+                        {
+                            log.addLog("Open cancelled due to file size");
+                            return false;
+                        }
+                    }
                     using (FileStream file = new FileStream(_path, FileMode.Open, FileAccess.Read))
                     {
                         byte[] bytes = new byte[file.Length];
@@ -352,8 +442,10 @@ namespace KuroNote
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());
                     MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
                 }
             }
+            return true;
         }
 
         /// <summary>
@@ -654,10 +746,33 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// Menu > Options > Logging > Show Log Files...
+        /// </summary>
+        private void ShowLogFiles_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.showLogFiles();
+        }
+
+        /// <summary>
+        /// Menu > Options > About KuroNote...
+        /// </summary>
         private void About_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: About");
-            MessageBox.Show("abt");
+        }
+
+        /// <summary>
+        /// Creates a string based on the number of words in the RTB
+        /// </summary>
+        /// <returns>A string that describes the number of words in the RTB</returns>
+        private string generateWordCount()
+        {
+            TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Selection.Start);
+            MatchCollection words = Regex.Matches(document.Text, @"\S+");
+            const string WORDS_POST = " Words";
+
+            return words.Count + WORDS_POST;
         }
 
         /// <summary>
@@ -665,11 +780,7 @@ namespace KuroNote
         /// </summary>
         private void MainRtb_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            const string SELECT_LENGTH_PRE = "Selection is ";
-            const string SELECT_LENGTH_POST = " character(s) long";
-
-            TextRange tempRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Selection.Start);
-            SelectLengthTb.Text = SELECT_LENGTH_PRE + MainRtb.Selection.Text.Length + SELECT_LENGTH_POST;
+            //
         }
 
         /// <summary>
@@ -678,6 +789,7 @@ namespace KuroNote
         private void MainRtb_TextChanged(object sender, RoutedEventArgs e)
         {
             toggleEdited(true);
+            WordCountTb.Text = generateWordCount();
         }
 
         /// <summary>
@@ -716,6 +828,7 @@ namespace KuroNote
 
         //Options
         public static RoutedCommand ShowLog = new RoutedCommand();
+        public static RoutedCommand ShowLogFiles = new RoutedCommand();
         public static RoutedCommand About = new RoutedCommand();
     }
 }
