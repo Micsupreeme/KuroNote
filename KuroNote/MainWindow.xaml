@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="700"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing">
     <Window.CommandBindings>
         <!--File-->
         <CommandBinding Command="local:CustomCommands.New" Executed="New_Executed" />

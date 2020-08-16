@@ -19,8 +19,7 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Password complexity measurer for AES Encryption
-    /// TODO: File Size Check (max 1MB?) before open or open with command line
-    /// TODO: Confirmation dialog when using Open or New or Exit with unsaved changes
+    /// TODO: Confirmation dialog when using Open or New or Exit(done) with unsaved changes
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -150,6 +149,15 @@ namespace KuroNote
                 "Files of this size may significantly compromise performance. " +
                 "Are you sure you want to open this file which exceeds the limit?";
             EnErrTitleDict[1] = "File size exceeds limit";
+
+            EnErrMsgDict[2] = "There are unsaved changes. Would you like to save this file before exiting?";
+            EnErrTitleDict[2] = "Save before exit?";
+
+            EnErrMsgDict[3] = "There are unsaved changes. Would you like to save this file before opening a new one?";
+            EnErrTitleDict[3] = "Save before open?";
+
+            EnErrMsgDict[4] = "There are unsaved changes. Would you like to save this file before creating a new one?";
+            EnErrTitleDict[4] = "Save before new?";
         }
 
         /// <summary>
@@ -602,10 +610,26 @@ namespace KuroNote
         }
         #endregion
 
-        private void doExit()
+        /// <summary>
+        /// If there are unsaved changes: uses a dialog to confirm weather or not the user wants to exit
+        /// </summary>
+        /// <returns>True if the user wants to exit, false otherwise</returns>
+        private bool doExit()
         {
-            log.addLog("Exiting");
-            Application.Current.Shutdown();
+            if(editedFlag) {
+                log.addLog("WARNING: Exit before saving");
+                var res = MessageBox.Show(getErrorMessage(2)[0], getErrorMessage(2)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes) {
+                    log.addLog("Exit cancelled");
+                    return false;
+                } else {
+                    log.addLog("Exiting");
+                    return true;
+                }
+            } else {
+                log.addLog("Exiting");
+                return true;
+            }
         }
 
         /// <summary>
@@ -613,7 +637,7 @@ namespace KuroNote
         /// </summary>
         private void Exit_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            doExit();
+            this.Close();
         }
 
         #region Cut, Copy, Paste, Undo, Redo and Select All
@@ -795,9 +819,12 @@ namespace KuroNote
         /// <summary>
         /// When the red X is clicked
         /// </summary>
-        private void Win_Closed(object sender, EventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            doExit();
+            if(!doExit()) {
+                e.Cancel = true;
+                doSave();
+            }
         }
     }
 
