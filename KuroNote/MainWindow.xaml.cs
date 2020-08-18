@@ -19,7 +19,7 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Password complexity measurer for AES Encryption
-    /// TODO: Confirmation dialog when using Open or New or Exit(done) with unsaved changes
+    /// FIX: Word count doesn't update upon open file (only upon text changed)
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -335,9 +335,22 @@ namespace KuroNote
         /// <summary>
         /// Closes the current file and opens a new file
         /// </summary>
-        private void doNew()
+        /// <returns>True if the operation completed successfully, false otherwise</returns>
+        private bool doNew()
         {
             log.addLog("Request: New File");
+            if (editedFlag)
+            {
+                log.addLog("WARNING: New before saving");
+                var res = MessageBox.Show(getErrorMessage(4)[0], getErrorMessage(4)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes)
+                {
+                    log.addLog("New cancelled");
+                    doSave();       //save
+                    return false;   //don't continue with new operation
+                }
+            }
+            
             fileName = string.Empty;
             TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
             range.Text = string.Empty;
@@ -345,6 +358,7 @@ namespace KuroNote
             toggleEdited(false);
             setStatus("New File");
             log.addLog("Content deleted");
+            return true;
         }
 
         /// <summary>
@@ -359,13 +373,26 @@ namespace KuroNote
         /// Loads a file into the RTB
         /// </summary>
         /// <param name="path">Optional: specify file to open instead of using file open dialog</param>
-        /// <returns>True if the file loaded successfully, false otherwise</returns>
+        /// <returns>True if the operation completed successfully, false otherwise</returns>
         private bool doOpen(string _path = "")
         {
+            log.addLog("Request: Open");
+            if (editedFlag)
+            {
+                log.addLog("WARNING: Open before saving");
+                var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes)
+                {
+                    log.addLog("Open cancelled");
+                    doSave();       //save
+                    return false;   //don't continue with open operation
+                }
+            }
+
             if (_path.Equals(""))
             {
                 //No file specified - use dialog
-                log.addLog("Request: Open");
+                log.addLog("Request: Open from dlg");
                 OpenFileDialog dlg = new OpenFileDialog
                 {
                     Filter = FILE_FILTER
@@ -822,8 +849,8 @@ namespace KuroNote
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if(!doExit()) {
-                e.Cancel = true;
-                doSave();
+                e.Cancel = true;  //cancel the exit
+                doSave();         //save instead
             }
         }
     }
