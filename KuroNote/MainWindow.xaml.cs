@@ -19,7 +19,6 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Password complexity measurer for AES Encryption
-    /// FIX: Word count doesn't update upon open file (only upon text changed)
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -819,10 +818,10 @@ namespace KuroNote
         /// <returns>A string that describes the number of words in the RTB</returns>
         private string generateWordCount()
         {
-            TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Selection.Start);
+            TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
             MatchCollection words = Regex.Matches(document.Text, @"\S+");
+            
             const string WORDS_POST = " Words";
-
             return words.Count + WORDS_POST;
         }
 
