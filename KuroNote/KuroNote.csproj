@@ -13,6 +13,70 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="img\ico\**" />
+    <EmbeddedResource Remove="img\ico\**" />
+    <None Remove="img\ico\**" />
+    <Page Remove="img\ico\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="img\icons\outline_account_circle_black_18dp.png" />
+    <None Remove="img\icons\outline_add_black_18dp.png" />
+    <None Remove="img\icons\outline_all_inclusive_black_18dp.png" />
+    <None Remove="img\icons\outline_apps_black_18dp.png" />
+    <None Remove="img\icons\outline_arrow_downward_black_18dp.png" />
+    <None Remove="img\icons\outline_arrow_upward_black_18dp.png" />
+    <None Remove="img\icons\outline_bug_report_black_18dp.png" />
+    <None Remove="img\icons\outline_build_black_18dp.png" />
+    <None Remove="img\icons\outline_color_lens_black_18dp.png" />
+    <None Remove="img\icons\outline_content_copy_black_18dp.png" />
+    <None Remove="img\icons\outline_content_cut_black_18dp.png" />
+    <None Remove="img\icons\outline_content_paste_black_18dp.png" />
+    <None Remove="img\icons\outline_create_black_18dp.png" />
+    <None Remove="img\icons\outline_description_black_18dp.png" />
+    <None Remove="img\icons\outline_done_outline_black_18dp.png" />
+    <None Remove="img\icons\outline_enhanced_encryption_black_18dp.png" />
+    <None Remove="img\icons\outline_exit_to_app_black_18dp.png" />
+    <None Remove="img\icons\outline_face_black_18dp.png" />
+    <None Remove="img\icons\outline_file_new_black_18dp.png" />
+    <None Remove="img\icons\outline_find_in_page_black_18dp.png" />
+    <None Remove="img\icons\outline_find_replace_black_18dp.png" />
+    <None Remove="img\icons\outline_fingerprint_black_18dp.png" />
+    <None Remove="img\icons\outline_folder_open_black_18dp.png" />
+    <None Remove="img\icons\outline_folder_timeline_black_18dp.png" />
+    <None Remove="img\icons\outline_fullscreen_black_18dp.png" />
+    <None Remove="img\icons\outline_fullscreen_exit_black_18dp.png" />
+    <None Remove="img\icons\outline_help_outline_black_18dp.png" />
+    <None Remove="img\icons\outline_history_black_18dp.png" />
+    <None Remove="img\icons\outline_home_black_18dp.png" />
+    <None Remove="img\icons\outline_info_black_18dp.png" />
+    <None Remove="img\icons\outline_invert_colors_black_18dp.png" />
+    <None Remove="img\icons\outline_language_black_18dp.png" />
+    <None Remove="img\icons\outline_lock_black_18dp.png" />
+    <None Remove="img\icons\outline_lock_open_black_18dp.png" />
+    <None Remove="img\icons\outline_mail_black_18dp.png" />
+    <None Remove="img\icons\outline_new_releases_black_18dp.png" />
+    <None Remove="img\icons\outline_note_add_black_18dp.png" />
+    <None Remove="img\icons\outline_no_encryption_black_18dp.png" />
+    <None Remove="img\icons\outline_opacity_black_18dp.png" />
+    <None Remove="img\icons\outline_pending_black_18dp.png" />
+    <None Remove="img\icons\outline_person_outline_black_18dp.png" />
+    <None Remove="img\icons\outline_power_settings_new_black_18dp.png" />
+    <None Remove="img\icons\outline_print_black_18dp.png" />
+    <None Remove="img\icons\outline_redo_black_18dp.png" />
+    <None Remove="img\icons\outline_save_as_black_18dp.png" />
+    <None Remove="img\icons\outline_save_black_18dp.png" />
+    <None Remove="img\icons\outline_search_black_18dp.png" />
+    <None Remove="img\icons\outline_select_all_black_18dp.png" />
+    <None Remove="img\icons\outline_settings_black_18dp.png" />
+    <None Remove="img\icons\outline_spellcheck_black_18dp.png" />
+    <None Remove="img\icons\outline_text_format_black_18dp.png" />
+    <None Remove="img\icons\outline_timeline_black_18dp.png" />
+    <None Remove="img\icons\outline_undo_black_18dp.png" />
+    <None Remove="img\icons\outline_upgrade_black_18dp.png" />
+    <None Remove="img\icons\outline_wallpaper_black_18dp.png" />
+    <None Remove="img\icons\outline_zoom_in_black_18dp.png" />
+    <None Remove="img\icons\outline_zoom_out_black_18dp.png" />
     <None Remove="img\water.png" />
   </ItemGroup>
 
@@ -25,6 +89,177 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="img\icons\outline_account_circle_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_add_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_all_inclusive_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_apps_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_arrow_downward_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_arrow_upward_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_bug_report_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_build_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_color_lens_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_content_copy_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_content_cut_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_content_paste_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_create_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_description_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_done_outline_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_enhanced_encryption_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_exit_to_app_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_face_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_file_new_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_find_in_page_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_find_replace_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_fingerprint_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_folder_open_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_folder_timeline_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_fullscreen_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_fullscreen_exit_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_help_outline_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_history_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_home_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_info_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_invert_colors_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_language_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_lock_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_lock_open_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_mail_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_new_releases_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_note_add_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_no_encryption_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_opacity_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_pending_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_person_outline_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_power_settings_new_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_print_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_redo_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_save_as_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_save_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_search_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_select_all_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_settings_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_spellcheck_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_text_format_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_timeline_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_undo_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_upgrade_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_wallpaper_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_zoom_in_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_zoom_out_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\water.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

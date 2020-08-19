@@ -18,7 +18,9 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
+    /// TODO: New Window and New Admin Window
     /// TODO: Password complexity measurer for AES Encryption
+    /// TODO: Options window
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -128,7 +130,7 @@ namespace KuroNote
             EnUIDict["AESEncMi"] = "AES Encrypt...";
             EnUIDict["AESDecMi"] = "AES Decrypt...";
             //Options
-            EnUIDict["OptionsMi"] = "Options";
+            EnUIDict["OptionsMi"] = string.Empty;
             EnUIDict["LoggingMi"] = "Logging";
             EnUIDict["ShowLogMi"] = "Show Log...";
             EnUIDict["ShowLogFilesMi"] = "Show Log Files...";
@@ -375,23 +377,23 @@ namespace KuroNote
         /// <returns>True if the operation completed successfully, false otherwise</returns>
         private bool doOpen(string _path = "")
         {
-            log.addLog("Request: Open");
-            if (editedFlag)
-            {
-                log.addLog("WARNING: Open before saving");
-                var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (res == MessageBoxResult.Yes)
-                {
-                    log.addLog("Open cancelled");
-                    doSave();       //save
-                    return false;   //don't continue with open operation
-                }
-            }
-
             if (_path.Equals(""))
             {
                 //No file specified - use dialog
-                log.addLog("Request: Open from dlg");
+                log.addLog("Request: Open");
+
+                if (editedFlag)
+                {
+                    log.addLog("WARNING: Open before saving");
+                    var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        log.addLog("Open cancelled");
+                        doSave();       //save
+                        return false;   //don't continue with open operation
+                    }
+                }
+
                 OpenFileDialog dlg = new OpenFileDialog
                 {
                     Filter = FILE_FILTER
