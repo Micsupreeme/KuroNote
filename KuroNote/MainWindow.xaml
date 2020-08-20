@@ -11,6 +11,8 @@
     <Window.CommandBindings>
         <!--File-->
         <CommandBinding Command="local:CustomCommands.New" Executed="New_Executed" />
+        <CommandBinding Command="local:CustomCommands.NewRegWin" Executed="NewRegWin_Executed" />
+        <CommandBinding Command="local:CustomCommands.NewAdminWin" Executed="NewAdminWin_Executed" />
         <CommandBinding Command="local:CustomCommands.Open" Executed="Open_Executed" />
         <CommandBinding Command="local:CustomCommands.Save" Executed="Save_Executed" />
         <CommandBinding Command="local:CustomCommands.SaveAs" Executed="SaveAs_Executed" />
@@ -31,6 +33,7 @@
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Modifiers="Ctrl" Key="N" Command="local:CustomCommands.New"/>
+        <KeyBinding Modifiers="Alt" Key="N" Command="local:CustomCommands.NewRegWin"/>
         <KeyBinding Modifiers="Ctrl" Key="O" Command="local:CustomCommands.Open"/>
         <KeyBinding Modifiers="Ctrl" Key="S" Command="local:CustomCommands.Save"/>
         <KeyBinding Modifiers="Ctrl+Shift" Key="S" Command="local:CustomCommands.SaveAs"/>
@@ -52,8 +55,8 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="NewWinMi" Header="{Binding [NewWinMi], Mode=OneTime}">
-                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}"/>
-                    <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}"/>
+                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" Command="local:CustomCommands.NewRegWin"/>
+                    <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}" Command="local:CustomCommands.NewAdminWin"/>
                 </MenuItem>
                 <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold">
                     <MenuItem.Icon>

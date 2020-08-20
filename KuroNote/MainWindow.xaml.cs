@@ -12,14 +12,15 @@ using System.Xml;
 using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: New Window and New Admin Window
     /// TODO: Password complexity measurer for AES Encryption
+    /// TODO: Log whether or not it's running as admin
     /// TODO: Options window
     /// 
     /// </summary>
@@ -30,6 +31,7 @@ namespace KuroNote
                                             "KuroNotes (*.kuro)|*.kuro|" +
                                             "All Files (*.*)|*.*";  //For opening and saving files
         private const long FILE_MAX_SIZE = 1048576; //Maximum supported file size in bytes
+        private const string FILE_SEARCH_EXE = "*.exe";
 
         //Globals
         public string appName = "KuroNote";
@@ -590,6 +592,74 @@ namespace KuroNote
         }
         #endregion
 
+        /// <summary>
+        /// Gets file names (and paths) from a specified folder that optionally match a specified search term
+        /// </summary>
+        /// <param name="_directory">The directory to search</param>
+        /// <param name="_searchTerm">Optional: only get files that match a non-regex search string</param>
+        /// <returns>A string array of matching file names (and paths)</returns>
+        private string[] getFilesFromDirectory(string _directory, string _searchTerm = "*")
+        {
+            string[] files = {""};
+            try {
+                //Only get files that match the search term (e.g. "c*" gets files that begin with c)
+                files = Directory.GetFiles(_directory, _searchTerm);
+                log.addLog("Searching " + _directory + " with searchTerm '" + _searchTerm + "'");
+                foreach (string file in files)
+                {
+                    log.addLog(">> " + file);
+                }
+                return files;
+            } catch (Exception e) {
+                log.addLog("ERROR: " + e.ToString());
+                return files;
+            }
+        }
+
+        /// <summary>
+        /// Executes the specified file, optionally with admin permissions
+        /// </summary>
+        /// <param name="_fileName">The filepath to execute</param>
+        /// <param name="_asAdmin">Optional: specify true to run as admin</param>
+        private void startProcess(string _fileName, bool _asAdmin = false)
+        {
+            try {
+                log.addLog("Launching " + _fileName);
+                Process process = new Process();
+                process.StartInfo.FileName = _fileName;
+                process.StartInfo.UseShellExecute = true; //enables opening things like folders without specifying the program to use
+                if (_asAdmin)
+                {
+                    process.StartInfo.Verb = "runas";
+                }
+                process.Start();
+            } catch (Exception e) {
+                log.addLog("ERROR: " + e.ToString());
+            }
+        }
+
+        #region New Window
+        /// <summary>
+        /// 
+        /// </summary>
+        private void NewRegWin_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: New Regular Window");
+            string[] executables = getFilesFromDirectory(appPath, FILE_SEARCH_EXE);
+            startProcess(executables[0]);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void NewAdminWin_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: New Admin Window");
+            string[] executables = getFilesFromDirectory(appPath, FILE_SEARCH_EXE);
+            startProcess(executables[0], true);
+        }
+        #endregion
+
         #region Print
         /// <summary>
         /// https://stackoverflow.com/users/1137199/dotnet's Simple Print Proccedure
@@ -863,6 +933,8 @@ namespace KuroNote
     {
         //File
         public static RoutedCommand New = new RoutedCommand();
+        public static RoutedCommand NewRegWin = new RoutedCommand();
+        public static RoutedCommand NewAdminWin = new RoutedCommand();
         public static RoutedCommand Open = new RoutedCommand();
         public static RoutedCommand Save = new RoutedCommand();
         public static RoutedCommand SaveAs = new RoutedCommand();

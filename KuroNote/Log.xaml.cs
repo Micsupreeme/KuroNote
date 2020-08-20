@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Security.Principal;
 using System.Windows;
 
 namespace KuroNote
@@ -32,6 +33,17 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Checks if the app is currently running with admin permissions
+        /// </summary>
+        /// <returns>True if the app is running with elevated permissions, false otherwise</returns>
+        private bool hasAdminPermissions()
+        {
+            var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        /// <summary>
         /// Generate the session ID and add content at the beginning of every log
         /// </summary>
         public void beginLog()
@@ -43,6 +55,12 @@ namespace KuroNote
                 "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " (Dev)" + Environment.NewLine +
                 DateTime.Now + ":" + DateTime.Now.Millisecond + ": SESSION " + sessionID + " BEGINS"
             , true);
+
+            if(hasAdminPermissions()) {
+                addLog(Environment.NewLine + "Permissions: Elevated", true);
+            } else {
+                addLog(Environment.NewLine + "Permissions: Standard", true);
+            }
         }
 
         /// <summary>
@@ -128,8 +146,7 @@ namespace KuroNote
             addLog("Request: Show Log Files");
             Process proc = new Process();
             proc.StartInfo.FileName = logPath;
-            proc.StartInfo.UseShellExecute = true;
-            //proc.StartInfo.Verb = "runas";
+            proc.StartInfo.UseShellExecute = true; //enables opening things like folders without specifying the program to use
             proc.Start();
         }
 
