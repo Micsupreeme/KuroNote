@@ -126,13 +126,15 @@ namespace KuroNote
             //Format
             EnUIDict["FormatMi"] = "Format";
             EnUIDict["FontMi"] = "Font...";
-            //Security
-            EnUIDict["SecurityMi"] = "Security";
+            //Tools
+            EnUIDict["ToolsMi"] = "Tools";
             EnUIDict["AESMi"] = "AES Encryption";
             EnUIDict["AESEncMi"] = "AES Encrypt...";
             EnUIDict["AESDecMi"] = "AES Decrypt...";
             //Options
             EnUIDict["OptionsMi"] = string.Empty;
+            EnUIDict["ThemeMi"] = "Theme...";
+            EnUIDict["CustomThemesMi"] = "Custom Themes...";
             EnUIDict["LoggingMi"] = "Logging";
             EnUIDict["ShowLogMi"] = "Show Log...";
             EnUIDict["ShowLogFilesMi"] = "Show Log Files...";
@@ -278,11 +280,13 @@ namespace KuroNote
         {
             this.Title = "New File - " + appName;
 
+            setTheme(appSettings.themeName);
+
             //Background for the whole window
             SolidColorBrush backgroundBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
             this.Background = backgroundBrush;
 
-            
+            /*
             //Load image from file
             var resCustomBackground = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute));
 
@@ -296,7 +300,8 @@ namespace KuroNote
                 ImageSource = resCustomBackground,
                 Opacity = 0.40
             };
-            MainRtb.Background = imgBrush;
+            MainRtb.Background = imgBrush; 
+            */
 
             //Text colour
             SolidColorBrush textColourBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
@@ -856,6 +861,55 @@ namespace KuroNote
             dec.toggleVisibility(true);
         }
 
+        #region Theme
+        /// <summary>
+        /// ThemeSelector uses this method to change the theme
+        /// </summary>
+        public void setTheme(String _themeName)
+        {
+            log.addLog("Changing theme to: " + _themeName);
+            ImageBrush imgBrush = new ImageBrush();
+            switch(_themeName)
+            {
+                case "Default":
+                    //Load image from file
+                    var defaultBackground = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute));
+
+                    imgBrush.ImageSource = defaultBackground;
+                    imgBrush.Opacity = 0.40;
+
+                    break;
+                case "Water":
+                    //Static resource
+                    BitmapImage waterBackground = new BitmapImage(new Uri("pack://application:,,,/img/water.png"));
+
+                    imgBrush.ImageSource = waterBackground;
+                    imgBrush.Opacity = 0.40;
+                    
+                    break;
+            }
+            MainRtb.Background = imgBrush;
+        }
+
+        /// <summary>
+        /// Menu > Options > Theme...
+        /// </summary>
+        private void Theme_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: Theme...");
+            ThemeSelector themeSelector = new ThemeSelector(this, appSettings, log);
+            themeSelector.toggleVisibility(true);
+        }
+
+        /// <summary>
+        /// Menu > Options > Custom Themes...
+        /// </summary>
+        private void CustomThemes_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: Custom Themes...");
+        }
+        #endregion
+
         /// <summary>
         /// Menu > Options > Logging > Show Log...
         /// </summary>
@@ -949,11 +1003,13 @@ namespace KuroNote
         //Format
         public static RoutedCommand Font = new RoutedCommand();
 
-        //Security
+        //Tools
         public static RoutedCommand AESEnc = new RoutedCommand();
         public static RoutedCommand AESDec = new RoutedCommand();
 
         //Options
+        public static RoutedCommand Theme = new RoutedCommand();
+        public static RoutedCommand CustomThemes = new RoutedCommand();
         public static RoutedCommand ShowLog = new RoutedCommand();
         public static RoutedCommand ShowLogFiles = new RoutedCommand();
         public static RoutedCommand About = new RoutedCommand();

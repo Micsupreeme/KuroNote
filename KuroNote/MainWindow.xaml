@@ -22,11 +22,13 @@
         <!--Edit-->
         <CommandBinding Command="local:CustomCommands.Font" Executed="Font_Executed" />
         
-        <!--Security-->
+        <!--Tools-->
         <CommandBinding Command="local:CustomCommands.AESEnc" Executed="AESEnc_Executed" />
         <CommandBinding Command="local:CustomCommands.AESDec" Executed="AESDec_Executed" />
         
         <!--Options-->
+        <CommandBinding Command="local:CustomCommands.Theme" Executed="Theme_Executed" />
+        <CommandBinding Command="local:CustomCommands.CustomThemes" Executed="CustomThemes_Executed" />
         <CommandBinding Command="local:CustomCommands.ShowLog" Executed="ShowLog_Executed" />
         <CommandBinding Command="local:CustomCommands.ShowLogFiles" Executed="ShowLogFiles_Executed" />
         <CommandBinding Command="local:CustomCommands.About" Executed="About_Executed" />
@@ -127,7 +129,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Name="SecurityMi" Header="{Binding [SecurityMi], Mode=OneTime}">
+            <MenuItem Name="ToolsMi" Header="{Binding [ToolsMi], Mode=OneTime}">
                 <MenuItem Name="AESMi" Header="{Binding [AESMi], Mode=OneTime}">
                     <MenuItem Name="AESEncMi" Header="{Binding [AESEncMi], Mode=OneTime}" Command="local:CustomCommands.AESEnc">
                         <MenuItem.Icon>
@@ -145,6 +147,17 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Name="OptionsMi" HorizontalAlignment="Right" FlowDirection="LeftToRight" Width="24px">
+                <MenuItem Name="ThemeMi" Header="{Binding [ThemeMi], Mode=OneTime}" Command="local:CustomCommands.Theme">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_color_lens_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="CustomThemesMi" Header="{Binding [CustomThemesMi], Mode=OneTime}" Command="local:CustomCommands.CustomThemes">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_create_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
                 <MenuItem Name="LoggingMi" Header="{Binding [LoggingMi], Mode=OneTime}">
                     <MenuItem Name="ShowLogMi" Header="{Binding [ShowLogMi], Mode=OneTime}" Command="local:CustomCommands.ShowLog">
                         <MenuItem.Icon>
@@ -160,6 +173,7 @@
                         <Image Source="pack://application:,,,/img/icons/outline_timeline_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <Separator/>
                 <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1"/>
                 <MenuItem.Icon>
                     <Image Source="pack://application:,,,/img/icons/outline_settings_black_18dp.png"/>
