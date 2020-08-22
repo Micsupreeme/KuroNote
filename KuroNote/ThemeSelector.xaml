@@ -11,10 +11,21 @@
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">
     <DockPanel LastChildFill="True" Margin="10">
-        <StackPanel Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft" DockPanel.Dock="Bottom">
-            <Button Name="btnCancel" Click="btnCancel_Click" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" Content="Cancel" IsCancel="True" FontSize="14"/>
-            <Button Name="btnOk" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="OK" IsDefault="True" FontSize="14"/>
-        </StackPanel>
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <CheckBox Name="chkIncludeFont" Checked="chkIncludeFont_CheckChanged" Unchecked="chkIncludeFont_CheckChanged" IsChecked="True" Content="Include Theme Font" Foreground="#EEEEEE" Grid.Column="0"/>
+            <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Column="1">
+                <Button Name="btnCancel" Click="btnCancel_Click" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" Content="Cancel" IsCancel="True" FontSize="14"/>
+                <Button Name="btnOk" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="OK" IsDefault="True" FontSize="14"/>
+            </StackPanel>
+        </Grid>
 
         <StackPanel>
             <TextBlock Name="tbSelectTheme" Text="Select Theme:" Foreground="#EEEEEE"/>

@@ -280,32 +280,7 @@ namespace KuroNote
         {
             this.Title = "New File - " + appName;
 
-            setTheme(appSettings.themeName);
-
-            //Background for the whole window
-            SolidColorBrush backgroundBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            this.Background = backgroundBrush;
-
-            /*
-            //Load image from file
-            var resCustomBackground = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute));
-
-            //Static resource
-            BitmapImage bmi = new BitmapImage(new Uri("pack://application:,,,/img/water.png"));
-
-
-            //Image background for the text box
-            ImageBrush imgBrush = new ImageBrush
-            {
-                ImageSource = resCustomBackground,
-                Opacity = 0.40
-            };
-            MainRtb.Background = imgBrush; 
-            */
-
-            //Text colour
-            SolidColorBrush textColourBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-            MainRtb.Foreground = textColourBrush;
+            setTheme(appSettings.themeName, appSettings.themeWithFont);
 
             //Set additional properties
             MainRtb.BorderThickness = new Thickness(0, 0, 0, 0); //No blue outline when you click inside the RTB
@@ -818,8 +793,12 @@ namespace KuroNote
 
         #region Font
         /// <summary>
-        /// FontDialog uses this method to change the font
+        /// Change the font to the specified font
         /// </summary>
+        /// <param name="_fontFamily">The name of the font to apply</param>
+        /// <param name="_fontSize">The size (in "pts") of the font to apply</param>
+        /// <param name="_fontWeight">The degree of boldness of the font to apply</param>
+        /// <param name="_fontStyle">The degree of italic of the font to apply</param>
         public void setFont(String _fontFamily, short _fontSize, FontWeight _fontWeight, FontStyle _fontStyle)
         {
             MainRtb.FontFamily = new FontFamily(_fontFamily);
@@ -863,32 +842,85 @@ namespace KuroNote
 
         #region Theme
         /// <summary>
-        /// ThemeSelector uses this method to change the theme
+        /// Change the theme to the specified theme, optionally with the corresponding theme font
         /// </summary>
-        public void setTheme(String _themeName)
+        /// <param name="_themeName">The name of the theme to change to</param>
+        /// <param name="_includeFont">True if you want to change the font to the font that comes with the theme, false otherwise</param>
+        public void setTheme(String _themeName, bool _includeFont)
         {
-            log.addLog("Changing theme to: " + _themeName);
-            ImageBrush imgBrush = new ImageBrush();
+            if(_includeFont) {
+                log.addLog("Changing theme to: " + _themeName + " (w/ font)");
+            } else {
+                log.addLog("Changing theme to: " + _themeName + " (w/o font)");
+            }
+            
+
+            SolidColorBrush bgBrush = new SolidColorBrush();        //background for the whole window
+
+            ImageBrush imgBrush = new ImageBrush();                 //background image OR
+            SolidColorBrush solidBrush = new SolidColorBrush();     //background colour
+
+            SolidColorBrush menuBrush = new SolidColorBrush();      //Menu bar background colour
+            SolidColorBrush statusBrush = new SolidColorBrush();    //Status bar background colour
+
+            SolidColorBrush textBrush = new SolidColorBrush();      //foreground colour
+            
+
+            bool hasImage = true;   //Does this theme have an image?
+
             switch(_themeName)
             {
                 case "Default":
+                    hasImage = true;
+
+                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+
                     //Load image from file
                     var defaultBackground = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute));
-
                     imgBrush.ImageSource = defaultBackground;
                     imgBrush.Opacity = 0.40;
 
-                    break;
-                case "Water":
-                    //Static resource
-                    BitmapImage waterBackground = new BitmapImage(new Uri("pack://application:,,,/img/water.png"));
+                    menuBrush = new SolidColorBrush(Color.FromRgb(240, 240, 240));
+                    statusBrush = new SolidColorBrush(Color.FromRgb(240, 240, 240));
 
-                    imgBrush.ImageSource = waterBackground;
-                    imgBrush.Opacity = 0.40;
+                    if (_includeFont)
+                    {
+                        setFont("Consolas", 18, FontWeights.Regular, FontStyles.Normal);
+                    }
+
+                    break;
+                case "Web":
+                    hasImage = true;
+
+                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+
+                    //Static resource
+                    BitmapImage webBackground = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-276205.jpg"));
+                    imgBrush.ImageSource = webBackground;
+                    imgBrush.Opacity = 0.33;
+
+                    menuBrush = new SolidColorBrush(Color.FromRgb(255, 241, 219));
+                    statusBrush = new SolidColorBrush(Color.FromRgb(255, 241, 219));
+
+                    if (_includeFont)
+                    {
+                        setFont("Verdana", 18, FontWeights.Regular, FontStyles.Normal);
+                    }
                     
                     break;
             }
-            MainRtb.Background = imgBrush;
+
+            this.Background = bgBrush;
+            MainRtb.Foreground = textBrush;
+            if (hasImage) {
+                MainRtb.Background = imgBrush;
+            } else {
+                MainRtb.Background = solidBrush;
+            }
+            MainMenu.Background = menuBrush;
+            MainStatus.Background = statusBrush;
         }
 
         /// <summary>

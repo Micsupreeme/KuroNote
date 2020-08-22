@@ -21,11 +21,11 @@ namespace KuroNote
         private const string WINDOW_NAME = "Theme";
         private static readonly string[] THEME_NAMES = { 
             "Default",
-            "Water" 
+            "Web" 
         };
         private static readonly string[] THEME_DESCS = { 
             "Classic", 
-            "Fancy" 
+            "(Image by Pixabay)"
         };
 
         //Globals
@@ -77,21 +77,42 @@ namespace KuroNote
                 case "Default":
                     tbThemeDesc.Text = THEME_DESCS[0];
                     break;
-                case "Water":
+                case "Web":
                     tbThemeDesc.Text = THEME_DESCS[1];
                     break;
             }
-            main.setTheme(cmbTheme.SelectedValue.ToString());
+            main.setTheme(cmbTheme.SelectedValue.ToString(), (bool)chkIncludeFont.IsChecked);
+        }
+
+        /// <summary>
+        /// Update the theme preview to include/omit the theme font when the checkbox state is changed
+        /// </summary>
+        private void chkIncludeFont_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                bool isChecked = (bool)chkIncludeFont.IsChecked;
+                if (!isChecked) //User doesn't want the theme font
+                {
+                    //Apply the user's currently saved font instead of the theme font
+                    main.setFont(settings.fontFamily, (short)settings.fontSize, settings.fontWeight, settings.fontStyle);
+                }
+                main.setTheme(cmbTheme.SelectedValue.ToString(), isChecked);
+            } catch(Exception ex) {
+                Console.Error.Write(ex.ToString()); //Attempted to apply theme before the combobox is initialised
+            }
         }
 
         /// <summary>
         /// Update theme preferences to the specified theme name
         /// </summary>
         /// <param name="_selectedTheme">The theme name to change the selectedTheme setting to</param>
-        private void applyTheme(string _selectedTheme) {
+        /// <param name="_includesFont">Whether or not to use the font that comes with the theme</param>
+        private void applyTheme(string _selectedTheme, bool _includesFont) {
             log.addLog("Updating theme preference: " + _selectedTheme);
 
             settings.themeName = _selectedTheme;
+            settings.themeWithFont = _includesFont;
             settings.UpdateSettings(); //Write these changes to the file
         }
 
@@ -115,21 +136,22 @@ namespace KuroNote
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             string newThemeName = cmbTheme.SelectedValue.ToString();
+            bool themeIncludesFont = (bool)chkIncludeFont.IsChecked;
 
-            main.setTheme(newThemeName);
-            applyTheme(newThemeName);
+            main.setTheme(newThemeName, themeIncludesFont);
+            applyTheme(newThemeName, themeIncludesFont);
             toggleVisibility(false);
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            main.setTheme(previouslySelectedTheme);
+            main.setTheme(previouslySelectedTheme, settings.themeWithFont);
             toggleVisibility(false);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            main.setTheme(previouslySelectedTheme);
+            main.setTheme(previouslySelectedTheme, settings.themeWithFont);
             log.addLog("Close ThemeSelector");
         }
     }

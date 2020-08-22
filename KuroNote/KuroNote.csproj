@@ -20,6 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="img\bgs\pexels-freestocksorg-863908.jpg" />
+    <None Remove="img\bgs\pexels-pixabay-276205.jpg" />
     <None Remove="img\icons\outline_account_circle_black_18dp.png" />
     <None Remove="img\icons\outline_add_black_18dp.png" />
     <None Remove="img\icons\outline_all_inclusive_black_18dp.png" />
@@ -89,6 +91,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="img\bgs\pexels-freestocksorg-863908.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-pixabay-276205.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\outline_account_circle_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -258,9 +266,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_zoom_out_black_18dp.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="img\water.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
