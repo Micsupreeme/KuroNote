@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="DecryptDialog" Height="250" Width="500"
+        Title="DecryptDialog" Height="200" Width="500" MinHeight="200" MinWidth="500"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
         Background="#404040"
@@ -17,7 +17,7 @@
         </StackPanel>
         <StackPanel>
             <Label Name="KeyLbl" Content="Enter AES Encryption Password: " FontSize="14" Foreground="#EEEEEE"/>
-            <PasswordBox Name="KeyPw" FontSize="14" Padding="2" FontFamily="Consolas" Background="#000000" Foreground="#00FF00"/>
+            <PasswordBox Name="KeyPw" FontSize="14" Padding="2" FontFamily="Consolas" Background="#000000" Foreground="#00FF00" Margin="4, 0, 4, 0"/>
         </StackPanel>
     </DockPanel>
 </Window>

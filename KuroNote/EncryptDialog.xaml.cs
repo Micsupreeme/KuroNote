@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -34,7 +35,7 @@ namespace KuroNote
         string AESencryptedContent = string.Empty;
 
         //While an app specific salt is not the best practice for
-        //password based encryption, it's probably safe enough as long as it is truly uncommon.
+        //password based encryption, it's probably safe enough as long as it is uncommon.
         private static byte[] _salt;
 
         public EncryptDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog, string _content)
@@ -172,14 +173,227 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Generates a score based on the length of the password field content
+        /// </summary>
+        /// <returns>A password length score from 0 to 3</returns>
+        private int getPassLengthScore()
+        {
+            //Thresholds
+            const int FAIR_LENGTH = 6;
+            const int STRONG_LENGTH = 9;
+            const int EXCEL_LENGTH = 14;
+
+            int passLength = KeyPw.Password.ToString().Length;
+
+            if(passLength >= FAIR_LENGTH) {
+                if(passLength >= STRONG_LENGTH) {
+                    if(passLength >= EXCEL_LENGTH) {
+                        //excel
+                        return 3;
+                    }
+                    //strong
+                    return 2;
+                }
+                // fair
+                return 1;
+            } else {
+                //weak
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Generates a score based on the number of lowercase letters in the password field content
+        /// </summary>
+        /// <returns>A password lowercase score from 0 to 3</returns>
+        private int getPassLowerScore()
+        {
+            //Thresholds
+            const int FAIR_LOWER = 1;
+            const int STRONG_LOWER = 4;
+            const int EXCEL_LOWER = 8;
+
+            MatchCollection lowercase = Regex.Matches(KeyPw.Password.ToString(), @"([a-z])");
+
+            if (lowercase.Count >= FAIR_LOWER) {
+                if (lowercase.Count >= STRONG_LOWER) {
+                    if (lowercase.Count >= EXCEL_LOWER) {
+                        //excel
+                        return 3;
+                    }
+                    //strong
+                    return 2;
+                }
+                //fair
+                return 1;
+            } else {
+                //weak
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Generates a score based on the number of uppercase letters in the password field content
+        /// </summary>
+        /// <returns>A password UPPERCASE score from 0 to 3</returns>
+        private int getPassUpperScore()
+        {
+            //Thresholds
+            const int FAIR_UPPER = 1;
+            const int STRONG_UPPER = 3;
+            const int EXCEL_UPPER = 7;
+
+            MatchCollection uppercase = Regex.Matches(KeyPw.Password.ToString(), @"([A-Z])");
+
+            if (uppercase.Count >= FAIR_UPPER) {
+                if (uppercase.Count >= STRONG_UPPER) {
+                    if (uppercase.Count >= EXCEL_UPPER) {
+                        //excel
+                        return 3;
+                    }
+                    //strong
+                    return 2;
+                }
+                //fair
+                return 1;
+            } else {
+                //weak
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Generates a score based on the number of numeric characters in the password field content
+        /// </summary>
+        /// <returns>A password numb3r score from 0 to 3</returns>
+        private int getPassNumberScore()
+        {
+            //Thresholds
+            const int FAIR_NUMBER = 1;
+            const int STRONG_NUMBER = 3;
+            const int EXCEL_NUMBER = 5;
+
+            MatchCollection numbers = Regex.Matches(KeyPw.Password.ToString(), @"([0-9])");
+
+            if (numbers.Count >= FAIR_NUMBER) {
+                if (numbers.Count >= STRONG_NUMBER) {
+                    if (numbers.Count >= EXCEL_NUMBER) {
+                        //excel
+                        return 3;
+                    }
+                    //strong
+                    return 2;
+                }
+                //fair
+                return 1;
+            } else {
+                //weak
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Generates a score based on the number of symbols in the password field content
+        /// </summary>
+        /// <returns>A password $ymbol score from 0 to 3</returns>
+        private int getPassSymbolScore()
+        {
+            //Thresholds
+            const int FAIR_SYMBOLS = 1;
+            const int STRONG_SYMBOLS = 2;
+            const int EXCEL_SYMBOLS = 3;
+
+            MatchCollection symbols = Regex.Matches(KeyPw.Password.ToString(), @"([-!$%^&*()_+|~=`{}\[\]:"";'<>?,.\\/@#£¬])");
+
+            if(symbols.Count >= FAIR_SYMBOLS) {
+                if(symbols.Count >= STRONG_SYMBOLS) {
+                    if(symbols.Count >= EXCEL_SYMBOLS) {
+                        //excel
+                        return 3;
+                    }
+                    //strong
+                    return 2;
+                }
+                //fair
+                return 1;
+            } else {
+                //weak
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Generates a password strength score based on 5 small tests
+        /// </summary>
+        /// <param name="_passwordsMatch">The rating for the password</param>
+        /// <returns></returns>
+        private string getPassScore(bool _passwordsMatch)
+        {
+            //Thresholds
+            const int FAIR_SCORE = 5;
+            const int STRONG_SCORE = 9;
+            const int EXCEL_SCORE = 13;
+
+            //Progress bar colours
+            SolidColorBrush noMatchBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            SolidColorBrush weakBrush = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+            SolidColorBrush fairBrush = new SolidColorBrush(Color.FromRgb(255, 255, 0));
+            SolidColorBrush strongBrush = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            SolidColorBrush excelBrush = new SolidColorBrush(Color.FromRgb(0, 255, 255));
+
+            int strengthScore = 0;
+            strengthScore += getPassLengthScore();
+            strengthScore += getPassLowerScore();
+            strengthScore += getPassUpperScore();
+            strengthScore += getPassNumberScore();
+            strengthScore += getPassSymbolScore();
+
+            if(_passwordsMatch) {
+                
+                if(strengthScore >= FAIR_SCORE) {
+                    if(strengthScore >= STRONG_SCORE) {
+                        if(strengthScore >= EXCEL_SCORE) {
+                            KeyStrengthProg.Foreground = excelBrush;
+                            KeyStrengthLbl.Content = "Excellent";
+                            KeyStrengthProg.Value = strengthScore;
+                            return "Excellent";
+                        }
+                        KeyStrengthProg.Foreground = strongBrush;
+                        KeyStrengthLbl.Content = "Strong";
+                        KeyStrengthProg.Value = strengthScore;
+                        return "Strong";
+                    }
+                    KeyStrengthProg.Foreground = fairBrush;
+                    KeyStrengthLbl.Content = "Fair";
+                    KeyStrengthProg.Value = strengthScore;
+                    return "Fair";
+                } else {
+                    KeyStrengthProg.Foreground = weakBrush;
+                    KeyStrengthLbl.Content = "Weak";
+                    KeyStrengthProg.Value = strengthScore;
+                    return "Weak";
+                }
+            } else {
+                KeyStrengthProg.Foreground = noMatchBrush;
+                KeyStrengthLbl.Content = "NA";
+                KeyStrengthProg.Value = strengthScore;
+                return "NA";
+            }
+        }
+
+
+
+        /// <summary>
         /// When either of the password fields are changed
         /// </summary>
         private void KeyPw_PasswordChanged(object sender, RoutedEventArgs e)
         {
             if(passwordsMatch()) {
                 btnOk.IsEnabled = true;
+                KeyStrengthLbl.Content = getPassScore(true);
             } else {
                 btnOk.IsEnabled = false;
+                KeyStrengthLbl.Content = getPassScore(false);
             }
         }
 

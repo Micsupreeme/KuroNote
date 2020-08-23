@@ -5,21 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="Encrypt" Height="250" Width="500"
+        Title="Encrypt" Height="275" Width="500" MinHeight="275" MinWidth="500"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
         Background="#404040"
         Closing="Window_Closing">
     <DockPanel LastChildFill="True" Margin="10">
+        
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button Name="btnCancel" Click="btnCancel_Click" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" Content="Cancel" IsCancel="True" FontSize="14"/>
             <Button Name="btnOk" IsEnabled="False" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="Encrypt" IsDefault="True" FontSize="14"/>
         </StackPanel>
         <StackPanel>
             <Label Name="KeyLbl" Content="Create AES Encryption Password: " FontSize="14" Foreground="#EEEEEE"/>
-            <PasswordBox Name="KeyPw" PasswordChanged="KeyPw_PasswordChanged" FontSize="14" Padding="2" FontFamily="Consolas" Background="#000000" Foreground="#00FF00"/>
+            <PasswordBox Name="KeyPw" PasswordChanged="KeyPw_PasswordChanged" FontSize="14" Padding="2" FontFamily="Consolas" Background="#000000" Foreground="#00FF00" Margin="4, 0, 4, 0"/>
             <Label Name="KeyRepeatLbl" Content="Repeat AES Encryption Password: " FontSize="14" Foreground="#EEEEEE"/>
-            <PasswordBox Name="KeyRepeatPw" PasswordChanged="KeyPw_PasswordChanged" FontSize="14" Padding="2" FontFamily="Consolas" Background="#000000" Foreground="#00FF00"/>
+            <PasswordBox Name="KeyRepeatPw" PasswordChanged="KeyPw_PasswordChanged" FontSize="14" Padding="2" FontFamily="Consolas" Background="#000000" Foreground="#00FF00" Margin="4, 0, 4, 0"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Name="KeyStrengthTitleLbl" Content="Password Strength: " FontSize="14" Foreground="#EEEEEE" Margin="0, 20, 0, 0"/>
+                <Label Name="KeyStrengthLbl" Content="NA" FontSize="14" Foreground="#EEEEEE" Margin="0, 20, 0, 0"/>
+            </StackPanel>
+            <ProgressBar Name="KeyStrengthProg" Minimum="0" Maximum="15" Value="0" Foreground="Red" Background="Black" Height="10px" Margin="4, 3, 4, 0"/>
         </StackPanel>
     </DockPanel>
 </Window>

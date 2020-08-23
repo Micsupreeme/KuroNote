@@ -19,9 +19,10 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Password complexity measurer for AES Encryption
-    /// TODO: Log whether or not it's running as admin
     /// TODO: Options window
+    /// TODO: Find
+    /// TODO: Replace All
+    /// TODO: Indent
     /// 
     /// </summary>
     public partial class MainWindow : Window

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="EncDecFinishDialog" Height="250" Width="500"
+        Title="EncDecFinishDialog" Height="200" Width="500" MinHeight="200" MinWidth="500"
         Background="#404040"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
