@@ -123,6 +123,7 @@ namespace KuroNote
             EnUIDict["PasteMi"] = "Paste";
             EnUIDict["UndoMi"] = "Undo";
             EnUIDict["RedoMi"] = "Redo";
+            EnUIDict["FindMi"] = "Find...";
             EnUIDict["SelectAllMi"] = "Select All";
             //Format
             EnUIDict["FormatMi"] = "Format";
@@ -284,6 +285,8 @@ namespace KuroNote
             setTheme(appSettings.themeName, appSettings.themeWithFont);
 
             //Set additional properties
+
+            //main.MainRtb.SelectionBrush = new SolidColorBrush(Color.FromRgb(255, 255, 0));
             MainRtb.BorderThickness = new Thickness(0, 0, 0, 0); //No blue outline when you click inside the RTB
             MainRtb.Padding = new Thickness(5, 5, 5, 5); //So you don't start typing right on the edge of the RTB
             MainRtb.SetValue(Paragraph.LineHeightProperty, 1.0);
@@ -792,6 +795,16 @@ namespace KuroNote
         }
         #endregion
 
+        /// <summary>
+        /// Menu > Edit > Find...
+        /// </summary>
+        private void Find_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: Find");
+            FindDialog findDialog = new FindDialog(this, appSettings, log);
+            findDialog.toggleVisibility(true);
+        }
+
         #region Font
         /// <summary>
         /// Change the font to the specified font
@@ -1032,6 +1045,7 @@ namespace KuroNote
         public static RoutedCommand Cut = new RoutedCommand();
         public static RoutedCommand Copy = new RoutedCommand();
         public static RoutedCommand Paste = new RoutedCommand();
+        public static RoutedCommand Find = new RoutedCommand();
 
         //Format
         public static RoutedCommand Font = new RoutedCommand();

@@ -20,6 +20,9 @@
         <CommandBinding Command="local:CustomCommands.Exit" Executed="Exit_Executed" />
 
         <!--Edit-->
+        <CommandBinding Command="local:CustomCommands.Find" Executed="Find_Executed" />
+        
+        <!--Format-->
         <CommandBinding Command="local:CustomCommands.Font" Executed="Font_Executed" />
         
         <!--Tools-->
@@ -41,6 +44,7 @@
         <KeyBinding Modifiers="Ctrl+Shift" Key="S" Command="local:CustomCommands.SaveAs"/>
         <KeyBinding Modifiers="Ctrl" Key="P" Command="local:CustomCommands.Print"/>
         <KeyBinding Modifiers="Alt" Key="F4" Command="local:CustomCommands.Exit"/>
+        <KeyBinding Modifiers="Ctrl" Key="F" Command="local:CustomCommands.Find"/>
         <KeyBinding Key="F1" Command="local:CustomCommands.About"/>
     </Window.InputBindings>
     <DockPanel LastChildFill="True">
@@ -57,7 +61,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="NewWinMi" Header="{Binding [NewWinMi], Mode=OneTime}">
-                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" Command="local:CustomCommands.NewRegWin"/>
+                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" Command="local:CustomCommands.NewRegWin" InputGestureText="Alt+N"/>
                     <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}" Command="local:CustomCommands.NewAdminWin"/>
                 </MenuItem>
                 <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold">
@@ -113,6 +117,12 @@
                 <MenuItem Name="RedoMi" Header="{Binding [RedoMi], Mode=OneTime}" Command="ApplicationCommands.Redo">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_redo_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Name="FindMi" Header="{Binding [FindMi], Mode=OneTime}" Command="local:CustomCommands.Find" InputGestureText="Ctrl+F">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_search_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
