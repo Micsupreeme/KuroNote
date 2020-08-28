@@ -21,11 +21,15 @@ namespace KuroNote
         private const string WINDOW_NAME = "Theme";
         private static readonly string[] THEME_NAMES = { 
             "Default",
-            "Web" 
+            "Morning Dew",
+            "Wooden",
+            "Leafage"
         };
         private static readonly string[] THEME_DESCS = { 
             "Classic", 
-            "(Image by Pixabay)"
+            "(Image by Pixabay)",
+            "(Image by FWStudio on Pexels)",
+            "(Image by Karolina Grabowska on Pexels)"
         };
 
         //Globals
@@ -77,8 +81,14 @@ namespace KuroNote
                 case "Default":
                     tbThemeDesc.Text = THEME_DESCS[0];
                     break;
-                case "Web":
+                case "Morning Dew":
                     tbThemeDesc.Text = THEME_DESCS[1];
+                    break;
+                case "Wooden":
+                    tbThemeDesc.Text = THEME_DESCS[2];
+                    break;
+                case "Leafage":
+                    tbThemeDesc.Text = THEME_DESCS[3];
                     break;
             }
             main.setTheme(cmbTheme.SelectedValue.ToString(), (bool)chkIncludeFont.IsChecked);

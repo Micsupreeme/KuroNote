@@ -20,9 +20,9 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Options window
-    /// TODO: Find
     /// TODO: Replace All
     /// TODO: Indent
+    /// TODO: Find - Scroll to selected text (a method that actually works)
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -902,9 +902,8 @@ namespace KuroNote
                     {
                         setFont("Consolas", 18, FontWeights.Regular, FontStyles.Normal);
                     }
-
                     break;
-                case "Web":
+                case "Morning Dew":
                     hasImage = true;
 
                     bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
@@ -921,8 +920,45 @@ namespace KuroNote
                     if (_includeFont)
                     {
                         setFont("Verdana", 18, FontWeights.Regular, FontStyles.Normal);
+                    }                   
+                    break;
+                case "Wooden":
+                    hasImage = true;
+
+                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+
+                    //Static resource
+                    BitmapImage woodBackground = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fwstudio-168447.jpg"));
+                    imgBrush.ImageSource = woodBackground;
+                    imgBrush.Opacity = 0.37;
+
+                    menuBrush = new SolidColorBrush(Color.FromRgb(220, 193, 179));
+                    statusBrush = new SolidColorBrush(Color.FromRgb(220, 193, 179));
+
+                    if (_includeFont)
+                    {
+                        setFont("Verdana", 18, FontWeights.Regular, FontStyles.Normal);
                     }
-                    
+                    break;
+                case "Leafage":
+                    hasImage = true;
+
+                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+
+                    //Static resource
+                    BitmapImage leafBackground = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg"));
+                    imgBrush.ImageSource = leafBackground;
+                    imgBrush.Opacity = 0.40;
+
+                    menuBrush = new SolidColorBrush(Color.FromRgb(208, 201, 153));
+                    statusBrush = new SolidColorBrush(Color.FromRgb(208, 201, 153));
+
+                    if (_includeFont)
+                    {
+                        setFont("Verdana", 18, FontWeights.Regular, FontStyles.Normal);
+                    }
                     break;
             }
 

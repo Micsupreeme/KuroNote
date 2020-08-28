@@ -76,6 +76,9 @@ namespace KuroNote
             doFind();
         }
 
+        /// <summary>
+        /// Selects the next occurance of the search term
+        /// </summary>
         private void doFind()
         {
             string findPhrase = txtFindWhat.Text;
@@ -86,37 +89,56 @@ namespace KuroNote
             TextPointer selectionStart, selectionEnd;
 
             document = new TextRange(main.MainRtb.Document.ContentStart.GetPositionAtOffset(searchPosition), main.MainRtb.Document.ContentEnd);
-            Match match = Regex.Match(document.Text, findPhrase);
+            Match match;
+            if(caseSensitive) {
+                match = Regex.Match(document.Text, findPhrase);
+            } else {
+                match = Regex.Match(document.Text, findPhrase, RegexOptions.IgnoreCase);
+            }
+            
             if (match.Success)
             {
-                MessageBox.Show("found at pos " + (searchPosition + match.Index));
-
+                //MessageBox.Show("found at pos " + (searchPosition + match.Index));
                 selectionStart = document.Start.GetPositionAtOffset(match.Index);
                 selectionEnd = selectionStart.GetPositionAtOffset(findPhrase.Length);
                 main.MainRtb.Selection.Select(selectionStart, selectionEnd);
 
                 //GetPositionAtOffset includes invisible non-text characters that can make the selection start too early
                 //Fix the pointers here
-                while (!main.MainRtb.Selection.Text.Equals(findPhrase))
+                int correctionOffset = 0;
+                if (caseSensitive)
                 {
-                    selectionStart = selectionStart.GetPositionAtOffset(1);
-                    selectionEnd = selectionStart.GetPositionAtOffset(findPhrase.Length);
-                    main.MainRtb.Selection.Select(selectionStart, selectionEnd);
-                }
+                    while (!main.MainRtb.Selection.Text.Equals(findPhrase))
+                    {
+                        selectionStart = selectionStart.GetPositionAtOffset(1);
+                        selectionEnd = selectionStart.GetPositionAtOffset(findPhrase.Length);
+                        correctionOffset++;
+                        main.MainRtb.Selection.Select(selectionStart, selectionEnd);
+                    }
+                } else {
+                    while (!main.MainRtb.Selection.Text.ToLower().Equals(findPhrase.ToLower()))
+                    {
+                        selectionStart = selectionStart.GetPositionAtOffset(1);
+                        selectionEnd = selectionStart.GetPositionAtOffset(findPhrase.Length);
+                        correctionOffset++;
+                        main.MainRtb.Selection.Select(selectionStart, selectionEnd);
+                    }
+                }              
 
-                searchPosition = searchPosition + match.Index + findPhrase.Length;
+                main.Activate(); //bring the main window to the front
+                searchPosition = searchPosition + match.Index + correctionOffset + findPhrase.Length;
             }
             else
             {
                 if (searchPosition == 0) {
-                    MessageBox.Show("no match anywhere");
+                    MessageBox.Show("There are no occurances of this search term.", "Find results", MessageBoxButton.OK, MessageBoxImage.Information);
                 } else {
                     //no match here - reset
                     searchPosition = 0;
                     if (wrapAround) {
                         doFind();
                     }  else {
-                        MessageBox.Show("no match");
+                        MessageBox.Show("Reached end of the file.", "Find results", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
