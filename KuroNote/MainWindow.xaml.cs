@@ -22,7 +22,6 @@ namespace KuroNote
     /// TODO: Options window
     /// TODO: Replace All
     /// TODO: Indent
-    /// TODO: Find - Scroll to selected text (a method that actually works)
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -1018,6 +1017,22 @@ namespace KuroNote
         private void About_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: About");
+        }
+
+        /// <summary>
+        /// StatusBar > Safe to Exit/Unsaved Changes
+        /// </summary>
+        private void SaveStatusItem_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("saved changes status");
+        }
+
+        /// <summary>
+        /// StatusBar > X Words
+        /// </summary>
+        private void WordCountItem_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("word count");
         }
 
         /// <summary>

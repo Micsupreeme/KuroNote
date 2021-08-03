@@ -58,6 +58,7 @@ namespace KuroNote
 
             if(hasAdminPermissions()) {
                 addLog(Environment.NewLine + "Permissions: Elevated", true);
+                main.appName += " (Admin)";
             } else {
                 addLog(Environment.NewLine + "Permissions: Standard", true);
             }

@@ -88,7 +88,13 @@ namespace KuroNote
             TextRange document;
             TextPointer selectionStart, selectionEnd;
 
-            document = new TextRange(main.MainRtb.Document.ContentStart.GetPositionAtOffset(searchPosition), main.MainRtb.Document.ContentEnd);
+            try {
+                document = new TextRange(main.MainRtb.Document.ContentStart.GetPositionAtOffset(searchPosition), main.MainRtb.Document.ContentEnd);
+            } catch(ArgumentNullException) {
+                //no offset
+                document = new TextRange(main.MainRtb.Document.ContentStart, main.MainRtb.Document.ContentEnd);
+            }
+
             Match match;
             if(caseSensitive) {
                 match = Regex.Match(document.Text, findPhrase);
@@ -123,7 +129,11 @@ namespace KuroNote
                         correctionOffset++;
                         main.MainRtb.Selection.Select(selectionStart, selectionEnd);
                     }
-                }              
+                }
+
+                //Add a rectangle object to the selected text, then scroll to it
+                Rect selectionRect = selectionStart.GetCharacterRect(LogicalDirection.Forward);
+                main.MainRtb.ScrollToVerticalOffset(selectionRect.Y);
 
                 main.Activate(); //bring the main window to the front
                 searchPosition = searchPosition + match.Index + correctionOffset + findPhrase.Length;

@@ -191,15 +191,15 @@
             </MenuItem>
         </Menu>
         <StatusBar Name="MainStatus" DockPanel.Dock="Bottom">
-            <StatusBarItem Margin="5, 2">
+            <StatusBarItem Name="StatusItem" Margin="5, 2">
                 <TextBlock Name="StatusTb" Text="00:00"/>
             </StatusBarItem>
             <Separator/>
-            <StatusBarItem Margin="5, 2">
+            <StatusBarItem Name="SaveStatusItem" Margin="5, 2" MouseUp="SaveStatusItem_MouseUp">
                 <TextBlock Name="SaveStatusTb" Text="Safe to Exit"/>
             </StatusBarItem>
             <Separator/>
-            <StatusBarItem Margin="5, 2">
+            <StatusBarItem Name="WordCountItem" Margin="5, 2" MouseUp="WordCountItem_MouseUp">
                 <TextBlock Name="WordCountTb" Text="0 Words"/>
             </StatusBarItem>
         </StatusBar>

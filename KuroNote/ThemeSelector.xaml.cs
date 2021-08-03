@@ -102,8 +102,7 @@ namespace KuroNote
             try
             {
                 bool isChecked = (bool)chkIncludeFont.IsChecked;
-                if (!isChecked) //User doesn't want the theme font
-                {
+                if (!isChecked) { //User doesn't want the theme font
                     //Apply the user's currently saved font instead of the theme font
                     main.setFont(settings.fontFamily, (short)settings.fontSize, settings.fontWeight, settings.fontStyle);
                 }
