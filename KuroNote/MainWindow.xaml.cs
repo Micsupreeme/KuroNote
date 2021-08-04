@@ -123,6 +123,7 @@ namespace KuroNote
             EnUIDict["UndoMi"] = "Undo";
             EnUIDict["RedoMi"] = "Redo";
             EnUIDict["FindMi"] = "Find...";
+            EnUIDict["ReplaceMi"] = "Replace...";
             EnUIDict["SelectAllMi"] = "Select All";
             //Format
             EnUIDict["FormatMi"] = "Format";
@@ -328,11 +329,13 @@ namespace KuroNote
             if (editedFlag)
             {
                 log.addLog("WARNING: New before saving");
-                var res = MessageBox.Show(getErrorMessage(4)[0], getErrorMessage(4)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (res == MessageBoxResult.Yes)
+                var res = MessageBox.Show(getErrorMessage(4)[0], getErrorMessage(4)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel)
                 {
                     log.addLog("New cancelled");
-                    doSave();       //save
+                    if(res == MessageBoxResult.Yes) {
+                        doSave();   //save
+                    }
                     return false;   //don't continue with new operation
                 }
             }
@@ -370,11 +373,12 @@ namespace KuroNote
                 if (editedFlag)
                 {
                     log.addLog("WARNING: Open before saving");
-                    var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (res == MessageBoxResult.Yes)
-                    {
+                    var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                         log.addLog("Open cancelled");
-                        doSave();       //save
+                        if(res == MessageBoxResult.Yes) {
+                            doSave();       //save
+                        }
                         return false;   //don't continue with open operation
                     }
                 }
@@ -699,9 +703,12 @@ namespace KuroNote
         {
             if(editedFlag) {
                 log.addLog("WARNING: Exit before saving");
-                var res = MessageBox.Show(getErrorMessage(2)[0], getErrorMessage(2)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (res == MessageBoxResult.Yes) {
+                var res = MessageBox.Show(getErrorMessage(2)[0], getErrorMessage(2)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                     log.addLog("Exit cancelled");
+                    if(res == MessageBoxResult.Yes) {
+                        doSave();
+                    }
                     return false;
                 } else {
                     log.addLog("Exiting");
@@ -800,7 +807,17 @@ namespace KuroNote
         private void Find_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: Find");
-            FindDialog findDialog = new FindDialog(this, appSettings, log);
+            FindDialog findDialog = new FindDialog(this, appSettings, log, false);
+            findDialog.toggleVisibility(true);
+        }
+
+        /// <summary>
+        /// Menu > Edit > Replace...
+        /// </summary>
+        private void Replace_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: Replace");
+            FindDialog findDialog = new FindDialog(this, appSettings, log, true);
             findDialog.toggleVisibility(true);
         }
 
@@ -1072,7 +1089,6 @@ namespace KuroNote
         {
             if(!doExit()) {
                 e.Cancel = true;  //cancel the exit
-                doSave();         //save instead
             }
         }
     }
@@ -1097,6 +1113,7 @@ namespace KuroNote
         public static RoutedCommand Copy = new RoutedCommand();
         public static RoutedCommand Paste = new RoutedCommand();
         public static RoutedCommand Find = new RoutedCommand();
+        public static RoutedCommand Replace = new RoutedCommand();
 
         //Format
         public static RoutedCommand Font = new RoutedCommand();

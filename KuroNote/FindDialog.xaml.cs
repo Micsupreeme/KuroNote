@@ -19,24 +19,36 @@ namespace KuroNote
     public partial class FindDialog : Window
     {
         //Constants
-        private const string WINDOW_NAME = "Find";
+        private const int FIND_MODE_HEIGHT = 180;
+        private const int REPLACE_MODE_HEIGHT = 230;
 
         //Globals
         private string appName;
         MainWindow main;
         KuroNoteSettings settings;
         Log log;
+        bool replaceMode;
 
         int searchPosition = 0; //start at 0, then increase to the position at the end of each match
 
-        public FindDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog)
+        public FindDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog, bool _replaceMode)
         {
             InitializeComponent();
             main = _mainWin;
             settings = _currentSettings;
             log = _mainLog;
+            replaceMode = _replaceMode;
             appName = main.appName;
-            this.Title = WINDOW_NAME + " - " + appName;
+
+            string windowName;
+            if (replaceMode) {
+                windowName = "Replace";
+            } else {
+                windowName = "Find";
+            }
+            this.Title = windowName + " - " + appName;
+
+            toggleReplaceUI(replaceMode);
         }
 
         /// <summary>
@@ -54,17 +66,43 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Sets the UI to either "Find" or "Find and Replace" mode
+        /// </summary>
+        /// <param name="enable">True to set Replace UI, false to set Find UI</param>
+        private void toggleReplaceUI(bool replace)
+        {
+            if (replace)
+            {
+                lblReplaceWith.Visibility = Visibility.Visible;
+                txtReplaceWith.Visibility = Visibility.Visible;
+                btnReplace.Visibility = Visibility.Visible;
+                btnReplaceAll.Visibility = Visibility.Visible;
+                btnCount.Visibility = Visibility.Collapsed;
+                this.Height = REPLACE_MODE_HEIGHT;
+            } else {
+                lblReplaceWith.Visibility = Visibility.Collapsed;
+                txtReplaceWith.Visibility = Visibility.Collapsed;
+                btnReplace.Visibility = Visibility.Collapsed;
+                btnReplaceAll.Visibility = Visibility.Collapsed;
+                btnCount.Visibility = Visibility.Visible;
+                this.Height = FIND_MODE_HEIGHT;
+            }
+        }
+
+        /// <summary>
         /// Enables/disables the "Find Next" and "Count" buttons
         /// </summary>
-        /// <param name="enable"></param>
+        /// <param name="enable">True to enable controls, false otherwise</param>
         private void toggleEnabled(bool enable)
         {
             if(enable) {
                 btnFind.IsEnabled = true;
                 btnCount.IsEnabled = true;
+                btnReplaceAll.IsEnabled = true;
             } else {
                 btnFind.IsEnabled = false;
                 btnCount.IsEnabled = false;
+                btnReplaceAll.IsEnabled = false;
             }
         }
 
@@ -137,6 +175,10 @@ namespace KuroNote
 
                 main.Activate(); //bring the main window to the front
                 searchPosition = searchPosition + match.Index + correctionOffset + findPhrase.Length;
+
+                //we have a match selected, we can now optionally replace it
+                log.addLog("Match selected!");
+                btnReplace.IsEnabled = true;
             }
             else
             {
@@ -159,7 +201,7 @@ namespace KuroNote
         /// </summary>
         private void btnCount_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("There are " + getCount() + " occurances of this search term.", "Count results", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("There are " + getCount() + " occurances of the search term \"" + txtFindWhat.Text + "\".", "Count results", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
@@ -192,21 +234,80 @@ namespace KuroNote
             toggleVisibility(false);
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        /// <summary>
+        /// When the user changes the search term or replace term
+        /// </summary>
+        private void txtFindReplace_TextChanged(object sender, TextChangedEventArgs e)
         {
-            log.addLog("Close FindDialog");
+            if (txtFindWhat.Text.Length > 0)
+            { //don't let the user search for null
+                toggleEnabled(true);
+            }
+            else
+            {
+                toggleEnabled(false);
+            }
         }
 
         /// <summary>
-        /// When the user changes the search term
+        /// When the user clicks "Replace"
         /// </summary>
-        private void txtFindWhat_TextChanged(object sender, TextChangedEventArgs e)
+        private void btnReplace_Click(object sender, RoutedEventArgs e)
         {
-            if(txtFindWhat.Text.Length > 0) { //don't let the user search for null
-                toggleEnabled(true);
-            } else {
-                toggleEnabled(false);
+            string findPhrase = txtFindWhat.Text;
+            string replacePhrase = txtReplaceWith.Text;
+            if (main.MainRtb.Selection.Text == findPhrase)
+            { //ensure the selection is correct before replacing it
+                main.MainRtb.Selection.Text = replacePhrase;
+                log.addLog("Single replace completed: \"" + findPhrase + "\" -> \"" + replacePhrase + "\"");
             }
+            else
+            {
+                log.addLog("Unable to perform single replace, the selection did not match the findPhrase \"" + findPhrase + "\" (selection length: " + main.MainRtb.Selection.Text.Length + ")");
+            }
+            btnReplace.IsEnabled = false; //Once completed, there is no need to repeat a single replace operation, it will be enabled again if a new match is found
+        }
+
+        /// <summary>
+        /// When the user clicks "Replace All"
+        /// </summary>
+        private void btnReplaceAll_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult replaceAllConfirmation = MessageBox.Show("Are you sure you want to replace the " + getCount() + " occurances of \"" + txtFindWhat.Text + "\" with \"" + txtReplaceWith.Text + "\"?", "Replace All?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if(replaceAllConfirmation == MessageBoxResult.Yes) {
+                replaceAll();
+            }
+        }
+
+        /// <summary>
+        /// Replaces all occurances of the findPhrase with the replacePhrase
+        /// </summary>
+        private void replaceAll()
+        {
+            string findPhrase = txtFindWhat.Text;
+            string replacePhrase = txtReplaceWith.Text;
+            bool caseSensitive = (bool)chkCaseSensitive.IsChecked;
+            log.addLog("Replace All \"" + findPhrase + "\" with \"" + replacePhrase + "\"");
+            TextRange document = new TextRange(main.MainRtb.Document.ContentStart, main.MainRtb.Document.ContentEnd);
+
+            if (caseSensitive)
+            {
+                document.Text = Regex.Replace(document.Text, findPhrase, replacePhrase); //REGEX is case sensitive by default
+            }
+            else
+            {
+                document.Text = Regex.Replace(document.Text, findPhrase, replacePhrase, RegexOptions.IgnoreCase);
+            }
+
+            //Select everything, replace it with the treated text, then deselect (put the caret at the end)
+            main.MainRtb.Selection.Select(main.MainRtb.Document.ContentStart, main.MainRtb.Document.ContentEnd);
+            main.MainRtb.Selection.Text = document.Text;
+            main.MainRtb.Selection.Select(main.MainRtb.Document.ContentEnd, main.MainRtb.Document.ContentEnd);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            log.addLog("Close FindDialog");
         }
     }
 }

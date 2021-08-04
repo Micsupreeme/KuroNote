@@ -21,6 +21,7 @@
 
         <!--Edit-->
         <CommandBinding Command="local:CustomCommands.Find" Executed="Find_Executed" />
+        <CommandBinding Command="local:CustomCommands.Replace" Executed="Replace_Executed" />
         
         <!--Format-->
         <CommandBinding Command="local:CustomCommands.Font" Executed="Font_Executed" />
@@ -45,6 +46,7 @@
         <KeyBinding Modifiers="Ctrl" Key="P" Command="local:CustomCommands.Print"/>
         <KeyBinding Modifiers="Alt" Key="F4" Command="local:CustomCommands.Exit"/>
         <KeyBinding Modifiers="Ctrl" Key="F" Command="local:CustomCommands.Find"/>
+        <KeyBinding Modifiers="Ctrl" Key="H" Command="local:CustomCommands.Replace"/>
         <KeyBinding Key="F1" Command="local:CustomCommands.About"/>
     </Window.InputBindings>
     <DockPanel LastChildFill="True">
@@ -123,6 +125,11 @@
                 <MenuItem Name="FindMi" Header="{Binding [FindMi], Mode=OneTime}" Command="local:CustomCommands.Find" InputGestureText="Ctrl+F">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_search_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="ReplaceMi" Header="{Binding [ReplaceMi], Mode=OneTime}" Command="local:CustomCommands.Replace" InputGestureText="Ctrl+H">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_find_replace_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
