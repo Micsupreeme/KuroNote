@@ -52,14 +52,18 @@ namespace KuroNote
             cmbTheme.Items.Clear();
             foreach(KuroNoteTheme theme in themeCollection)
             {
-                ComboBoxItem themeItem = new ComboBoxItem();
-                themeItem.Content = theme.themeName;
-                themeItem.Tag = theme.themeId;
-                if(theme.themeId == settings.themeId) {
-                    log.addLog("Selected theme: " + themeItem.Content);
-                    themeItem.IsSelected = true;
+                if(theme.unlockCode == 0) //to support unlocks - check that an array contains a specified unlockCode
+                {
+                    ComboBoxItem themeItem = new ComboBoxItem();
+                    themeItem.Content = theme.themeName;
+                    themeItem.Tag = theme.themeId;
+                    if (theme.themeId == settings.themeId)
+                    {
+                        log.addLog("Selected theme: " + themeItem.Content);
+                        themeItem.IsSelected = true;
+                    }
+                    cmbTheme.Items.Add(themeItem);
                 }
-                cmbTheme.Items.Add(themeItem);
             }
         }
 

@@ -14,6 +14,7 @@ namespace KuroNote
         public string themeName;
         public string themeDesc;
         public bool hasImage;
+        public int unlockCode;                  //launching the app on special occasions and earning achievements will add such codes to a settings-based arraylist - 0 is the default for no unlock required
 
         //colours
         public SolidColorBrush bgBrush;         //background for the whole window
@@ -32,7 +33,7 @@ namespace KuroNote
         /// <summary>
         /// Creates a new KuroNoteTheme with an image background
         /// </summary>
-        public KuroNoteTheme(int _themeId, string _themeName, string _themeDesc,
+        public KuroNoteTheme(int _themeId, string _themeName, string _themeDesc, int _unlockCode,
                             SolidColorBrush _bgBrush, ImageBrush _imgBrush,
                             SolidColorBrush _menuBrush, SolidColorBrush _statusBrush, SolidColorBrush _textBrush,
                             string _fontFamily, short _fontSize, FontWeight _fontWeight, FontStyle _fontStyle)
@@ -40,6 +41,7 @@ namespace KuroNote
             this.themeId = _themeId;
             this.themeName = _themeName;
             this.themeDesc = _themeDesc;
+            this.unlockCode = _unlockCode;
             this.hasImage = true;
             this.bgBrush = _bgBrush;
             this.imgBrush = _imgBrush;
@@ -56,7 +58,7 @@ namespace KuroNote
         /// <summary>
         /// Creates a new KuroNoteTheme with a solid colour background
         /// </summary>
-        public KuroNoteTheme(int _themeId, string _themeName, string _themeDesc,
+        public KuroNoteTheme(int _themeId, string _themeName, string _themeDesc, int _unlockCode,
                             SolidColorBrush _bgBrush, SolidColorBrush _solidBrush,
                             SolidColorBrush _menuBrush, SolidColorBrush _statusBrush, SolidColorBrush _textBrush,
                             string _fontFamily, short _fontSize, FontWeight _fontWeight, FontStyle _fontStyle)
@@ -64,6 +66,7 @@ namespace KuroNote
             this.themeId = _themeId;
             this.themeName = _themeName;
             this.themeDesc = _themeDesc;
+            this.unlockCode = _unlockCode;
             this.hasImage = false;
             this.bgBrush = _bgBrush;
             this.imgBrush = null;
