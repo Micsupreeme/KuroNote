@@ -18,7 +18,7 @@ namespace KuroNote
         public int fontSize = 14;
         public FontWeight fontWeight = FontWeights.Normal;
         public FontStyle fontStyle = FontStyles.Normal;
-        public string themeName = "Default";
+        public int themeId = 0;
         public bool themeWithFont = true;
 
         public KuroNoteSettings(Log mainLog)
@@ -43,7 +43,7 @@ namespace KuroNote
                     this.fontSize = knsFile.fontSize;
                     this.fontWeight = knsFile.fontWeight;
                     this.fontStyle = knsFile.fontStyle;
-                    this.themeName = knsFile.themeName;
+                    this.themeId = knsFile.themeId;
                     this.themeWithFont = knsFile.themeWithFont;
                     log.addLog("Successfully read conf.json");
                 }

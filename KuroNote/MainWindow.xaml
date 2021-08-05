@@ -210,7 +210,7 @@
                 <TextBlock Name="WordCountTb" Text="0 Words"/>
             </StatusBarItem>
         </StatusBar>
-        <RichTextBox Name="MainRtb" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" VerticalScrollBarVisibility="Auto" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
+        <RichTextBox Name="MainRtb" AcceptsTab="True" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" VerticalScrollBarVisibility="Auto" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
             <FlowDocument/>
         </RichTextBox>
     </DockPanel>

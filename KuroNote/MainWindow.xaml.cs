@@ -20,8 +20,7 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Options window
-    /// TODO: Replace All
-    /// TODO: Indent
+    /// TODO: Custom themes
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -44,6 +43,8 @@ namespace KuroNote
         private Encoding selectedEncoding = Encoding.UTF8;  //Encoding for opening and saving files (Encoding.ASCII blocks unicode)
 
         private bool temporaryLogEnabledFlag = true;
+
+        public KuroNoteTheme[] themeCollection;
 
         //UI Dictionaries for different languages
         public Dictionary<string, string> EnUIDict;
@@ -282,7 +283,7 @@ namespace KuroNote
         {
             this.Title = "New File - " + appName;
 
-            setTheme(appSettings.themeName, appSettings.themeWithFont);
+            setTheme(appSettings.themeId, appSettings.themeWithFont);
 
             //Set additional properties
 
@@ -874,119 +875,80 @@ namespace KuroNote
         /// <summary>
         /// Change the theme to the specified theme, optionally with the corresponding theme font
         /// </summary>
-        /// <param name="_themeName">The name of the theme to change to</param>
+        /// <param name="_themeId">The ID of the theme to change to</param>
         /// <param name="_includeFont">True if you want to change the font to the font that comes with the theme, false otherwise</param>
-        public void setTheme(String _themeName, bool _includeFont)
+        public void setTheme(int _themeId, bool _includeFont)
         {
             if(_includeFont) {
-                log.addLog("Changing theme to: " + _themeName + " (w/ font)");
+                log.addLog("Changing theme to: Theme ID " + _themeId + " (w/ font)");
             } else {
-                log.addLog("Changing theme to: " + _themeName + " (w/o font)");
+                log.addLog("Changing theme to: Theme ID " + _themeId + " (w/o font)");
             }
-            
 
-            SolidColorBrush bgBrush = new SolidColorBrush();        //background for the whole window
-
-            ImageBrush imgBrush = new ImageBrush();                 //background image OR
-            SolidColorBrush solidBrush = new SolidColorBrush();     //background colour
-
-            SolidColorBrush menuBrush = new SolidColorBrush();      //Menu bar background colour
-            SolidColorBrush statusBrush = new SolidColorBrush();    //Status bar background colour
-
-            SolidColorBrush textBrush = new SolidColorBrush();      //foreground colour
-            
-
-            bool hasImage = true;   //Does this theme have an image?
-
-            switch(_themeName)
+            //Declare array of themes
+            themeCollection = new KuroNoteTheme[]
             {
-                case "Default":
-                    hasImage = true;
+                new KuroNoteTheme
+                (
+                    0, "KuroNote", "Classic",
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute)),
+                                     Opacity = 0.38 },
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Consolas", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    1, "Morning Dew", "(Image by Pixabay)",
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-276205.jpg")),
+                                     Opacity = 0.31 },
+                    new SolidColorBrush(Color.FromRgb(255, 244, 228)),
+                    new SolidColorBrush(Color.FromRgb(255, 241, 219)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    2, "Wooden", "(Image by FWStudio on Pexels)",
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fwstudio-168447.jpg")),
+                                     Opacity = 0.37 },
+                    new SolidColorBrush(Color.FromRgb(220, 193, 179)),
+                    new SolidColorBrush(Color.FromRgb(220, 193, 179)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    3, "Leafage", "(Image by Karolina Grabowska on Pexels)",
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
+                                     Opacity = 0.38 },
+                    new SolidColorBrush(Color.FromRgb(204, 197, 158)),
+                    new SolidColorBrush(Color.FromRgb(204, 197, 158)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                )
+            };
 
-                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-
-                    //Load image from file
-                    var defaultBackground = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute));
-                    imgBrush.ImageSource = defaultBackground;
-                    imgBrush.Opacity = 0.40;
-
-                    menuBrush = new SolidColorBrush(Color.FromRgb(240, 240, 240));
-                    statusBrush = new SolidColorBrush(Color.FromRgb(240, 240, 240));
-
-                    if (_includeFont)
-                    {
-                        setFont("Consolas", 18, FontWeights.Regular, FontStyles.Normal);
-                    }
-                    break;
-                case "Morning Dew":
-                    hasImage = true;
-
-                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-
-                    //Static resource
-                    BitmapImage webBackground = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-276205.jpg"));
-                    imgBrush.ImageSource = webBackground;
-                    imgBrush.Opacity = 0.33;
-
-                    menuBrush = new SolidColorBrush(Color.FromRgb(255, 241, 219));
-                    statusBrush = new SolidColorBrush(Color.FromRgb(255, 241, 219));
-
-                    if (_includeFont)
-                    {
-                        setFont("Verdana", 18, FontWeights.Regular, FontStyles.Normal);
-                    }                   
-                    break;
-                case "Wooden":
-                    hasImage = true;
-
-                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-
-                    //Static resource
-                    BitmapImage woodBackground = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fwstudio-168447.jpg"));
-                    imgBrush.ImageSource = woodBackground;
-                    imgBrush.Opacity = 0.37;
-
-                    menuBrush = new SolidColorBrush(Color.FromRgb(220, 193, 179));
-                    statusBrush = new SolidColorBrush(Color.FromRgb(220, 193, 179));
-
-                    if (_includeFont)
-                    {
-                        setFont("Verdana", 18, FontWeights.Regular, FontStyles.Normal);
-                    }
-                    break;
-                case "Leafage":
-                    hasImage = true;
-
-                    bgBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                    textBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-
-                    //Static resource
-                    BitmapImage leafBackground = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg"));
-                    imgBrush.ImageSource = leafBackground;
-                    imgBrush.Opacity = 0.40;
-
-                    menuBrush = new SolidColorBrush(Color.FromRgb(208, 201, 153));
-                    statusBrush = new SolidColorBrush(Color.FromRgb(208, 201, 153));
-
-                    if (_includeFont)
-                    {
-                        setFont("Verdana", 18, FontWeights.Regular, FontStyles.Normal);
-                    }
-                    break;
-            }
-
-            this.Background = bgBrush;
-            MainRtb.Foreground = textBrush;
-            if (hasImage) {
-                MainRtb.Background = imgBrush;
+            //Apply the selected theme information to the UI
+            this.Background = themeCollection[_themeId].bgBrush;
+            MainRtb.Foreground = themeCollection[_themeId].textBrush;
+            if (themeCollection[_themeId].hasImage) {
+                MainRtb.Background = themeCollection[_themeId].imgBrush;
             } else {
-                MainRtb.Background = solidBrush;
+                MainRtb.Background = themeCollection[_themeId].solidBrush;
             }
-            MainMenu.Background = menuBrush;
-            MainStatus.Background = statusBrush;
+            MainMenu.Background = themeCollection[_themeId].menuBrush;
+            MainStatus.Background = themeCollection[_themeId].statusBrush;
+
+            if(_includeFont)
+            {
+                setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
+            }
         }
 
         /// <summary>
@@ -995,7 +957,7 @@ namespace KuroNote
         private void Theme_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: Theme...");
-            ThemeSelector themeSelector = new ThemeSelector(this, appSettings, log);
+            ThemeSelector themeSelector = new ThemeSelector(this, appSettings, themeCollection, log);
             themeSelector.toggleVisibility(true);
         }
 
@@ -1041,7 +1003,11 @@ namespace KuroNote
         /// </summary>
         private void SaveStatusItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            MessageBox.Show("saved changes status");
+            if(editedFlag) {
+                MessageBox.Show("Some changes have been made to this file.\nKuroNote will offer to save these changes when you close the file.", SaveStatusTb.Text, MessageBoxButton.OK, MessageBoxImage.Information);
+            } else {
+                MessageBox.Show("No changes have been made to this file.\nYou can safely close the file at any time.", SaveStatusTb.Text, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         /// <summary>
@@ -1049,7 +1015,8 @@ namespace KuroNote
         /// </summary>
         private void WordCountItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            MessageBox.Show("word count");
+            TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+            MessageBox.Show(generateWordCount() + "\n" + document.Text.Length + " Characters (including spaces)", "Word Count", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
@@ -1060,9 +1027,15 @@ namespace KuroNote
         {
             TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
             MatchCollection words = Regex.Matches(document.Text, @"\S+");
-            
-            const string WORDS_POST = " Words";
-            return words.Count + WORDS_POST;
+
+            string wordsPost;
+            if(words.Count == 1) {
+                wordsPost = "Word";
+            } else {
+                wordsPost = "Words";
+            }
+
+            return words.Count + " " + wordsPost;
         }
 
         /// <summary>

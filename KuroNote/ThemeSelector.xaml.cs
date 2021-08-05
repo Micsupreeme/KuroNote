@@ -19,36 +19,27 @@ namespace KuroNote
     {
         //Constants
         private const string WINDOW_NAME = "Theme";
-        private static readonly string[] THEME_NAMES = { 
-            "Default",
-            "Morning Dew",
-            "Wooden",
-            "Leafage"
-        };
-        private static readonly string[] THEME_DESCS = { 
-            "Classic", 
-            "(Image by Pixabay)",
-            "(Image by FWStudio on Pexels)",
-            "(Image by Karolina Grabowska on Pexels)"
-        };
 
         //Globals
         private string appName;
         MainWindow main;
         KuroNoteSettings settings;
+        KuroNoteTheme[] themeCollection;
         Log log;
-        private string previouslySelectedTheme; //the theme to revert back to if the user clicks "Cancel" or "X"
 
-        public ThemeSelector(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog)
+        private int previouslySelectedThemeId; //the theme to revert back to if the user clicks "Cancel" or "X"
+
+        public ThemeSelector(MainWindow _mainWin, KuroNoteSettings _currentSettings, KuroNoteTheme[] _themeCollection, Log _mainLog)
         {
             InitializeComponent();
             main = _mainWin;
             settings = _currentSettings;
+            themeCollection = _themeCollection;
             log = _mainLog;
             appName = main.appName;
             this.Title = WINDOW_NAME + " - " + appName;
 
-            previouslySelectedTheme = settings.themeName;
+            previouslySelectedThemeId = settings.themeId;
             loadThemes();
             //loadCustomThemes()
         }
@@ -59,11 +50,12 @@ namespace KuroNote
         private void loadThemes()
         {
             cmbTheme.Items.Clear();
-            foreach(string themeName in THEME_NAMES)
+            foreach(KuroNoteTheme theme in themeCollection)
             {
                 ComboBoxItem themeItem = new ComboBoxItem();
-                themeItem.Content = themeName;
-                if(themeName.Equals(settings.themeName)) {
+                themeItem.Content = theme.themeName;
+                themeItem.Tag = theme.themeId;
+                if(theme.themeId == settings.themeId) {
                     log.addLog("Selected theme: " + themeItem.Content);
                     themeItem.IsSelected = true;
                 }
@@ -76,22 +68,10 @@ namespace KuroNote
         /// </summary>
         private void cmbTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            switch(cmbTheme.SelectedValue)
-            {
-                case "Default":
-                    tbThemeDesc.Text = THEME_DESCS[0];
-                    break;
-                case "Morning Dew":
-                    tbThemeDesc.Text = THEME_DESCS[1];
-                    break;
-                case "Wooden":
-                    tbThemeDesc.Text = THEME_DESCS[2];
-                    break;
-                case "Leafage":
-                    tbThemeDesc.Text = THEME_DESCS[3];
-                    break;
-            }
-            main.setTheme(cmbTheme.SelectedValue.ToString(), (bool)chkIncludeFont.IsChecked);
+            int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
+
+            tbThemeDesc.Text = themeCollection[selectedThemeTag].themeDesc;
+            main.setTheme(selectedThemeTag, (bool)chkIncludeFont.IsChecked);
         }
 
         /// <summary>
@@ -101,12 +81,13 @@ namespace KuroNote
         {
             try
             {
+                int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
                 bool isChecked = (bool)chkIncludeFont.IsChecked;
                 if (!isChecked) { //User doesn't want the theme font
                     //Apply the user's currently saved font instead of the theme font
                     main.setFont(settings.fontFamily, (short)settings.fontSize, settings.fontWeight, settings.fontStyle);
                 }
-                main.setTheme(cmbTheme.SelectedValue.ToString(), isChecked);
+                main.setTheme(selectedThemeTag, isChecked);
             } catch(Exception ex) {
                 Console.Error.Write(ex.ToString()); //Attempted to apply theme before the combobox is initialised
             }
@@ -117,10 +98,10 @@ namespace KuroNote
         /// </summary>
         /// <param name="_selectedTheme">The theme name to change the selectedTheme setting to</param>
         /// <param name="_includesFont">Whether or not to use the font that comes with the theme</param>
-        private void applyTheme(string _selectedTheme, bool _includesFont) {
-            log.addLog("Updating theme preference: " + _selectedTheme);
+        private void applyTheme(int _selectedThemeId, bool _includesFont) {
+            log.addLog("Updating theme preference: Theme ID " + _selectedThemeId);
 
-            settings.themeName = _selectedTheme;
+            settings.themeId = _selectedThemeId;
             settings.themeWithFont = _includesFont;
             settings.UpdateSettings(); //Write these changes to the file
         }
@@ -144,23 +125,23 @@ namespace KuroNote
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
-            string newThemeName = cmbTheme.SelectedValue.ToString();
+            int newThemeId = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
             bool themeIncludesFont = (bool)chkIncludeFont.IsChecked;
 
-            main.setTheme(newThemeName, themeIncludesFont);
-            applyTheme(newThemeName, themeIncludesFont);
+            main.setTheme(newThemeId, themeIncludesFont);
+            applyTheme(newThemeId, themeIncludesFont);
             toggleVisibility(false);
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            main.setTheme(previouslySelectedTheme, settings.themeWithFont);
+            main.setTheme(previouslySelectedThemeId, settings.themeWithFont);
             toggleVisibility(false);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            main.setTheme(previouslySelectedTheme, settings.themeWithFont);
+            main.setTheme(previouslySelectedThemeId, settings.themeWithFont);
             log.addLog("Close ThemeSelector");
         }
     }
