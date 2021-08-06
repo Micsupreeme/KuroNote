@@ -22,11 +22,13 @@
   <ItemGroup>
     <None Remove="img\bgs\pexels-asad-photo-maldives-3320516.jpg" />
     <None Remove="img\bgs\pexels-ben-mack-5326909.jpg" />
+    <None Remove="img\bgs\pexels-fillipe-gomes-5611219.jpg" />
     <None Remove="img\bgs\pexels-freestocksorg-863908.jpg" />
     <None Remove="img\bgs\pexels-fwstudio-168447.jpg" />
     <None Remove="img\bgs\pexels-gradienta-6985045.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4022107.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4046687.jpg" />
+    <None Remove="img\bgs\pexels-pixabay-258149.jpg" />
     <None Remove="img\bgs\pexels-pixabay-276205.jpg" />
     <None Remove="img\icons\outline_account_circle_black_18dp.png" />
     <None Remove="img\icons\outline_add_black_18dp.png" />
@@ -103,10 +105,10 @@
     <Resource Include="img\bgs\pexels-ben-mack-5326909.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\bgs\pexels-freestocksorg-863908.jpg">
+    <Resource Include="img\bgs\pexels-fillipe-gomes-5611219.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\bgs\pexels-fwstudio-168447.jpg">
+    <Resource Include="img\bgs\pexels-freestocksorg-863908.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-gradienta-6985045.jpg">
@@ -116,6 +118,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-karolina-grabowska-4046687.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-pixabay-258149.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-pixabay-276205.jpg">
