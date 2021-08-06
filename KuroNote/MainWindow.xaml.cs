@@ -34,7 +34,7 @@ namespace KuroNote
 
         //Globals
         public string appName = "KuroNote";
-        private string appPath = AppDomain.CurrentDomain.BaseDirectory;
+        public string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private KuroNoteSettings appSettings;
         private Log log;
         private string fileName = string.Empty;             //Name of the loaded file - null if no file loaded
@@ -1073,6 +1073,8 @@ namespace KuroNote
         private void CustomThemes_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: Custom Themes...");
+            CustomThemeManager customThemeManager = new CustomThemeManager(this, appSettings, log);
+            customThemeManager.Visibility = Visibility.Visible;
         }
         #endregion
 

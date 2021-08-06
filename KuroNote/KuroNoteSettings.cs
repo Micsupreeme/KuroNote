@@ -20,6 +20,7 @@ namespace KuroNote
         public FontStyle fontStyle = FontStyles.Normal;
         public int themeId = 0;
         public bool themeWithFont = true;
+        public int customThemeIndex = 1000;
 
         public KuroNoteSettings(Log mainLog)
         {
@@ -45,6 +46,7 @@ namespace KuroNote
                     this.fontStyle = knsFile.fontStyle;
                     this.themeId = knsFile.themeId;
                     this.themeWithFont = knsFile.themeWithFont;
+                    this.customThemeIndex = knsFile.customThemeIndex;
                     log.addLog("Successfully read conf.json");
                 }
             }

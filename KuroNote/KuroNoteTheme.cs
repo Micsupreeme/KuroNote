@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -19,6 +20,7 @@ namespace KuroNote
         //colours
         public SolidColorBrush bgBrush;         //background for the whole window
         public ImageBrush imgBrush;             //background image OR
+        public double imgBrushOpacity;
         public SolidColorBrush solidBrush;      //solid background colour
         public SolidColorBrush menuBrush;       //top menu colour
         public SolidColorBrush statusBrush;     //status bar colour
@@ -45,7 +47,8 @@ namespace KuroNote
             this.hasImage = true;
             this.bgBrush = _bgBrush;
             this.imgBrush = _imgBrush;
-            this.solidBrush = null;
+            this.imgBrushOpacity = this.imgBrush.Opacity;
+            this.solidBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
             this.menuBrush = _menuBrush;
             this.statusBrush = _statusBrush;
             this.textBrush = _textBrush;
@@ -70,6 +73,7 @@ namespace KuroNote
             this.hasImage = false;
             this.bgBrush = _bgBrush;
             this.imgBrush = null;
+            this.imgBrushOpacity = 0;
             this.solidBrush = _solidBrush;
             this.menuBrush = _menuBrush;
             this.statusBrush = _statusBrush;
