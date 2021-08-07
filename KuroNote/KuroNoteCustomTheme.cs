@@ -13,7 +13,6 @@ namespace KuroNote
         //meta
         public int themeId;
         public string themeName;
-        public string themeDesc;
         public bool hasImage;
 
         //colours
@@ -32,7 +31,7 @@ namespace KuroNote
 
         //deserialise constructor
         [JsonConstructor]
-        public KuroNoteCustomTheme(int _themeId, string _themeName, string _themeDesc, bool _hasImage,
+        public KuroNoteCustomTheme(int _themeId, string _themeName, bool _hasImage,
                             string _bgBrush, double _imgBrushOpacity, string _solidBrush,
                             string _menuBrush, string _statusBrush, string _textBrush,
                             string _fontFamily, short _fontSize, FontWeight _fontWeight, FontStyle _fontStyle)
@@ -40,7 +39,6 @@ namespace KuroNote
 
             this.themeId = _themeId;
             this.themeName = _themeName;
-            this.themeDesc = _themeDesc;
             this.hasImage = _hasImage;
             this.hasImage = _hasImage;
             this.bgBrush = _bgBrush;

@@ -43,6 +43,7 @@
     <None Remove="img\icons\outline_content_cut_black_18dp.png" />
     <None Remove="img\icons\outline_content_paste_black_18dp.png" />
     <None Remove="img\icons\outline_create_black_18dp.png" />
+    <None Remove="img\icons\outline_delete_outline_black_18dp.png" />
     <None Remove="img\icons\outline_description_black_18dp.png" />
     <None Remove="img\icons\outline_done_outline_black_18dp.png" />
     <None Remove="img\icons\outline_enhanced_encryption_black_18dp.png" />
@@ -84,6 +85,8 @@
     <None Remove="img\icons\outline_timeline_black_18dp.png" />
     <None Remove="img\icons\outline_undo_black_18dp.png" />
     <None Remove="img\icons\outline_upgrade_black_18dp.png" />
+    <None Remove="img\icons\outline_visibility_black_18dp.png" />
+    <None Remove="img\icons\outline_visibility_off_black_18dp.png" />
     <None Remove="img\icons\outline_wallpaper_black_18dp.png" />
     <None Remove="img\icons\outline_zoom_in_black_18dp.png" />
     <None Remove="img\icons\outline_zoom_out_black_18dp.png" />
@@ -164,6 +167,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_create_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_delete_outline_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_description_black_18dp.png">
@@ -287,6 +293,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_upgrade_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_visibility_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_visibility_off_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_wallpaper_black_18dp.png">

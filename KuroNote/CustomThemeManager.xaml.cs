@@ -16,8 +16,16 @@ using Path = System.IO.Path;
 
 namespace KuroNote
 {
-    //TODO: confirmation for deleting themes
-    //TODO: disable all customisation controls while no theme selected or theme just deleted
+    //TODO (optional): change "Auto-Preview" visibility icon to eye with line through it and back to regular eye depending on toggle button state
+    //TODO: custom theme transparency (RGB -> ARGB)
+    //TODO: custom theme font size, weight and style
+    //TODO***: After setting an image background source, it does not preview until a full/partial preview refresh happens, use a "mouse-enter/leave" method or <1s timer to trigger a preview refresh?
+
+    //KNOWN BUG: If you open ThemeSelector and CustomThemeManager at the same time, open a theme in CustomThemeManager,
+    //  close ThemeSelector (triggers revert back theme change), then change the opacity of the image in CustomThemeManager
+    //  (does a partial preview re-render- only changed background, not the menu/status), the custom theme preview will have
+    //  the SolidColorBrushes of the currently set theme in settings instead of the custom theme being edited
+    //  - until you change something that causes a full preview refresh (e.g. a SolidColorBrush)
 
     /// <summary>
     /// Interaction logic for CustomThemeManager.xaml
@@ -36,6 +44,7 @@ namespace KuroNote
         MainWindow main;
         KuroNoteSettings settings;
         Log log;
+        bool fieldsPopulated = false;
 
         private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
         private KuroNoteCustomTheme currentTheme;
@@ -51,6 +60,24 @@ namespace KuroNote
             this.Title = WINDOW_NAME + " - " + appName;
 
             loadCustomThemeList();
+            toggleCustomiseUI(false); //customise controls require a theme to be loaded first
+        }
+
+        /// <summary>
+        /// Open/close this window
+        /// </summary>
+        public void toggleVisibility(bool vis)
+        {
+            if (vis)
+            {
+                log.addLog("Open CustomThemeManager");
+                this.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                log.addLog("Collapse CustomThemeManager");
+                this.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void loadCustomThemeList()
@@ -92,6 +119,8 @@ namespace KuroNote
         /// </summary>
         private void selectBackgroundImage()
         {
+            migrateThemeToNewId();
+
             OpenFileDialog ofd = new OpenFileDialog() {
                 Filter = BGIMAGE_FILE_FILTER,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
@@ -132,7 +161,7 @@ namespace KuroNote
 
             currentTheme = new KuroNoteCustomTheme
             (
-                themeId, "Custom theme", "", true,
+                themeId, "Custom theme", true,
                 "#FFFFFFFF", 0.25,
                 "#FFFFFFFF",
                 "#FFF0F0F0",
@@ -140,6 +169,47 @@ namespace KuroNote
                 "#FF000000",
                 "Consolas", 18, FontWeights.Regular, FontStyles.Normal
             );
+        }
+
+        /// <summary>
+        /// Unable to replace internal image file (used by another process) workaround for changing image after it has already been set
+        /// </summary>
+        private void migrateThemeToNewId()
+        {
+            string fileToMigrate = customThemePath + currentTheme.themeId + CUSTOM_THEME_EXT;
+            int oldThemeId = currentTheme.themeId;
+            int newThemeId = generateNewThemeId();
+
+            currentTheme = new KuroNoteCustomTheme
+            (
+                newThemeId, themeNameTxt.Text, true,
+                bgBrushCol.Color.ToString(), 0.25,
+                solidBrushCol.Color.ToString(),
+                menuBrushCol.Color.ToString(),
+                statusBrushCol.Color.ToString(),
+                textBrushCol.Color.ToString(),
+                fontTxt.Text, 18, FontWeights.Regular, FontStyles.Normal
+            );
+
+            updateThemeFile();
+            loadCustomThemeList(); //refresh custom theme list because we've added a new file to the custom theme directory
+            loadThemeObjectFromFile(newThemeId); //the theme that was just created
+            if (tbtnAutoPreview.IsChecked == true)
+            {
+                main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+            }
+
+            //delete old file
+            File.Delete(fileToMigrate);
+            //delete the combo box listing for the old id
+            for(int i = 0; i < cmbCustomTheme.Items.Count; i++)
+            {
+                ComboBoxItem cmbItem = (ComboBoxItem)cmbCustomTheme.Items.GetItemAt(i);
+                if((int)cmbItem.Tag == oldThemeId)
+                {
+                    cmbCustomTheme.Items.RemoveAt(i);
+                }
+            }
         }
 
         /// <summary>
@@ -176,7 +246,7 @@ namespace KuroNote
                     //load image theme
                     currentTheme = new KuroNoteCustomTheme
                     (
-                        kntFile.themeId, kntFile.themeName, kntFile.themeDesc, kntFile.hasImage,
+                        kntFile.themeId, kntFile.themeName, kntFile.hasImage,
                         kntFile.bgBrush.ToString(), kntFile.imgBrushOpacity,
                         kntFile.solidBrush.ToString(),
                         kntFile.menuBrush.ToString(),
@@ -186,6 +256,7 @@ namespace KuroNote
                     );
 
                     log.addLog("Custom theme file successfully loaded");
+                    toggleCustomiseUI(true);
                     populateFields();
                 }
             }
@@ -200,6 +271,7 @@ namespace KuroNote
         /// </summary>
         public void populateFields()
         {
+            fieldsPopulated = false;
             //in JSON format, colour values are stored as hex, convert them to ARGB so we can create new SolidColorBrush instances
             byte[] bgBrushArgb = getARGBFromHex(currentTheme.bgBrush.ToString());
             byte[] solidBrushArgb = getARGBFromHex(currentTheme.solidBrush.ToString());
@@ -208,26 +280,23 @@ namespace KuroNote
             byte[] textBrushArgb = getARGBFromHex(currentTheme.textBrush.ToString());
 
             themeNameTxt.Text = currentTheme.themeName;
-            themeDescTxt.Text = currentTheme.themeDesc;
+            fontTxt.Text = currentTheme.fontFamily;
             bgBrushCol.SetColor(Color.FromRgb(bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
             menuBrushCol.SetColor(Color.FromRgb(menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
             statusBrushCol.SetColor(Color.FromRgb(statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
             imageOpacitySlide.Value = currentTheme.imgBrushOpacity;
             solidBrushCol.SetColor(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
             textBrushCol.SetColor(Color.FromRgb(textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
-            fontTxt.Text = currentTheme.fontFamily;
 
             //toggleImageSolidUI(currentTheme.hasImage);
-            if(currentTheme.hasImage) {
+            imageBrowseTxt.Text = "Not set";
+            if (currentTheme.hasImage) {
 
                 //Show confirmation in the browse text box that an image has actually been set
                 string internalImagePath = customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT;
                 if(File.Exists(internalImagePath)) {
                     //Image has already been set
                     imageBrowseTxt.Text = internalImagePath;
-                } else {
-                    //Image has never been set for this theme
-                    imageBrowseTxt.Text = "Not set";
                 }
 
                 imageBgRadio.IsChecked = true;
@@ -236,6 +305,7 @@ namespace KuroNote
                 imageBgRadio.IsChecked = false;
                 solidBgRadio.IsChecked = true;
             }
+            fieldsPopulated = true;
         }
 
         /// <summary>
@@ -247,18 +317,17 @@ namespace KuroNote
             {
                 string themeFileName = customThemePath + currentTheme.themeId + CUSTOM_THEME_EXT;
 
-                log.addLog("Updating " + themeFileName);
                 using (StreamWriter sw = new StreamWriter(themeFileName))
                 {
                     string json = JsonConvert.SerializeObject(currentTheme, Formatting.Indented);
 
                     sw.Write(json);
-                    log.addLog("Custom theme file successfully updated");
+                    log.addLog("Custom theme file for theme" + currentTheme.themeId + " successfully updated");
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
+                log.addLog("WARN: " + e.GetType().ToString() + " occurred while updating theme file");
             }
         }
 
@@ -268,7 +337,6 @@ namespace KuroNote
         private void updateThemeObject()
         {
             currentTheme.themeName = themeNameTxt.Text;
-            currentTheme.themeDesc = themeDescTxt.Text;
             currentTheme.bgBrush = bgBrushCol.Color.ToString();
             currentTheme.menuBrush = menuBrushCol.Color.ToString();
             currentTheme.statusBrush = statusBrushCol.Color.ToString();
@@ -286,7 +354,6 @@ namespace KuroNote
         {
             try {
                 File.Delete(customThemePath + currentTheme.themeId + CUSTOM_THEME_EXT);
-                File.Delete(customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT);
             } catch (Exception e) {
                 MessageBox.Show(e.ToString(), "Delete Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 log.addLog(e.ToString());
@@ -298,6 +365,11 @@ namespace KuroNote
             generateNewTheme();
             updateThemeFile();
             loadCustomThemeList(); //refresh custom theme list because we've added a new file to the custom theme directory
+            loadThemeObjectFromFile(settings.customThemeIndex - 1); //the theme that was just created
+            if (tbtnAutoPreview.IsChecked == true)
+            {
+                main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+            }
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -308,20 +380,75 @@ namespace KuroNote
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            deleteThemeFile();
-            loadCustomThemeList(); //refresh custom theme list because we've removed a new file from the custom theme directory
+            MessageBoxResult conf = MessageBox.Show("Are you sure you want to delete \"" + currentTheme.themeName + "\"?", "Delete custom theme?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if(conf == MessageBoxResult.Yes)
+            {
+                deleteThemeFile();
+                loadCustomThemeList();      //refresh custom theme list because we've removed a new file from the custom theme directory
+                toggleCustomiseUI(false);   //the theme was just deleted so now there is no theme loaded
+            }
         }
 
         private void imageBgRadio_Checked(object sender, RoutedEventArgs e)
         {
             toggleImageSolidUI(true);
+            try {
+                if (fieldsPopulated)
+                {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
+            }
         }
 
         private void solidBgRadio_Checked(object sender, RoutedEventArgs e)
         {
             toggleImageSolidUI(false);
+            try {
+                if (fieldsPopulated)
+                {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+            }
+            catch (NullReferenceException)
+            {
+                Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
+            }
         }
 
+        /// <summary>
+        /// Hides or shows all of the UI elements that require a custom theme to be loaded first (which is most of them)
+        /// </summary>
+        /// <param name="enable">Whether or not to enable UI elements that require a loaded theme</param>
+        private void toggleCustomiseUI(bool enable)
+        {
+            if(enable) {
+                customiseGrid.Opacity = 1;
+                customiseGrid.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+            } else {
+                customiseGrid.Opacity = 0.33;
+                customiseGrid.IsEnabled = false;
+                btnDelete.IsEnabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Hides the solid colour controls for custom themes with images
+        /// or hides the image controls for custom themes without images
+        /// </summary>
+        /// <param name="hasImage">Whether or not the selected theme uses an image background</param>
         private void toggleImageSolidUI(bool hasImage)
         {
             try {
@@ -349,6 +476,10 @@ namespace KuroNote
         {
             try {
                 loadThemeObjectFromFile((int)cmbCustomTheme.SelectedValue);
+                if (tbtnAutoPreview.IsChecked == true)
+                {
+                    main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                }
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
             }
@@ -356,17 +487,53 @@ namespace KuroNote
 
         private void bgBrushCol_OnPick(object sender, EventArgs e)
         {
-
+            try {
+                if (fieldsPopulated)
+                {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+            }
         }
 
         private void menuBrushCol_OnPick(object sender, EventArgs e)
         {
-
+            try {
+                if(fieldsPopulated)
+                {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+            }
         }
 
         private void statusBrushCol_OnPick(object sender, EventArgs e)
         {
-
+            try {
+                if (fieldsPopulated)
+                {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+            }
         }
 
         private void imageBrowseBtn_Click(object sender, RoutedEventArgs e)
@@ -376,20 +543,80 @@ namespace KuroNote
 
         private void solidBrushCol_OnPick(object sender, EventArgs e)
         {
-
+            try {
+                if (fieldsPopulated)
+                {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+            }
         }
 
         private void imageOpacitySlide_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             try {
                 imageOpacityLbl.Content = "Opacity: " + Math.Round(imageOpacitySlide.Value, 2);
+                if (fieldsPopulated) {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        //A full re-render preview every time the opacity value changes is too much, this is a minimal version for opacity changes only
+                        try {
+                            main.MainRtb.Background = new ImageBrush
+                            {
+                                ImageSource = new BitmapImage(new Uri(customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT, UriKind.Absolute)),
+                                Opacity = currentTheme.imgBrushOpacity
+                            };
+                        } catch (Exception ex) {
+                            log.addLog("Custom theme opacity change lightweight preview failed");
+                            log.addLog(ex.ToString());
+                        }
+                    }
+                }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
+                Console.Error.WriteLine("WARN: ValueChanged Event fired before object initialisation ");
+            }
+        }
+
+        private void themeNameTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try {
+                if (fieldsPopulated) {
+                    updateThemeObject();
+                    updateThemeFile();
+                }
+                //no need to update preview, themeName is metadata only
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: TextChanged Event fired before object initialisation ");
+            }
+        }
+
+        private void fontTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try {
+                if (fieldsPopulated) {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true)
+                    {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: TextChanged Event fired before object initialisation ");
             }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            main.setTheme(settings.themeId, settings.themeWithFont); //ensure that the theme selected in settings is restored when custom theme manager is closed
             log.addLog("Close Custom Theme Manager");
         }
     }

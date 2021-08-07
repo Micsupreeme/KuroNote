@@ -11,7 +11,19 @@
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">
     <StackPanel Margin="10">
-        <Label Name="selectThemeLbl" Grid.Row="0" Grid.Column="0" Content="Select custom theme:" Foreground="#EEEEEE" FontSize="16" Margin="0,0,0,10"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Label Name="selectThemeLbl" Grid.Row="0" Grid.Column="0" Content="Select custom theme:" Foreground="#EEEEEE" FontSize="16" Margin="0,0,0,10"/>
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" FlowDirection="RightToLeft">
+
+            </StackPanel>
+        </Grid>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.5*"/>
@@ -20,12 +32,38 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <ComboBox Name="cmbCustomTheme" Grid.Row="0" Grid.Column="0" IsReadOnly="True" FontSize="14" SelectedValuePath="Tag" SelectionChanged="cmbCustomTheme_SelectionChanged"/>
-            <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="0" Grid.Column="1">
-                <Button Name="btnDelete" Margin="0,0,0,0" Padding="5,3,5,3" Content="Delete" IsCancel="True" FontSize="14" Click="btnDelete_Click"/>
-                <Button Name="btnSave" Margin="5,0,0,0" Padding="5,3,5,3" Content="Save" IsCancel="True" FontSize="14" Click="btnSave_Click"/>
-                <Button Name="btnAdd" Margin="5,0,0,0" Padding="5,3,5,3" Content="Add theme" IsDefault="True" FontSize="14" Click="btnAdd_Click"/>
-            </StackPanel>
+            <ComboBox Name="cmbCustomTheme" IsReadOnly="True" FontSize="14" SelectedValuePath="Tag" SelectionChanged="cmbCustomTheme_SelectionChanged" TabIndex="0"/>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" FlowDirection="LeftToRight">
+                    <Button Name="btnAdd" Height="28" Margin="0,0,0,0" Padding="6,3,6,3" FontSize="14" Click="btnAdd_Click">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/img/icons/outline_add_black_18dp.png"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" FlowDirection="RightToLeft">
+                    <Button Name="btnDelete" Height="28" Margin="0,0,0,0" Padding="6,3,6,3" FontSize="14" Click="btnDelete_Click">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/img/icons/outline_delete_outline_black_18dp.png"/>
+                        </Button.Content>
+                    </Button>
+                    <ToggleButton Name="tbtnAutoPreview" Height="28" Margin="5,0,0,0" Padding="6,3,6,3" IsChecked="True">
+                        <ToggleButton.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/img/icons/outline_visibility_black_18dp.png"/>
+                                <TextBlock FontSize="14" Padding="5,0,0,0">Auto-Preview</TextBlock>
+                            </StackPanel>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                </StackPanel>
+            </Grid>
         </Grid>
         <Label Name="customiseThemeLbl" Grid.Row="0" Grid.Column="0" Content="Customise:" Foreground="#EEEEEE" FontSize="16" Margin="0,10,0,0"/>
         <Grid Name="customiseGrid" Margin="10,0,10,0">
@@ -44,15 +82,13 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Label Name="themeNameLbl" Grid.Row="0" Grid.Column="0" Content="Theme name:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
-            <TextBox Name="themeNameTxt" Grid.Row="0" Grid.Column="1" Foreground="#111111" FontSize="14" Margin="0,10,0,0"/>
-            <Label Name="themeDescLbl" Grid.Row="1" Grid.Column="0" Content="Theme description:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
-            <TextBox Name="themeDescTxt" Grid.Row="1" Grid.Column="1" Foreground="#111111" FontSize="14" Margin="0,10,0,0"/>
-            <Label Name="bgBrushLbl" Grid.Row="2" Grid.Column="0" Content="Window canvas colour:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
-            <ColorPickerWPF:ColorPickRow x:Name="bgBrushCol" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFF" FontSize="14" Options="LoadCustomPalette" Margin="0,10,0,0" IsEnabled="False" OnPick="bgBrushCol_OnPick"/>
-            <Label Name="menuBrushLbl" Grid.Row="3" Grid.Column="0" Content="Menu bar colour:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
-            <ColorPickerWPF:ColorPickRow x:Name="menuBrushCol" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFF" FontSize="14" Options="LoadCustomPalette" Margin="0,10,0,0" OnPick="menuBrushCol_OnPick"/>
-            <Label Name="statusBrushLbl" Grid.Row="4" Grid.Column="0" Content="Status bar colour:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
-            <ColorPickerWPF:ColorPickRow x:Name="statusBrushCol" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFF" FontSize="14" Options="LoadCustomPalette" Margin="0,10,0,0" OnPick="statusBrushCol_OnPick"/>
+            <TextBox Name="themeNameTxt" Grid.Row="0" Grid.Column="1" Foreground="#111111" FontSize="14" Margin="0,10,0,0" TextChanged="themeNameTxt_TextChanged"/>
+            <Label Name="bgBrushLbl" Grid.Row="1" Grid.Column="0" Content="Window canvas colour:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
+            <ColorPickerWPF:ColorPickRow x:Name="bgBrushCol" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFF" FontSize="14" Options="LoadCustomPalette" Margin="0,10,0,0" OnPick="bgBrushCol_OnPick"/>
+            <Label Name="menuBrushLbl" Grid.Row="2" Grid.Column="0" Content="Menu bar colour:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
+            <ColorPickerWPF:ColorPickRow x:Name="menuBrushCol" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFF" FontSize="14" Options="LoadCustomPalette" Margin="0,10,0,0" OnPick="menuBrushCol_OnPick"/>
+            <Label Name="statusBrushLbl" Grid.Row="3" Grid.Column="0" Content="Status bar colour:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
+            <ColorPickerWPF:ColorPickRow x:Name="statusBrushCol" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFF" FontSize="14" Options="LoadCustomPalette" Margin="0,10,0,0" OnPick="statusBrushCol_OnPick"/>
             <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
@@ -67,7 +103,7 @@
                     <RadioButton x:Name="solidBgRadio" GroupName="backgroundType" Foreground="#EEEEEE" FontSize="14" Margin="5,10,0,0" Checked="solidBgRadio_Checked">Solid colour background</RadioButton>
                 </StackPanel>
                 <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,10,0,10">
-                    <Label Name="imageNoteLbl" HorizontalAlignment="Center" Content="Recommended 1920 x 1280 and less than 500KB" Foreground="#EEEEEE" FontSize="12"/>
+                    <Label Name="imageNoteLbl" HorizontalAlignment="Center" Content="Recommended 1920 x 1280 and less than 1MB" Foreground="#EEEEEE" FontSize="12"/>
                     <Grid x:Name="imageControlGrid">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3*"/>
@@ -87,7 +123,7 @@
             <Label Name="textBrushLbl" Grid.Row="6" Grid.Column="0" Content="Font colour:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
             <ColorPickerWPF:ColorPickRow x:Name="textBrushCol" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFF" FontSize="14" Options="LoadCustomPalette" Margin="0,10,0,0" OnPick="statusBrushCol_OnPick"/>
             <Label Name="fontLbl" Grid.Row="7" Grid.Column="0" Content="Font:" Foreground="#EEEEEE" FontSize="14" Margin="0,10,0,0"/>
-            <TextBox Name="fontTxt" Grid.Row="7" Grid.Column="1" Foreground="#111111" FontSize="14" Margin="0,10,0,0"/>
+            <TextBox Name="fontTxt" Grid.Row="7" Grid.Column="1" Foreground="#111111" FontSize="14" Margin="0,10,0,0" TextChanged="fontTxt_TextChanged"/>
         </Grid>
     </StackPanel>
 </Window>

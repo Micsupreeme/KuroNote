@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +21,7 @@ namespace KuroNote
     {
         //Constants
         private const string WINDOW_NAME = "Theme";
+        private const string CUSTOM_THEME_EXT = ".kurotheme";
 
         //Globals
         private string appName;
@@ -28,6 +31,7 @@ namespace KuroNote
         Log log;
 
         private int previouslySelectedThemeId; //the theme to revert back to if the user clicks "Cancel" or "X"
+        private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
 
         public ThemeSelector(MainWindow _mainWin, KuroNoteSettings _currentSettings, KuroNoteTheme[] _themeCollection, Log _mainLog)
         {
@@ -40,25 +44,58 @@ namespace KuroNote
             this.Title = WINDOW_NAME + " - " + appName;
 
             previouslySelectedThemeId = settings.themeId;
-            loadThemes();
-            //loadCustomThemes()
+            loadPresetAndCustomThemes();
         }
 
         /// <summary>
-        /// Populate the dropdown menu with the available built-in themes
+        /// Populate the dropdown menu with all available themes
         /// </summary>
-        private void loadThemes()
+        private void loadPresetAndCustomThemes()
         {
             cmbTheme.Items.Clear();
-            foreach(KuroNoteTheme theme in themeCollection)
+
+            try {
+                string[] customThemeFiles = Directory.GetFiles(customThemePath);
+
+                //Go through the array backwards when adding ComboBoxItems, so that the ComboBox is ordered "Newest themes descending"
+                for (int i = (customThemeFiles.Length - 1); i >= 0; i--)
+                {
+                    //Only list .kurotheme files as selectable theme files
+                    if (customThemeFiles[i].Contains(CUSTOM_THEME_EXT))
+                    {
+                        int customThemeId;
+                        string customThemeName;
+
+                        using (StreamReader sr = new StreamReader(customThemeFiles[i]))
+                        {
+                            string json = sr.ReadToEnd();
+                            KuroNoteCustomTheme kntFile = JsonConvert.DeserializeObject<KuroNoteCustomTheme>(json);
+                            customThemeId = kntFile.themeId;
+                            customThemeName = kntFile.themeName;
+                        }
+
+                        ComboBoxItem customThemeItem = new ComboBoxItem();
+                        customThemeItem.Tag = customThemeId;
+                        customThemeItem.Content = customThemeName;
+                        if (customThemeId == settings.themeId) {
+                            log.addLog("Selected theme: " + customThemeItem.Content + " (Custom)");
+                            customThemeItem.IsSelected = true;
+                        }
+                        cmbTheme.Items.Add(customThemeItem);
+                    }
+                }
+            } catch (Exception e) {
+                log.addLog(e.ToString());
+            }
+
+            foreach (KuroNoteTheme theme in themeCollection)
             {
-                if(theme.unlockCode == 0) //to support unlocks - check that an array contains a specified unlockCode
+                if (theme.unlockCode == 0) //to support unlocks - check that an array contains a specified unlockCode
                 {
                     ComboBoxItem themeItem = new ComboBoxItem();
-                    themeItem.Content = theme.themeName;
                     themeItem.Tag = theme.themeId;
-                    if (theme.themeId == settings.themeId)
-                    {
+                    themeItem.Content = theme.themeName;
+                    if (theme.themeId == settings.themeId) {
                         log.addLog("Selected theme: " + themeItem.Content);
                         themeItem.IsSelected = true;
                     }
@@ -74,7 +111,11 @@ namespace KuroNote
         {
             int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
 
-            tbThemeDesc.Text = themeCollection[selectedThemeTag].themeDesc;
+            if(selectedThemeTag < 1000) { //currently, only preset themes can have descriptions
+                tbThemeDesc.Text = themeCollection[selectedThemeTag].themeDesc;
+            } else {
+                tbThemeDesc.Text = "Custom theme";
+            }
             main.setTheme(selectedThemeTag, (bool)chkIncludeFont.IsChecked);
         }
 

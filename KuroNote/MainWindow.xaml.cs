@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace KuroNote
 {
@@ -20,7 +21,7 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Options window
-    /// TODO: Custom themes
+    /// TODO: Purge orphaned images from CustomThemes folder during load or close
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -29,12 +30,16 @@ namespace KuroNote
         private const string FILE_FILTER =  "Text Documents (*.txt, *.kuro)|*.txt; *.kuro|" +
                                             "KuroNotes (*.kuro)|*.kuro|" +
                                             "All Files (*.*)|*.*";  //For opening and saving files
-        private const long FILE_MAX_SIZE = 1048576; //Maximum supported file size in bytes
+        private const long FILE_MAX_SIZE = 1048576;                 //Maximum supported file size in bytes
         private const string FILE_SEARCH_EXE = "*.exe";
+        private const string CUSTOM_THEME_EXT = ".kurotheme";
+        private const string INTERNAL_IMAGE_EXT = ".jpg";           //custom theme destination extension is always this
+        private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
 
         //Globals
         public string appName = "KuroNote";
         public string appPath = AppDomain.CurrentDomain.BaseDirectory;
+        private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
         private KuroNoteSettings appSettings;
         private Log log;
         private string fileName = string.Empty;             //Name of the loaded file - null if no file loaded
@@ -88,6 +93,7 @@ namespace KuroNote
             InitialiseUIDictionary();
             InitialiseErrorDictionary();
             InitialiseFont();
+            InitialiseThemeCollection();
             InitialiseTheme();
             processCmdLineArgs();
 
@@ -136,7 +142,7 @@ namespace KuroNote
             EnUIDict["AESDecMi"] = "AES Decrypt...";
             //Options
             EnUIDict["OptionsMi"] = string.Empty;
-            EnUIDict["ThemeMi"] = "Theme...";
+            EnUIDict["ThemeMi"] = "Select Theme...";
             EnUIDict["CustomThemesMi"] = "Custom Themes...";
             EnUIDict["LoggingMi"] = "Logging";
             EnUIDict["ShowLogMi"] = "Show Log...";
@@ -274,6 +280,167 @@ namespace KuroNote
                 appSettings.fontFamily +
                 " (" + appSettings.fontWeight + " " + appSettings.fontStyle + ") " +
                 appSettings.fontSize);
+        }
+
+        /// <summary>
+        /// Instantiates preset themes
+        /// </summary>
+        private void InitialiseThemeCollection()
+        {
+            //Declare array of themes
+            themeCollection = new KuroNoteTheme[]
+            {
+                new KuroNoteTheme
+                (
+                    0, "KuroNote", "Classic", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute)),
+                                     Opacity = 0.33 },
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Consolas", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    1, "ShiroNote", "cissalC", 2912,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute)),
+                                     Opacity = 0.38 },
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Consolas", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    2, "Soft Light", "(Image by Gradienta on Pexels)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985045.jpg")),
+                                     Opacity = 0.44 },
+                    new SolidColorBrush(Color.FromRgb(254, 255, 232)),
+                    new SolidColorBrush(Color.FromRgb(204, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    3, "Layers of Time", "(Image by Fillipe Gomes on Pexels)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fillipe-gomes-5611219.jpg")),
+                                     Opacity = 0.38 },
+                    new SolidColorBrush(Color.FromRgb(254, 238, 222)),
+                    new SolidColorBrush(Color.FromRgb(254, 238, 222)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    4, "Endless Sky", "(Image by Pixabay on Pexels)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-258149.jpg")),
+                                     Opacity = 0.33 },
+                    new SolidColorBrush(Color.FromRgb(171, 208, 234)),
+                    new SolidColorBrush(Color.FromRgb(227, 226, 227)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    5, "Morning Dew", "(Image by Pixabay)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-276205.jpg")),
+                                     Opacity = 0.31 },
+                    new SolidColorBrush(Color.FromRgb(255, 244, 228)),
+                    new SolidColorBrush(Color.FromRgb(255, 241, 219)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    6, "Leafy Green", "(Image by Karolina Grabowska on Pexels)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
+                                     Opacity = 0.37 },
+                    new SolidColorBrush(Color.FromRgb(213, 203, 161)),
+                    new SolidColorBrush(Color.FromRgb(204, 197, 158)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    7, "Overly Orangey", "(Image by Karolina Grabowska on Pexels)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4022107.jpg")),
+                                     Opacity = 0.31 },
+                    new SolidColorBrush(Color.FromRgb(248, 213, 173)),
+                    new SolidColorBrush(Color.FromRgb(250, 216, 173)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    8, "Paradise Found", "(Image by Asad Photo Maldives on Pexels)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-asad-photo-maldives-3320516.jpg")),
+                                     Opacity = 0.34 },
+                    new SolidColorBrush(Color.FromRgb(203, 228, 255)),
+                    new SolidColorBrush(Color.FromRgb(250, 250, 251)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    9, "Sunset Ripples", "(Image by Ben Mack on Pexels)", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-ben-mack-5326909.jpg")),
+                                     Opacity = 0.38 },
+                    new SolidColorBrush(Color.FromRgb(242, 234, 234)),
+                    new SolidColorBrush(Color.FromRgb(231, 222, 220)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    10, "Abyss", "Distraction-free!", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(249, 249, 249)),
+                    new SolidColorBrush(Color.FromRgb(249, 249, 249)),
+                    new SolidColorBrush(Color.FromRgb(249, 249, 249)),
+                    new SolidColorBrush(Color.FromRgb(20, 20, 20)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    11, "Onyx", "Sleepy-eye friendly!", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(15, 15, 15)),
+                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
+                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
+                    new SolidColorBrush(Color.FromRgb(245, 245, 245)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    12, "Notepad", "Mightier than the sword!", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(255, 255, 210)),
+                    new SolidColorBrush(Color.FromRgb(220, 220, 175)),
+                    new SolidColorBrush(Color.FromRgb(220, 220, 175)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    13, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[12]; }", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
+                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
+                    new SolidColorBrush(Color.FromRgb(0, 255, 0)),
+                    "Consolas", 18, FontWeights.Regular, FontStyles.Normal
+                )
+            };
         }
 
         /// <summary>
@@ -885,175 +1052,86 @@ namespace KuroNote
                 log.addLog("Changing theme to: Theme ID " + _themeId + " (w/o font)");
             }
 
-            //Declare array of themes
-            themeCollection = new KuroNoteTheme[]
+            if(_themeId < 1000) //Custom themes start at ID 1000
             {
-                new KuroNoteTheme
-                (
-                    0, "KuroNote", "Classic", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute)),
-                                     Opacity = 0.33 },
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Consolas", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    1, "ShiroNote", "cissalC", 2912,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute)),
-                                     Opacity = 0.38 },
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Consolas", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    2, "Soft Light", "(Image by Gradienta on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985045.jpg")),
-                                     Opacity = 0.44 },
-                    new SolidColorBrush(Color.FromRgb(254, 255, 232)),
-                    new SolidColorBrush(Color.FromRgb(204, 255, 255)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    3, "Layers of Time", "(Image by Fillipe Gomes on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fillipe-gomes-5611219.jpg")),
-                                     Opacity = 0.38 },
-                    new SolidColorBrush(Color.FromRgb(254, 238, 222)),
-                    new SolidColorBrush(Color.FromRgb(254, 238, 222)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    4, "Endless Sky", "(Image by Pixabay on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-258149.jpg")),
-                                     Opacity = 0.33 },
-                    new SolidColorBrush(Color.FromRgb(171, 208, 234)),
-                    new SolidColorBrush(Color.FromRgb(227, 226, 227)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    5, "Morning Dew", "(Image by Pixabay)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-276205.jpg")),
-                                     Opacity = 0.31 },
-                    new SolidColorBrush(Color.FromRgb(255, 244, 228)),
-                    new SolidColorBrush(Color.FromRgb(255, 241, 219)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    6, "Leafy Green", "(Image by Karolina Grabowska on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
-                                     Opacity = 0.37 },
-                    new SolidColorBrush(Color.FromRgb(213, 203, 161)),
-                    new SolidColorBrush(Color.FromRgb(204, 197, 158)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    7, "Overly Orangey", "(Image by Karolina Grabowska on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4022107.jpg")),
-                                     Opacity = 0.31 },
-                    new SolidColorBrush(Color.FromRgb(248, 213, 173)),
-                    new SolidColorBrush(Color.FromRgb(250, 216, 173)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    8, "Paradise Found", "(Image by Asad Photo Maldives on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-asad-photo-maldives-3320516.jpg")),
-                                     Opacity = 0.34 },
-                    new SolidColorBrush(Color.FromRgb(203, 228, 255)),
-                    new SolidColorBrush(Color.FromRgb(250, 250, 251)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    9, "Sunset Ripples", "(Image by Ben Mack on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-ben-mack-5326909.jpg")),
-                                     Opacity = 0.38 },
-                    new SolidColorBrush(Color.FromRgb(242, 234, 234)),
-                    new SolidColorBrush(Color.FromRgb(231, 222, 220)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    10, "Abyss", "Distraction-free!", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new SolidColorBrush(Color.FromRgb(249, 249, 249)),
-                    new SolidColorBrush(Color.FromRgb(249, 249, 249)),
-                    new SolidColorBrush(Color.FromRgb(249, 249, 249)),
-                    new SolidColorBrush(Color.FromRgb(20, 20, 20)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    11, "Onyx", "Sleepy-eye friendly!", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new SolidColorBrush(Color.FromRgb(15, 15, 15)),
-                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
-                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
-                    new SolidColorBrush(Color.FromRgb(245, 245, 245)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    12, "Notepad", "Mightier than the sword!", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new SolidColorBrush(Color.FromRgb(255, 255, 210)),
-                    new SolidColorBrush(Color.FromRgb(220, 220, 175)),
-                    new SolidColorBrush(Color.FromRgb(220, 220, 175)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 18, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    13, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[12]; }", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
-                    new SolidColorBrush(Color.FromRgb(190, 190, 190)),
-                    new SolidColorBrush(Color.FromRgb(0, 255, 0)),
-                    "Consolas", 18, FontWeights.Regular, FontStyles.Normal
-                )
-            };
+                //Preset themen because selected id is < 1000
 
-            //Apply the selected theme information to the UI
-            this.Background = themeCollection[_themeId].bgBrush;
-            MainRtb.Foreground = themeCollection[_themeId].textBrush;
-            if (themeCollection[_themeId].hasImage) {
-                MainRtb.Background = themeCollection[_themeId].imgBrush;
+                //Apply the selected theme information to the UI
+                this.Background = themeCollection[_themeId].bgBrush;
+                MainRtb.Foreground = themeCollection[_themeId].textBrush;
+                if (themeCollection[_themeId].hasImage) {
+                    MainRtb.Background = themeCollection[_themeId].imgBrush;
+                } else {
+                    MainRtb.Background = themeCollection[_themeId].solidBrush;
+                }
+                MainMenu.Background = themeCollection[_themeId].menuBrush;
+                MainStatus.Background = themeCollection[_themeId].statusBrush;
+
+                if (_includeFont)
+                {
+                    setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
+                }
             } else {
-                MainRtb.Background = themeCollection[_themeId].solidBrush;
-            }
-            MainMenu.Background = themeCollection[_themeId].menuBrush;
-            MainStatus.Background = themeCollection[_themeId].statusBrush;
+                //Custom theme because selected id is >= 1000
+                KuroNoteCustomTheme selectedCustomTheme = null;
+                
+                //Get the custom theme file specified by its themeId
+                try {
+                    using (StreamReader sr = new StreamReader(customThemePath + _themeId + CUSTOM_THEME_EXT))
+                    {
+                        string json = sr.ReadToEnd();
+                        KuroNoteCustomTheme kntFile = JsonConvert.DeserializeObject<KuroNoteCustomTheme>(json);
+                        selectedCustomTheme = kntFile;
+                    }
+                } catch (Exception e) {
+                    //unable to read custom theme, it might have been deleted
+                    log.addLog(e.ToString());
 
-            if(_includeFont)
-            {
-                setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
+                    //setting a default theme instead
+                    appSettings.themeId = DEFAULT_THEME_ID;
+                    appSettings.UpdateSettings();
+                    setTheme(appSettings.themeId, true);
+                }
+
+                if (selectedCustomTheme != null)
+                {
+                    //in JSON format, colour values are stored as hex, convert them to ARGB so we can create new SolidColorBrush instances
+                    byte[] bgBrushArgb = getARGBFromHex(selectedCustomTheme.bgBrush.ToString());
+                    byte[] solidBrushArgb = getARGBFromHex(selectedCustomTheme.solidBrush.ToString());
+                    byte[] menuBrushArgb = getARGBFromHex(selectedCustomTheme.menuBrush.ToString());
+                    byte[] statusBrushArgb = getARGBFromHex(selectedCustomTheme.statusBrush.ToString());
+                    byte[] textBrushArgb = getARGBFromHex(selectedCustomTheme.textBrush.ToString());
+
+                    //Apply the selected theme information to the UI
+                    this.Background = new SolidColorBrush(Color.FromRgb(bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
+                    MainRtb.Foreground = new SolidColorBrush(Color.FromRgb(textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
+                    if (selectedCustomTheme.hasImage)
+                    {
+                        try {
+                            MainRtb.Background = new ImageBrush
+                            {
+                                ImageSource = new BitmapImage(new Uri(customThemePath + selectedCustomTheme.themeId + INTERNAL_IMAGE_EXT, UriKind.Absolute)),
+                                Opacity = selectedCustomTheme.imgBrushOpacity
+                            };
+                        } catch (Exception e) {
+                            log.addLog("Custom theme has an image but the internal image file could not be accessed, it might be not set");
+                            log.addLog(e.ToString());
+                            //Apply the solid brush instead
+                            MainRtb.Background = new SolidColorBrush(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
+                        }
+                    }
+                    else
+                    {
+                        MainRtb.Background = new SolidColorBrush(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
+                    }
+                    MainMenu.Background = new SolidColorBrush(Color.FromRgb(menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
+                    MainStatus.Background = new SolidColorBrush(Color.FromRgb(statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
+
+                    if (_includeFont)
+                    {
+                        setFont(selectedCustomTheme.fontFamily, 18, FontWeights.Normal, FontStyles.Normal);
+                    }
+                }
             }
         }
 
@@ -1074,7 +1152,7 @@ namespace KuroNote
         {
             log.addLog("Request: Custom Themes...");
             CustomThemeManager customThemeManager = new CustomThemeManager(this, appSettings, log);
-            customThemeManager.Visibility = Visibility.Visible;
+            customThemeManager.toggleVisibility(true);
         }
         #endregion
 
@@ -1144,6 +1222,21 @@ namespace KuroNote
             }
 
             return words.Count + " " + wordsPost;
+        }
+
+        /// <summary>
+        /// Converts hex colour value strings to ARGB numbers
+        /// </summary>
+        /// <param name="colorHexIncludingHash">hex "#AARRGGBB" string value to convert to ARGB byte array</param>
+        /// <returns>ARGB numbers in an array of bytes</returns>
+        public byte[] getARGBFromHex(string colorHexIncludingHash)
+        {
+            byte[] argbValues = new byte[4];
+            argbValues[0] = (byte)Convert.ToInt64(colorHexIncludingHash.Substring(1, 2), 16);
+            argbValues[1] = (byte)Convert.ToInt64(colorHexIncludingHash.Substring(3, 2), 16);
+            argbValues[2] = (byte)Convert.ToInt64(colorHexIncludingHash.Substring(5, 2), 16);
+            argbValues[3] = (byte)Convert.ToInt64(colorHexIncludingHash.Substring(7, 2), 16);
+            return argbValues;
         }
 
         /// <summary>
