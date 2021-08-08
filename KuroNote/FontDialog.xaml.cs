@@ -26,25 +26,36 @@ namespace KuroNote
         MainWindow main;
         KuroNoteSettings settings;
         Log log;
+        CustomThemeManager customThemeManager = null;
+        KuroNoteCustomTheme customThemeObject = null;
 
         private string selectedFontFamily;
         private FontWeight selectedFontWeight;
         private FontStyle selectedFontStyle;
         private short selectedFontSize;
 
-        public FontDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog)
+        public FontDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog, CustomThemeManager _customThemeManager = null, KuroNoteCustomTheme _customThemeObject = null)
         {
             InitializeComponent();
             main = _mainWin;
             settings = _currentSettings;
             log = _mainLog;
+            if (_customThemeManager != null && _customThemeObject != null) {
+                customThemeManager = _customThemeManager;
+                customThemeObject = _customThemeObject;
+            }
             appName = main.appName;
             this.Title = WINDOW_NAME + " - " + appName;
 
+            if(customThemeManager != null & customThemeObject != null)
+            {
+                log.addLog("FontDialog called from CustomThemeManager");
+            }
             loadFontFamilies();
             loadFontStyles();
             loadFontSizes();
             log.addLog("Font lists loaded");
+            updateFont();
         }
 
         /// <summary>
@@ -59,11 +70,24 @@ namespace KuroNote
                 item.Content = ff.Source;
                 item.FontFamily = ff;
 
-                //Select the font family that is currently in settings
-                if (item.Content.Equals(settings.fontFamily))
+                if (customThemeManager != null & customThemeObject != null)
                 {
-                    log.addLog("Selected family: " + item.Content);
-                    item.IsSelected = true;
+                    //Select the font family that is currently in the custom theme object
+                    if(item.Content.Equals(customThemeObject.fontFamily))
+                    {
+                        log.addLog("Selected family: " + item.Content);
+                        txtFontFamily.Text = (string)item.Content;
+                        item.IsSelected = true;
+                    }
+                } else 
+                {
+                    //Select the font family that is currently in settings
+                    if (item.Content.Equals(settings.fontFamily))
+                    {
+                        log.addLog("Selected family: " + item.Content);
+                        txtFontFamily.Text = (string)item.Content;
+                        item.IsSelected = true;
+                    }
                 }
 
                 lisFontFamilies.Items.Add(item);
@@ -89,24 +113,53 @@ namespace KuroNote
             lbiBoldItalic.FontWeight = FontWeights.Bold;
             lbiBoldItalic.FontStyle = FontStyles.Italic;
 
-            //Select the font style that is currently in settings
-            if(settings.fontWeight == FontWeights.Bold){
-                if(settings.fontStyle == FontStyles.Italic)
-                {
-                    log.addLog("Selected Style: " + lbiBoldItalic.Content);
-                    lbiBoldItalic.IsSelected = true;
+            if (customThemeManager != null & customThemeObject != null)
+            {
+                //Select the font style that is currently in the custom theme object
+                if (customThemeObject.fontWeight == FontWeights.Bold) {
+                    if (customThemeObject.fontStyle == FontStyles.Italic) {
+                        log.addLog("Selected Style: " + lbiBoldItalic.Content);
+                        txtFontStyle.Text = (string)lbiBoldItalic.Content;
+                        lbiBoldItalic.IsSelected = true;
+                    } else {
+                        log.addLog("Selected Style: " + lbiBold.Content);
+                        txtFontStyle.Text = (string)lbiBold.Content;
+                        lbiBold.IsSelected = true;
+                    }
                 } else {
-                    log.addLog("Selected Style: " + lbiBold.Content);
-                    lbiBold.IsSelected = true;
-                } 
-            } else {
-                if(settings.fontStyle == FontStyles.Italic)
-                {
-                    log.addLog("Selected Style: " + lbiItalic.Content);
-                    lbiItalic.IsSelected = true;
+                    if (customThemeObject.fontStyle == FontStyles.Italic) {
+                        log.addLog("Selected Style: " + lbiItalic.Content);
+                        txtFontStyle.Text = (string)lbiItalic.Content;
+                        lbiItalic.IsSelected = true;
+                    } else {
+                        log.addLog("Selected Style: " + lbiNormal.Content);
+                        txtFontStyle.Text = (string)lbiNormal.Content;
+                        lbiNormal.IsSelected = true;
+                    }
+                }
+            } else
+            {
+                //Select the font style that is currently in settings
+                if (settings.fontWeight == FontWeights.Bold) {
+                    if (settings.fontStyle == FontStyles.Italic) {
+                        log.addLog("Selected Style: " + lbiBoldItalic.Content);
+                        txtFontStyle.Text = (string)lbiBoldItalic.Content;
+                        lbiBoldItalic.IsSelected = true;
+                    } else {
+                        log.addLog("Selected Style: " + lbiBold.Content);
+                        txtFontStyle.Text = (string)lbiBold.Content;
+                        lbiBold.IsSelected = true;
+                    }
                 } else {
-                    log.addLog("Selected Style: " + lbiNormal.Content);
-                    lbiNormal.IsSelected = true;
+                    if (settings.fontStyle == FontStyles.Italic) {
+                        log.addLog("Selected Style: " + lbiItalic.Content);
+                        txtFontStyle.Text = (string)lbiItalic.Content;
+                        lbiItalic.IsSelected = true;
+                    } else {
+                        log.addLog("Selected Style: " + lbiNormal.Content);
+                        txtFontStyle.Text = (string)lbiNormal.Content;
+                        lbiNormal.IsSelected = true;
+                    }
                 }
             }
 
@@ -127,12 +180,26 @@ namespace KuroNote
                 ListBoxItem item = new ListBoxItem();
                 item.Content = size;
 
-                //Select the font size that is currently in settings
-                if (size == settings.fontSize)
+                if (customThemeManager != null & customThemeObject != null)
                 {
-                    log.addLog("Selected Size: " + item.Content);
-                    item.IsSelected = true;
-                    selectedFontSize = size;
+                    //Select the font size that is currently in custom theme object
+                    if (size == customThemeObject.fontSize)
+                    {
+                        log.addLog("Selected Size: " + item.Content);
+                        txtFontSize.Text = (short)item.Content + "";
+                        item.IsSelected = true;
+                        selectedFontSize = size;
+                    }
+                } else
+                {
+                    //Select the font size that is currently in settings
+                    if (size == settings.fontSize)
+                    {
+                        log.addLog("Selected Size: " + item.Content);
+                        txtFontSize.Text = (short)item.Content + "";
+                        item.IsSelected = true;
+                        selectedFontSize = size;
+                    }
                 }
 
                 lisFontSizes.Items.Add(item);
@@ -202,14 +269,24 @@ namespace KuroNote
         /// </summary>
         private void applyFont()
         {
-            log.addLog("Applying font: " + selectedFontFamily + " (" + txtFontStyle.Text + ") " + selectedFontSize);
-            main.setFont(selectedFontFamily, selectedFontSize, selectedFontWeight, selectedFontStyle);
+            if (customThemeManager != null & customThemeObject != null)
+            {
+                //apply for CustomThemeManager
+                log.addLog("Sending [" + selectedFontFamily + " (" + txtFontStyle.Text + ") " + selectedFontSize + "] to CustomThemeManager");
+                customThemeManager.setFont(selectedFontFamily, selectedFontSize, selectedFontWeight, selectedFontStyle);
+            }
+            else
+            {
+                //apply for MainWindow
+                log.addLog("Applying font: " + selectedFontFamily + " (" + txtFontStyle.Text + ") " + selectedFontSize);
+                main.setFont(selectedFontFamily, selectedFontSize, selectedFontWeight, selectedFontStyle);
 
-            settings.fontFamily = selectedFontFamily;
-            settings.fontSize = selectedFontSize;
-            settings.fontWeight = selectedFontWeight;
-            settings.fontStyle = selectedFontStyle;
-            settings.UpdateSettings(); //Write these changes to the file
+                settings.fontFamily = selectedFontFamily;
+                settings.fontSize = selectedFontSize;
+                settings.fontWeight = selectedFontWeight;
+                settings.fontStyle = selectedFontStyle;
+                settings.UpdateSettings(); //Write these changes to the file
+            }
         }
 
         /// <summary>

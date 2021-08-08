@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,10 +19,9 @@ namespace KuroNote
 {
     //TODO (optional): change "Auto-Preview" visibility icon to eye with line through it and back to regular eye depending on toggle button state
     //TODO: custom theme transparency (RGB -> ARGB)
-    //TODO: custom theme font size, weight and style
-    //TODO***: After setting an image background source, it does not preview until a full/partial preview refresh happens, use a "mouse-enter/leave" method or <1s timer to trigger a preview refresh?
+    //TODO: field validation
 
-    //KNOWN BUG: If you open ThemeSelector and CustomThemeManager at the same time, open a theme in CustomThemeManager,
+    //VERY OBSCURE KNOWN BUG: If you open ThemeSelector and CustomThemeManager at the same time, open a theme in CustomThemeManager,
     //  close ThemeSelector (triggers revert back theme change), then change the opacity of the image in CustomThemeManager
     //  (does a partial preview re-render- only changed background, not the menu/status), the custom theme preview will have
     //  the SolidColorBrushes of the currently set theme in settings instead of the custom theme being edited
@@ -45,6 +45,7 @@ namespace KuroNote
         KuroNoteSettings settings;
         Log log;
         bool fieldsPopulated = false;
+        bool newImageSet = false;
 
         private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
         private KuroNoteCustomTheme currentTheme;
@@ -131,7 +132,8 @@ namespace KuroNote
                 //copy specified image to custom theme directory
                 string newFilePath = customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT;
                 try {
-                    File.Copy(ofd.FileName, newFilePath, true); //copy the specified image to the custom theme directory and overwrite the destination if needed
+                    File.Copy(ofd.FileName, newFilePath, true); //copy the specified image to the custom theme directory with the new themeId as the name
+                    newImageSet = true;                         //trigger preview update on next mouse movement
                 } catch (Exception e) {
                     MessageBox.Show(e.ToString(), "Copy Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     log.addLog(e.ToString());
@@ -167,7 +169,7 @@ namespace KuroNote
                 "#FFF0F0F0",
                 "#FFF0F0F0",
                 "#FF000000",
-                "Consolas", 18, FontWeights.Regular, FontStyles.Normal
+                "Verdana", 18, FontWeights.Regular, FontStyles.Normal
             );
         }
 
@@ -212,6 +214,22 @@ namespace KuroNote
             }
         }
 
+        public void setFont(String _fontFamily, short _fontSize, FontWeight _fontWeight, FontStyle _fontStyle)
+        {
+            //update theme object here because these values are not yet stored in fields
+            currentTheme.fontFamily = _fontFamily;
+            currentTheme.fontSize = _fontSize;
+            currentTheme.fontWeight = _fontWeight;
+            currentTheme.fontStyle = _fontStyle;
+            updateThemeFile();
+            fontTxt.Text = currentTheme.fontFamily + ", " + currentTheme.fontSize + "pt (W: " + currentTheme.fontWeight + ", S: " + currentTheme.fontStyle + ")";
+
+            if (tbtnAutoPreview.IsChecked == true)
+            {
+                main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+            }
+        }
+
         /// <summary>
         /// Converts hex colour value strings to ARGB numbers
         /// </summary>
@@ -252,7 +270,7 @@ namespace KuroNote
                         kntFile.menuBrush.ToString(),
                         kntFile.statusBrush.ToString(),
                         kntFile.textBrush.ToString(),
-                        kntFile.fontFamily, 18, FontWeights.Regular, FontStyles.Normal
+                        kntFile.fontFamily, kntFile.fontSize, kntFile.fontWeight, kntFile.fontStyle
                     );
 
                     log.addLog("Custom theme file successfully loaded");
@@ -280,7 +298,7 @@ namespace KuroNote
             byte[] textBrushArgb = getARGBFromHex(currentTheme.textBrush.ToString());
 
             themeNameTxt.Text = currentTheme.themeName;
-            fontTxt.Text = currentTheme.fontFamily;
+            fontTxt.Text = currentTheme.fontFamily + ", " + currentTheme.fontSize + "pt (W: " + currentTheme.fontWeight + ", S: " + currentTheme.fontStyle + ")";
             bgBrushCol.SetColor(Color.FromRgb(bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
             menuBrushCol.SetColor(Color.FromRgb(menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
             statusBrushCol.SetColor(Color.FromRgb(statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
@@ -343,7 +361,7 @@ namespace KuroNote
             currentTheme.imgBrushOpacity = Math.Round(imageOpacitySlide.Value, 2);
             currentTheme.solidBrush = solidBrushCol.Color.ToString();
             currentTheme.textBrush = textBrushCol.Color.ToString();
-            currentTheme.fontFamily = fontTxt.Text;
+            //font is updated by setFont()
         }
 
         /// <summary>
@@ -541,6 +559,21 @@ namespace KuroNote
             selectBackgroundImage();
         }
 
+        /// <summary>
+        /// When the mouse moves anywhere in the content of this Window
+        /// </summary>
+        private void masterStack_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(newImageSet) {
+                log.addLog("test");
+                newImageSet = false;
+                if (tbtnAutoPreview.IsChecked == true)
+                {
+                    main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                }
+            }
+        }
+
         private void solidBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
@@ -598,20 +631,10 @@ namespace KuroNote
             }
         }
 
-        private void fontTxt_TextChanged(object sender, TextChangedEventArgs e)
+        private void fontBtn_Click(object sender, RoutedEventArgs e)
         {
-            try {
-                if (fieldsPopulated) {
-                    updateThemeObject();
-                    updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true)
-                    {
-                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
-                    }
-                }
-            } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: TextChanged Event fired before object initialisation ");
-            }
+            FontDialog fontDialog = new FontDialog(main, settings, log, this, currentTheme);
+            fontDialog.toggleVisibility(true);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

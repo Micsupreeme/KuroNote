@@ -1070,6 +1070,9 @@ namespace KuroNote
                 if (_includeFont)
                 {
                     setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
+                } else
+                {
+                    setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                 }
             } else {
                 //Custom theme because selected id is >= 1000
@@ -1129,7 +1132,10 @@ namespace KuroNote
 
                     if (_includeFont)
                     {
-                        setFont(selectedCustomTheme.fontFamily, 18, FontWeights.Normal, FontStyles.Normal);
+                        setFont(selectedCustomTheme.fontFamily, selectedCustomTheme.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
+                    } else
+                    {
+                        setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                     }
                 }
             }
