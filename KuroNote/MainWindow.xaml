@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="750"
+        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">
     <Window.CommandBindings>
@@ -63,8 +64,19 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="NewWinMi" Header="{Binding [NewWinMi], Mode=OneTime}">
-                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" Command="local:CustomCommands.NewRegWin" InputGestureText="Alt+N"/>
-                    <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}" Command="local:CustomCommands.NewAdminWin"/>
+                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" Command="local:CustomCommands.NewRegWin" InputGestureText="Alt+N">
+                        <MenuItem.Icon>
+                            <Image Source="pack://application:,,,/img/icons/kuronote_logo.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}" Command="local:CustomCommands.NewAdminWin">
+                        <MenuItem.Icon>
+                            <Image Source="pack://application:,,,/img/icons/kuronote_logo_admin.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/kuronote_logo.png"/>
+                    </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold">
                     <MenuItem.Icon>
@@ -191,7 +203,11 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1"/>
+                <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/kuronote_logo.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem.Icon>
                     <Image Source="pack://application:,,,/img/icons/outline_settings_black_18dp.png"/>
                 </MenuItem.Icon>

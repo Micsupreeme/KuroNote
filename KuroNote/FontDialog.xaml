@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="FontDialog" Height="515" Width="550" MinHeight="515" MinWidth="550"
+        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
         Background="#404040"

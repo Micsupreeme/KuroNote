@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="CustomThemeManager" Width="700" Height="630" MaxHeight="630"
+        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         Background="#404040"
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">

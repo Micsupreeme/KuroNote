@@ -30,6 +30,9 @@
     <None Remove="img\bgs\pexels-karolina-grabowska-4046687.jpg" />
     <None Remove="img\bgs\pexels-pixabay-258149.jpg" />
     <None Remove="img\bgs\pexels-pixabay-276205.jpg" />
+    <None Remove="img\icons\kuronote_logo.ico" />
+    <None Remove="img\icons\kuronote_logo.png" />
+    <None Remove="img\icons\kuronote_logo_admin.png" />
     <None Remove="img\icons\outline_account_circle_black_18dp.png" />
     <None Remove="img\icons\outline_add_black_18dp.png" />
     <None Remove="img\icons\outline_all_inclusive_black_18dp.png" />
@@ -128,6 +131,15 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-pixabay-276205.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_logo.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_logo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_logo_admin.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_account_circle_black_18dp.png">

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="DecryptDialog" Height="200" Width="500" MinHeight="200" MinWidth="500"
+        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
         Background="#404040"
