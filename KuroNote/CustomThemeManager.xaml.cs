@@ -1,19 +1,12 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Path = System.IO.Path;
 
 namespace KuroNote
 {
@@ -69,13 +62,10 @@ namespace KuroNote
         /// </summary>
         public void toggleVisibility(bool vis)
         {
-            if (vis)
-            {
+            if (vis) {
                 log.addLog("Open CustomThemeManager");
                 this.Visibility = Visibility.Visible;
-            }
-            else
-            {
+            } else {
                 log.addLog("Collapse CustomThemeManager");
                 this.Visibility = Visibility.Collapsed;
             }
@@ -88,16 +78,13 @@ namespace KuroNote
                 string[] customThemeFiles = Directory.GetFiles(customThemePath);
 
                 //Go through the array backwards when adding ComboBoxItems, so that the ComboBox is ordered "Newest themes descending"
-                for (int i = (customThemeFiles.Length - 1); i >= 0; i--)
-                {
+                for (int i = (customThemeFiles.Length - 1); i >= 0; i--) {
                     //Only list .kurotheme files as selectable theme files
-                    if (customThemeFiles[i].Contains(CUSTOM_THEME_EXT))
-                    {
+                    if (customThemeFiles[i].Contains(CUSTOM_THEME_EXT)) {
                         int customThemeId;
                         string customThemeName;
 
-                        using (StreamReader sr = new StreamReader(customThemeFiles[i]))
-                        {
+                        using (StreamReader sr = new StreamReader(customThemeFiles[i])) {
                             string json = sr.ReadToEnd();
                             KuroNoteCustomTheme kntFile = JsonConvert.DeserializeObject<KuroNoteCustomTheme>(json);
                             customThemeId = kntFile.themeId;
@@ -196,19 +183,16 @@ namespace KuroNote
             updateThemeFile();
             loadCustomThemeList(); //refresh custom theme list because we've added a new file to the custom theme directory
             loadThemeObjectFromFile(newThemeId); //the theme that was just created
-            if (tbtnAutoPreview.IsChecked == true)
-            {
+            if (tbtnAutoPreview.IsChecked == true) {
                 main.setTheme(currentTheme.themeId, true); //always auto-preview with font
             }
 
             //delete old file
             File.Delete(fileToMigrate);
             //delete the combo box listing for the old id
-            for(int i = 0; i < cmbCustomTheme.Items.Count; i++)
-            {
+            for (int i = 0; i < cmbCustomTheme.Items.Count; i++) {
                 ComboBoxItem cmbItem = (ComboBoxItem)cmbCustomTheme.Items.GetItemAt(i);
-                if((int)cmbItem.Tag == oldThemeId)
-                {
+                if ((int)cmbItem.Tag == oldThemeId) {
                     cmbCustomTheme.Items.RemoveAt(i);
                 }
             }
@@ -224,8 +208,7 @@ namespace KuroNote
             updateThemeFile();
             fontTxt.Text = currentTheme.fontFamily + ", " + currentTheme.fontSize + "pt (W: " + currentTheme.fontWeight + ", S: " + currentTheme.fontStyle + ")";
 
-            if (tbtnAutoPreview.IsChecked == true)
-            {
+            if (tbtnAutoPreview.IsChecked == true) {
                 main.setTheme(currentTheme.themeId, true); //always auto-preview with font
             }
         }
@@ -251,13 +234,11 @@ namespace KuroNote
         /// <param name="themeId">The custom theme ID to load</param>
         public void loadThemeObjectFromFile(int themeId)
         {
-            try
-            {
+            try {
                 string themeFileName = customThemePath + themeId + CUSTOM_THEME_EXT;
 
                 log.addLog("Reading " + themeFileName);
-                using (StreamReader sr = new StreamReader(themeFileName))
-                {
+                using (StreamReader sr = new StreamReader(themeFileName)) {
                     string json = sr.ReadToEnd();
                     KuroNoteCustomTheme kntFile = JsonConvert.DeserializeObject<KuroNoteCustomTheme>(json);
 
@@ -277,9 +258,7 @@ namespace KuroNote
                     toggleCustomiseUI(true);
                     populateFields();
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.addLog(e.ToString());
             }
         }
@@ -312,7 +291,7 @@ namespace KuroNote
 
                 //Show confirmation in the browse text box that an image has actually been set
                 string internalImagePath = customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT;
-                if(File.Exists(internalImagePath)) {
+                if (File.Exists(internalImagePath)) {
                     //Image has already been set
                     imageBrowseTxt.Text = internalImagePath;
                 }
@@ -331,20 +310,16 @@ namespace KuroNote
         /// </summary>
         public void updateThemeFile()
         {
-            try
-            {
+            try {
                 string themeFileName = customThemePath + currentTheme.themeId + CUSTOM_THEME_EXT;
 
-                using (StreamWriter sw = new StreamWriter(themeFileName))
-                {
+                using (StreamWriter sw = new StreamWriter(themeFileName)) {
                     string json = JsonConvert.SerializeObject(currentTheme, Formatting.Indented);
 
                     sw.Write(json);
                     log.addLog("Custom theme file for theme" + currentTheme.themeId + " successfully updated");
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.addLog("WARN: " + e.GetType().ToString() + " occurred while updating theme file");
             }
         }
@@ -384,8 +359,7 @@ namespace KuroNote
             updateThemeFile();
             loadCustomThemeList(); //refresh custom theme list because we've added a new file to the custom theme directory
             loadThemeObjectFromFile(settings.customThemeIndex - 1); //the theme that was just created
-            if (tbtnAutoPreview.IsChecked == true)
-            {
+            if (tbtnAutoPreview.IsChecked == true) {
                 main.setTheme(currentTheme.themeId, true); //always auto-preview with font
             }
         }
@@ -399,8 +373,7 @@ namespace KuroNote
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult conf = MessageBox.Show("Are you sure you want to delete \"" + currentTheme.themeName + "\"?", "Delete custom theme?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if(conf == MessageBoxResult.Yes)
-            {
+            if (conf == MessageBoxResult.Yes) {
                 deleteThemeFile();
                 loadCustomThemeList();      //refresh custom theme list because we've removed a new file from the custom theme directory
                 toggleCustomiseUI(false);   //the theme was just deleted so now there is no theme loaded
@@ -411,12 +384,10 @@ namespace KuroNote
         {
             toggleImageSolidUI(true);
             try {
-                if (fieldsPopulated)
-                {
+                if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true)
-                    {
+                    if (tbtnAutoPreview.IsChecked == true) {
                         main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                     }
                 }
@@ -429,18 +400,14 @@ namespace KuroNote
         {
             toggleImageSolidUI(false);
             try {
-                if (fieldsPopulated)
-                {
+                if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true)
-                    {
+                    if (tbtnAutoPreview.IsChecked == true) {
                         main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                     }
                 }
-            }
-            catch (NullReferenceException)
-            {
+            } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
             }
         }
@@ -451,7 +418,7 @@ namespace KuroNote
         /// <param name="enable">Whether or not to enable UI elements that require a loaded theme</param>
         private void toggleCustomiseUI(bool enable)
         {
-            if(enable) {
+            if (enable) {
                 customiseGrid.Opacity = 1;
                 customiseGrid.IsEnabled = true;
                 btnDelete.IsEnabled = true;
@@ -494,8 +461,7 @@ namespace KuroNote
         {
             try {
                 loadThemeObjectFromFile((int)cmbCustomTheme.SelectedValue);
-                if (tbtnAutoPreview.IsChecked == true)
-                {
+                if (tbtnAutoPreview.IsChecked == true) {
                     main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                 }
             } catch (NullReferenceException) {
@@ -506,8 +472,7 @@ namespace KuroNote
         private void bgBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
-                if (fieldsPopulated)
-                {
+                if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
                     if (tbtnAutoPreview.IsChecked == true)
@@ -523,12 +488,10 @@ namespace KuroNote
         private void menuBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
-                if(fieldsPopulated)
-                {
+                if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true)
-                    {
+                    if (tbtnAutoPreview.IsChecked == true) {
                         main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                     }
                 }
@@ -540,12 +503,10 @@ namespace KuroNote
         private void statusBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
-                if (fieldsPopulated)
-                {
+                if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true)
-                    {
+                    if (tbtnAutoPreview.IsChecked == true) {
                         main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                     }
                 }
@@ -564,11 +525,10 @@ namespace KuroNote
         /// </summary>
         private void masterStack_MouseMove(object sender, MouseEventArgs e)
         {
-            if(newImageSet) {
+            if (newImageSet) {
                 log.addLog("test");
                 newImageSet = false;
-                if (tbtnAutoPreview.IsChecked == true)
-                {
+                if (tbtnAutoPreview.IsChecked == true) {
                     main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                 }
             }
@@ -577,12 +537,10 @@ namespace KuroNote
         private void solidBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
-                if (fieldsPopulated)
-                {
+                if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true)
-                    {
+                    if (tbtnAutoPreview.IsChecked == true) {
                         main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                     }
                 }
@@ -598,8 +556,7 @@ namespace KuroNote
                 if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true)
-                    {
+                    if (tbtnAutoPreview.IsChecked == true) {
                         //A full re-render preview every time the opacity value changes is too much, this is a minimal version for opacity changes only
                         try {
                             main.MainRtb.Background = new ImageBrush

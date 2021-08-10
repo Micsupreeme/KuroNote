@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -78,8 +71,7 @@ namespace KuroNote
 
             //https://stackoverflow.com/users/188474/brett's Simple SimpleEncryptWithPassword
             RijndaelManaged aesAlg = null;
-            try
-            {
+            try {
                 // generate the key from the shared secret and the salt
                 Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(args.key, _salt);
                 //allow iteration count to change?
@@ -92,24 +84,19 @@ namespace KuroNote
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
-                {
+                using (MemoryStream msEncrypt = new MemoryStream()) {
                     // prepend the IV
                     msEncrypt.Write(BitConverter.GetBytes(aesAlg.IV.Length), 0, sizeof(int));
                     msEncrypt.Write(aesAlg.IV, 0, aesAlg.IV.Length);
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                        {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write)) {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt)) {
                             //Write all data to the stream.
                             swEncrypt.Write(args.content);
                         }
                     }
                     AESencryptedContent = Convert.ToBase64String(msEncrypt.ToArray());
                 }
-            }
-            finally
-            {
+            } finally {
                 // Clear the RijndaelManaged object.
                 if (aesAlg != null)
                     aesAlg.Clear();
@@ -147,13 +134,10 @@ namespace KuroNote
         /// </summary>
         public void toggleVisibility(bool vis)
         {
-            if (vis)
-            {
+            if (vis) {
                 log.addLog("Open EncryptionDialog");
                 this.Visibility = Visibility.Visible;
-            }
-            else
-            {
+            } else {
                 log.addLog("Collapse EncryptionDialog");
                 this.Visibility = Visibility.Collapsed;
             }
@@ -165,7 +149,7 @@ namespace KuroNote
         /// <returns>True if both password fields match and are not empty, false otherwise</returns>
         private bool passwordsMatch()
         {
-            if(KeyPw.Password.ToString().Length > 0) {
+            if (KeyPw.Password.ToString().Length > 0) {
                 return KeyPw.Password.ToString().Equals(KeyRepeatPw.Password.ToString());
             } else {
                 return false;
@@ -185,9 +169,9 @@ namespace KuroNote
 
             int passLength = KeyPw.Password.ToString().Length;
 
-            if(passLength >= FAIR_LENGTH) {
-                if(passLength >= STRONG_LENGTH) {
-                    if(passLength >= EXCEL_LENGTH) {
+            if (passLength >= FAIR_LENGTH) {
+                if (passLength >= STRONG_LENGTH) {
+                    if (passLength >= EXCEL_LENGTH) {
                         //excel
                         return 3;
                     }
@@ -305,9 +289,9 @@ namespace KuroNote
 
             MatchCollection symbols = Regex.Matches(KeyPw.Password.ToString(), @"([-!$%^&*()_+|~=`{}\[\]:"";'<>?,.\\/@#£¬])");
 
-            if(symbols.Count >= FAIR_SYMBOLS) {
-                if(symbols.Count >= STRONG_SYMBOLS) {
-                    if(symbols.Count >= EXCEL_SYMBOLS) {
+            if (symbols.Count >= FAIR_SYMBOLS) {
+                if (symbols.Count >= STRONG_SYMBOLS) {
+                    if (symbols.Count >= EXCEL_SYMBOLS) {
                         //excel
                         return 3;
                     }
@@ -348,11 +332,10 @@ namespace KuroNote
             strengthScore += getPassNumberScore();
             strengthScore += getPassSymbolScore();
 
-            if(_passwordsMatch) {
-                
-                if(strengthScore >= FAIR_SCORE) {
-                    if(strengthScore >= STRONG_SCORE) {
-                        if(strengthScore >= EXCEL_SCORE) {
+            if (_passwordsMatch) {              
+                if (strengthScore >= FAIR_SCORE) {
+                    if (strengthScore >= STRONG_SCORE) {
+                        if (strengthScore >= EXCEL_SCORE) {
                             KeyStrengthProg.Foreground = excelBrush;
                             KeyStrengthLbl.Content = "Excellent";
                             KeyStrengthProg.Value = strengthScore;
@@ -388,7 +371,7 @@ namespace KuroNote
         /// </summary>
         private void KeyPw_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if(passwordsMatch()) {
+            if (passwordsMatch()) {
                 btnOk.IsEnabled = true;
                 KeyStrengthLbl.Content = getPassScore(true);
             } else {

@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -76,16 +68,14 @@ namespace KuroNote
 
             //https://stackoverflow.com/users/188474/brett's Simple SimpleDecryptWithPassword
             RijndaelManaged aesAlg = null;
-            try
-            {
+            try {
                 // generate the key from the shared secret and the salt
                 Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(args.key, _salt);
                 //allow iteration count to change?
 
                 // Create the streams used for decryption.                
                 byte[] bytes = Convert.FromBase64String(args.content);
-                using (MemoryStream msDecrypt = new MemoryStream(bytes))
-                {
+                using (MemoryStream msDecrypt = new MemoryStream(bytes)) {
                     // Create a RijndaelManaged object
                     // with the specified key and IV.
                     aesAlg = new RijndaelManaged();
@@ -94,26 +84,20 @@ namespace KuroNote
                     aesAlg.IV = ReadByteArray(msDecrypt);
                     // Create a decrytor to perform the stream transform.
                     ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read)) {
                         using (StreamReader srDecrypt = new StreamReader(csDecrypt))
 
                             // Read the decrypted bytes from the decrypting stream
                             // and place them in a string.
-                            try
-                            {
+                            try {
                                 AESdecryptedContent = srDecrypt.ReadToEnd();
-                            }
-                            catch (CryptographicException ctEx)
-                            {
+                            } catch (CryptographicException ctEx) {
                                 //Incorrect decryption key
                                 Console.Error.WriteLine(ctEx.ToString());
                             }
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 // Clear the RijndaelManaged object.
                 if (aesAlg != null)
                     aesAlg.Clear();
@@ -123,14 +107,12 @@ namespace KuroNote
         private static byte[] ReadByteArray(Stream s)
         {
             byte[] rawLength = new byte[sizeof(int)];
-            if (s.Read(rawLength, 0, rawLength.Length) != rawLength.Length)
-            {
+            if (s.Read(rawLength, 0, rawLength.Length) != rawLength.Length) {
                 throw new SystemException("Stream did not contain properly formatted byte array");
             }
 
             byte[] buffer = new byte[BitConverter.ToInt32(rawLength, 0)];
-            if (s.Read(buffer, 0, buffer.Length) != buffer.Length)
-            {
+            if (s.Read(buffer, 0, buffer.Length) != buffer.Length) {
                 throw new SystemException("Did not read byte array properly");
             }
 
@@ -139,23 +121,17 @@ namespace KuroNote
 
         void decWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled)
-            {
+            if (e.Cancelled) {
                 log.addLog("AES Decryption Cancelled");
-            }
-            else
-            {
-                if (!AESdecryptedContent.Equals(string.Empty))
-                {
+            } else {
+                if (!AESdecryptedContent.Equals(string.Empty)) {
                     log.addLog("AES Decryption Completed");
 
                     log.addLog("Request: EncDecFinish");
                     EncDecFinishDialog edf = new EncDecFinishDialog(main, settings, log, 2, AESdecryptedContent);
                     toggleVisibility(false);
                     edf.toggleVisibility(true);
-                }
-                else
-                {
+                } else {
                     log.addLog("AES Decryption Failed: Incorrect Password");
 
                     log.addLog("Request: EncDecFinish");
@@ -172,13 +148,10 @@ namespace KuroNote
         /// </summary>
         public void toggleVisibility(bool vis)
         {
-            if (vis)
-            {
+            if (vis) {
                 log.addLog("Open DecryptionDialog");
                 this.Visibility = Visibility.Visible;
-            }
-            else
-            {
+            } else {
                 log.addLog("Collapse DecryptionDialog");
                 this.Visibility = Visibility.Collapsed;
             }

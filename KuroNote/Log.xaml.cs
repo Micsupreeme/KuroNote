@@ -56,7 +56,7 @@ namespace KuroNote
                 DateTime.Now + ":" + DateTime.Now.Millisecond + ": SESSION " + sessionID + " BEGINS"
             , true);
 
-            if(hasAdminPermissions()) {
+            if (hasAdminPermissions()) {
                 addLog(Environment.NewLine + "Permissions: Elevated", true);
                 main.appName += " (Admin)";
             } else {
@@ -100,8 +100,7 @@ namespace KuroNote
         {
             try {
                 //Append to today's file if it exists, otherwise create a new one
-                using (StreamWriter sw = File.AppendText(logPath + generateLogFileName()))
-                {
+                using (StreamWriter sw = File.AppendText(logPath + generateLogFileName())) {
                     sw.Write(logEntry);
                 }
             } catch(Exception e) {
@@ -125,7 +124,7 @@ namespace KuroNote
         /// <param name="removeFormatting">Whether or not to omit the automatic timestamp and the newline</param>
         public void addLog(string content, bool removeFormatting = false)
         {
-            if(loggingEnabled) {
+            if (loggingEnabled) {
                 if (removeFormatting) {
                     LogTxt.Text += content;
                     writeToLogFile(content);
@@ -156,13 +155,10 @@ namespace KuroNote
         /// </summary>
         public void toggleVisibility(bool vis)
         {
-            if (vis)
-            {
+            if (vis) {
                 addLog("Open Log");
                 this.Visibility = Visibility.Visible;
-            }
-            else
-            {
+            } else {
                 addLog("Collapse Log");
                 this.Visibility = Visibility.Collapsed;
             }

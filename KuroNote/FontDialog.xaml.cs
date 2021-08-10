@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -47,8 +40,7 @@ namespace KuroNote
             appName = main.appName;
             this.Title = WINDOW_NAME + " - " + appName;
 
-            if(customThemeManager != null & customThemeObject != null)
-            {
+            if (customThemeManager != null & customThemeObject != null) {
                 log.addLog("FontDialog called from CustomThemeManager");
             }
             loadFontFamilies();
@@ -64,26 +56,21 @@ namespace KuroNote
         private void loadFontFamilies()
         {
             lisFontFamilies.Items.Clear();
-            foreach (FontFamily ff in Fonts.SystemFontFamilies)
-            {
+            foreach (FontFamily ff in Fonts.SystemFontFamilies) {
                 ListBoxItem item = new ListBoxItem();
                 item.Content = ff.Source;
                 item.FontFamily = ff;
 
-                if (customThemeManager != null & customThemeObject != null)
-                {
+                if (customThemeManager != null & customThemeObject != null) {
                     //Select the font family that is currently in the custom theme object
-                    if(item.Content.Equals(customThemeObject.fontFamily))
-                    {
+                    if (item.Content.Equals(customThemeObject.fontFamily)) {
                         log.addLog("Selected family: " + item.Content);
                         txtFontFamily.Text = (string)item.Content;
                         item.IsSelected = true;
                     }
-                } else 
-                {
+                } else {
                     //Select the font family that is currently in settings
-                    if (item.Content.Equals(settings.fontFamily))
-                    {
+                    if (item.Content.Equals(settings.fontFamily)) {
                         log.addLog("Selected family: " + item.Content);
                         txtFontFamily.Text = (string)item.Content;
                         item.IsSelected = true;
@@ -113,8 +100,7 @@ namespace KuroNote
             lbiBoldItalic.FontWeight = FontWeights.Bold;
             lbiBoldItalic.FontStyle = FontStyles.Italic;
 
-            if (customThemeManager != null & customThemeObject != null)
-            {
+            if (customThemeManager != null & customThemeObject != null) {
                 //Select the font style that is currently in the custom theme object
                 if (customThemeObject.fontWeight == FontWeights.Bold) {
                     if (customThemeObject.fontStyle == FontStyles.Italic) {
@@ -137,8 +123,7 @@ namespace KuroNote
                         lbiNormal.IsSelected = true;
                     }
                 }
-            } else
-            {
+            } else {
                 //Select the font style that is currently in settings
                 if (settings.fontWeight == FontWeights.Bold) {
                     if (settings.fontStyle == FontStyles.Italic) {
@@ -175,26 +160,21 @@ namespace KuroNote
         private void loadFontSizes()
         {
             lisFontSizes.Items.Clear();
-            foreach (short size in FONT_SIZES)
-            {
+            foreach (short size in FONT_SIZES) {
                 ListBoxItem item = new ListBoxItem();
                 item.Content = size;
 
-                if (customThemeManager != null & customThemeObject != null)
-                {
+                if (customThemeManager != null & customThemeObject != null) {
                     //Select the font size that is currently in custom theme object
-                    if (size == customThemeObject.fontSize)
-                    {
+                    if (size == customThemeObject.fontSize) {
                         log.addLog("Selected Size: " + item.Content);
                         txtFontSize.Text = (short)item.Content + "";
                         item.IsSelected = true;
                         selectedFontSize = size;
                     }
-                } else
-                {
+                } else {
                     //Select the font size that is currently in settings
-                    if (size == settings.fontSize)
-                    {
+                    if (size == settings.fontSize) {
                         log.addLog("Selected Size: " + item.Content);
                         txtFontSize.Text = (short)item.Content + "";
                         item.IsSelected = true;
@@ -238,27 +218,21 @@ namespace KuroNote
                     break;
             }
 
-            try
-            {
-                if(!txtFontSize.Text.Equals(String.Empty))
-                {
+            try {
+                if (!txtFontSize.Text.Equals(String.Empty)) {
                     selectedFontSize = short.Parse(txtFontSize.Text);
                 } 
-            }
-            catch (FormatException e)
-            {
+            } catch (FormatException e) {
                 MessageBox.Show(e.ToString());
             }
 
             //Apply the values to the preview
             lblFontPreview.FontWeight = selectedFontWeight;
             lblFontPreview.FontStyle = selectedFontStyle;
-            if (!selectedFontFamily.Equals(String.Empty))
-            {
+            if (!selectedFontFamily.Equals(String.Empty)) {
                 lblFontPreview.FontFamily = new FontFamily(selectedFontFamily);
             }
-            if (selectedFontSize > 0)
-            {
+            if (selectedFontSize > 0) {
                 lblFontPreview.FontSize = selectedFontSize;
                 lblFontPreview.Content = appName;
             }
@@ -269,14 +243,11 @@ namespace KuroNote
         /// </summary>
         private void applyFont()
         {
-            if (customThemeManager != null & customThemeObject != null)
-            {
+            if (customThemeManager != null & customThemeObject != null) {
                 //apply for CustomThemeManager
                 log.addLog("Sending [" + selectedFontFamily + " (" + txtFontStyle.Text + ") " + selectedFontSize + "] to CustomThemeManager");
                 customThemeManager.setFont(selectedFontFamily, selectedFontSize, selectedFontWeight, selectedFontStyle);
-            }
-            else
-            {
+            } else {
                 //apply for MainWindow
                 log.addLog("Applying font: " + selectedFontFamily + " (" + txtFontStyle.Text + ") " + selectedFontSize);
                 main.setFont(selectedFontFamily, selectedFontSize, selectedFontWeight, selectedFontStyle);
@@ -294,13 +265,10 @@ namespace KuroNote
         /// </summary>
         public void toggleVisibility(bool vis)
         {
-            if (vis)
-            {
+            if (vis) {
                 log.addLog("Open FontDialog");
                 this.Visibility = Visibility.Visible;
-            }
-            else
-            {
+            } else {
                 log.addLog("Collapse FontDialog");
                 this.Visibility = Visibility.Collapsed;
             }

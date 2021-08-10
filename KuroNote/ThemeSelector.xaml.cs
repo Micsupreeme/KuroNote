@@ -1,16 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -58,16 +50,13 @@ namespace KuroNote
                 string[] customThemeFiles = Directory.GetFiles(customThemePath);
 
                 //Go through the array backwards when adding ComboBoxItems, so that the ComboBox is ordered "Newest themes descending"
-                for (int i = (customThemeFiles.Length - 1); i >= 0; i--)
-                {
+                for (int i = (customThemeFiles.Length - 1); i >= 0; i--) {
                     //Only list .kurotheme files as selectable theme files
-                    if (customThemeFiles[i].Contains(CUSTOM_THEME_EXT))
-                    {
+                    if (customThemeFiles[i].Contains(CUSTOM_THEME_EXT)) {
                         int customThemeId;
                         string customThemeName;
 
-                        using (StreamReader sr = new StreamReader(customThemeFiles[i]))
-                        {
+                        using (StreamReader sr = new StreamReader(customThemeFiles[i])) {
                             string json = sr.ReadToEnd();
                             KuroNoteCustomTheme kntFile = JsonConvert.DeserializeObject<KuroNoteCustomTheme>(json);
                             customThemeId = kntFile.themeId;
@@ -88,10 +77,8 @@ namespace KuroNote
                 log.addLog(e.ToString());
             }
 
-            foreach (KuroNoteTheme theme in themeCollection)
-            {
-                if (theme.unlockCode == 0) //to support unlocks - check that an array contains a specified unlockCode
-                {
+            foreach (KuroNoteTheme theme in themeCollection) {
+                if (theme.unlockCode == 0) { //to support unlocks - check that an array contains a specified unlockCode
                     ComboBoxItem themeItem = new ComboBoxItem();
                     themeItem.Tag = theme.themeId;
                     themeItem.Content = theme.themeName;
@@ -111,7 +98,7 @@ namespace KuroNote
         {
             int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
 
-            if(selectedThemeTag < 1000) { //currently, only preset themes can have descriptions
+            if (selectedThemeTag < 1000) { //currently, only preset themes can have descriptions
                 tbThemeDesc.Text = themeCollection[selectedThemeTag].themeDesc;
             } else {
                 tbThemeDesc.Text = "Custom theme";
@@ -124,8 +111,7 @@ namespace KuroNote
         /// </summary>
         private void chkIncludeFont_CheckChanged(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            try {
                 int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
                 bool isChecked = (bool)chkIncludeFont.IsChecked;
                 if (!isChecked) { //User doesn't want the theme font
@@ -156,13 +142,10 @@ namespace KuroNote
         /// </summary>
         public void toggleVisibility(bool vis)
         {
-            if (vis)
-            {
+            if (vis) {
                 log.addLog("Open ThemeSelector");
                 this.Visibility = Visibility.Visible;
-            }
-            else
-            {
+            } else {
                 log.addLog("Collapse ThemeSelector");
                 this.Visibility = Visibility.Collapsed;
             }

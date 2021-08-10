@@ -32,11 +32,9 @@ namespace KuroNote
         /// </summary>
         public void RetrieveSettings()
         {
-            try
-            {
+            try {
                 log.addLog("Reading conf.json");
-                using (StreamReader sr = new StreamReader(appPath + "conf/conf.json"))
-                {
+                using (StreamReader sr = new StreamReader(appPath + "conf/conf.json")) {
                     string json = sr.ReadToEnd();
                     KuroNoteSettings knsFile = JsonConvert.DeserializeObject<KuroNoteSettings>(json);
 
@@ -49,9 +47,7 @@ namespace KuroNote
                     this.customThemeIndex = knsFile.customThemeIndex;
                     log.addLog("Successfully read conf.json");
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.addLog(e.ToString());
             }
         }
@@ -61,19 +57,15 @@ namespace KuroNote
         /// </summary>
         public void UpdateSettings()
         {
-            try
-            {
+            try {
                 log.addLog("Updating conf.json");
-                using (StreamWriter sw = new StreamWriter(appPath + "conf/conf.json"))
-                {
+                using (StreamWriter sw = new StreamWriter(appPath + "conf/conf.json")) {
                     string json = JsonConvert.SerializeObject(this);
 
                     sw.Write(json);
                     log.addLog("Successfully updated conf.json");
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 MessageBox.Show(e.ToString());
             }
         }

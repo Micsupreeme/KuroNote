@@ -21,7 +21,6 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Options window
-    /// TODO: Purge orphaned images from CustomThemes folder during load or close
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -60,22 +59,6 @@ namespace KuroNote
 
         #region Code for reference
         /*
-        foreach (string arg in Environment.GetCommandLineArgs())
-        {
-            MessageBox.Show("Arg: " + arg);
-        }
-        
-        //Example controls
-        MainRtb.SpellCheck.IsEnabled = true;
-
-        //MessageBoxResult result = MessageBox.Show("My Message Question", "My Title", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        
-        Function GenerateWordCount()
-            Dim Words As MatchCollection = Regex.Matches(rtb.Text, "\S+")
-            txtWc.Text = Words.Count & " Words"
-            Return (CInt(Words.Count))
-        End Function
-
             JpUIDict = new Dictionary<string, object>();
                 JpUIDict["NewMi"] = "しんき";
                 JpUIDict["OpenMi"] = "あく";
@@ -96,6 +79,7 @@ namespace KuroNote
             InitialiseThemeCollection();
             InitialiseTheme();
             processCmdLineArgs();
+            purgeOrphanedThemeImages();
 
             toggleEdited(false);
             log.addLog(
@@ -201,8 +185,7 @@ namespace KuroNote
         private void InitialiseLog()
         {
             log = new Log(this, temporaryLogEnabledFlag);
-            if (temporaryLogEnabledFlag)
-            {
+            if (temporaryLogEnabledFlag) {
                 log.beginLog();
             }
         }
@@ -232,7 +215,7 @@ namespace KuroNote
         /// <returns>The number of bytes in the file</returns>
         private long getFileSize(string _path)
         {
-            if(!_path.Equals(string.Empty)) {
+            if (!_path.Equals(string.Empty)) {
                 return new FileInfo(_path).Length;
             } else {
                 return 0;
@@ -246,7 +229,7 @@ namespace KuroNote
         private bool hasCmdLineFile()
         {
             //The file arg is arg[1]. arg[0] contains the KuroNote dll
-            if(Environment.GetCommandLineArgs().Length == 2) {
+            if (Environment.GetCommandLineArgs().Length == 2) {
                 log.addLog("File specified in command line arg[1]");
                 return true;
             } else {
@@ -260,9 +243,29 @@ namespace KuroNote
         /// </summary>
         private void processCmdLineArgs()
         {
-            if(hasCmdLineFile()) {
+            if (hasCmdLineFile()) {
                 string[] args = Environment.GetCommandLineArgs();
                 doOpen(args[1]);
+            }
+        }
+
+        /// <summary>
+        /// Check for images in the custom themes directory that don't have associated .kurotheme files and delete them
+        /// </summary>
+        private void purgeOrphanedThemeImages()
+        {
+            string[] customThemeFiles = Directory.GetFiles(customThemePath);
+
+            for (int i = 0; i < customThemeFiles.Length; i++) {
+                //Is the file an image?
+                if (Path.GetExtension(customThemeFiles[i]).Equals(INTERNAL_IMAGE_EXT)) {
+                    //Does the image have an associated .kurotheme file with the same file name?
+                    if (!File.Exists(customThemePath + Path.GetFileNameWithoutExtension(customThemeFiles[i]) + CUSTOM_THEME_EXT)) {
+                        //Associated .kurotheme file does not exist - delete the image
+                        log.addLog("Purging orphaned image in custom theme directory: " + customThemeFiles[i]);
+                        File.Delete(customThemeFiles[i]);
+                    }
+                }
             }
         }
 
@@ -474,13 +477,10 @@ namespace KuroNote
         /// </summary>
         private void toggleEdited(bool _edited)
         {
-            if (_edited)
-            {
+            if (_edited) {
                 editedFlag = true;
                 SaveStatusTb.Text = "Unsaved Changes";
-            }
-            else
-            {
+            } else {
                 editedFlag = false;
                 SaveStatusTb.Text = "Safe to Exit";
             }
@@ -494,14 +494,12 @@ namespace KuroNote
         private bool doNew()
         {
             log.addLog("Request: New File");
-            if (editedFlag)
-            {
+            if (editedFlag) {
                 log.addLog("WARNING: New before saving");
                 var res = MessageBox.Show(getErrorMessage(4)[0], getErrorMessage(4)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-                if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel)
-                {
+                if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                     log.addLog("New cancelled");
-                    if(res == MessageBoxResult.Yes) {
+                    if (res == MessageBoxResult.Yes) {
                         doSave();   //save
                     }
                     return false;   //don't continue with new operation
@@ -533,18 +531,16 @@ namespace KuroNote
         /// <returns>True if the operation completed successfully, false otherwise</returns>
         private bool doOpen(string _path = "")
         {
-            if (_path.Equals(""))
-            {
+            if (_path.Equals("")) {
                 //No file specified - use dialog
                 log.addLog("Request: Open");
 
-                if (editedFlag)
-                {
+                if (editedFlag) {
                     log.addLog("WARNING: Open before saving");
                     var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                         log.addLog("Open cancelled");
-                        if(res == MessageBoxResult.Yes) {
+                        if (res == MessageBoxResult.Yes) {
                             doSave();       //save
                         }
                         return false;   //don't continue with open operation
@@ -555,23 +551,18 @@ namespace KuroNote
                 {
                     Filter = FILE_FILTER
                 };
-                if (dlg.ShowDialog() == true)
-                {
+                if (dlg.ShowDialog() == true) {
                     MemoryStream ms = new MemoryStream();
-                    try
-                    {
-                        if(fileTooBig(dlg.FileName))
-                        {
+                    try {
+                        if (fileTooBig(dlg.FileName)) {
                             log.addLog("WARNING: File size exceeds limit");
                             var res = MessageBox.Show(getErrorMessage(1)[0], getErrorMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                            if(res == MessageBoxResult.No)
-                            {
+                            if (res == MessageBoxResult.No) {
                                 log.addLog("Open cancelled due to file size");
                                 return false;
                             }
                         }
-                        using (FileStream file = new FileStream(dlg.FileName, FileMode.Open, FileAccess.Read))
-                        {
+                        using (FileStream file = new FileStream(dlg.FileName, FileMode.Open, FileAccess.Read)) {
                             byte[] bytes = new byte[file.Length];
                             file.Read(bytes, 0, (int)file.Length);
                             ms.Write(bytes, 0, (int)file.Length);
@@ -586,9 +577,7 @@ namespace KuroNote
                         this.Title = fileName + " - " + appName;
                         toggleEdited(false);
                         setStatus("Opened");
-                    }
-                    catch (Exception ex)
-                    {
+                    } catch (Exception ex) {
                         //File cannot be accessed (e.g. used by another process)
                         log.addLog(ex.ToString());
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -601,20 +590,16 @@ namespace KuroNote
                 //File specified - open without using a dialog
                 log.addLog("Request: Open from cmd - " + _path);
                 MemoryStream ms = new MemoryStream();
-                try
-                {
-                    if (fileTooBig(_path))
-                    {
+                try {
+                    if (fileTooBig(_path)) {
                         log.addLog("WARNING: File size exceeds limit");
                         var res = MessageBox.Show(getErrorMessage(1)[0], getErrorMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        if (res == MessageBoxResult.No)
-                        {
+                        if (res == MessageBoxResult.No) {
                             log.addLog("Open cancelled due to file size");
                             return false;
                         }
                     }
-                    using (FileStream file = new FileStream(_path, FileMode.Open, FileAccess.Read))
-                    {
+                    using (FileStream file = new FileStream(_path, FileMode.Open, FileAccess.Read)) {
                         byte[] bytes = new byte[file.Length];
                         file.Read(bytes, 0, (int)file.Length);
                         ms.Write(bytes, 0, (int)file.Length);
@@ -629,9 +614,7 @@ namespace KuroNote
                     this.Title = fileName + " - " + appName;
                     toggleEdited(false);
                     setStatus("Opened");
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());
                     MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -646,20 +629,17 @@ namespace KuroNote
         /// </summary>
         private void doSave()
         {
-            if (editedFlag)
-            {
+            if (editedFlag) {
                 log.addLog("Request: Save");
-                if(fileName.Equals(string.Empty)) {
+                if (fileName.Equals(string.Empty)) {
                     log.addLog("File does not exist yet");
                     doSaveAs();
                 } else {
                     TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
                     MemoryStream ms = new MemoryStream(selectedEncoding.GetBytes(range.Text));
 
-                    try
-                    {
-                        using (FileStream file = new FileStream(fileName, FileMode.Create, System.IO.FileAccess.Write))
-                        {
+                    try {
+                        using (FileStream file = new FileStream(fileName, FileMode.Create, System.IO.FileAccess.Write)) {
                             byte[] bytes = new byte[ms.Length];
                             ms.Read(bytes, 0, (int)ms.Length);
                             file.Write(bytes, 0, bytes.Length);
@@ -668,9 +648,7 @@ namespace KuroNote
                         }
                         toggleEdited(false);
                         setStatus("Saved");
-                    }
-                    catch (Exception ex)
-                    {
+                    } catch (Exception ex) {
                         //File cannot be accessed (e.g. used by another process)
                         log.addLog(ex.ToString());
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -691,15 +669,12 @@ namespace KuroNote
                 AddExtension = true,
                 Filter = FILE_FILTER
             };
-            if (dlg.ShowDialog() == true)
-            {
+            if (dlg.ShowDialog() == true) {
                 TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
                 MemoryStream ms = new MemoryStream(selectedEncoding.GetBytes(range.Text));
 
-                try
-                {
-                    using (FileStream file = new FileStream(dlg.FileName, FileMode.Create, System.IO.FileAccess.Write))
-                    {
+                try {
+                    using (FileStream file = new FileStream(dlg.FileName, FileMode.Create, System.IO.FileAccess.Write)) {
 
                         byte[] bytes = new byte[ms.Length];
                         ms.Read(bytes, 0, (int)ms.Length);
@@ -712,9 +687,7 @@ namespace KuroNote
                     this.Title = fileName + " - " + appName;
                     toggleEdited(false);
                     setStatus("Saved");
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());
                     MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -760,8 +733,7 @@ namespace KuroNote
                 //Only get files that match the search term (e.g. "c*" gets files that begin with c)
                 files = Directory.GetFiles(_directory, _searchTerm);
                 log.addLog("Searching " + _directory + " with searchTerm '" + _searchTerm + "'");
-                foreach (string file in files)
-                {
+                foreach (string file in files) {
                     log.addLog(">> " + file);
                 }
                 return files;
@@ -783,8 +755,7 @@ namespace KuroNote
                 Process process = new Process();
                 process.StartInfo.FileName = _fileName;
                 process.StartInfo.UseShellExecute = true; //enables opening things like folders without specifying the program to use
-                if (_asAdmin)
-                {
+                if (_asAdmin) {
                     process.StartInfo.Verb = "runas";
                 }
                 process.Start();
@@ -869,12 +840,12 @@ namespace KuroNote
         /// <returns>True if the user wants to exit, false otherwise</returns>
         private bool doExit()
         {
-            if(editedFlag) {
+            if (editedFlag) {
                 log.addLog("WARNING: Exit before saving");
                 var res = MessageBox.Show(getErrorMessage(2)[0], getErrorMessage(2)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                 if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                     log.addLog("Exit cancelled");
-                    if(res == MessageBoxResult.Yes) {
+                    if (res == MessageBoxResult.Yes) {
                         doSave();
                     }
                     return false;
@@ -936,33 +907,22 @@ namespace KuroNote
         /// </summary>
         private void rtbEditor_PreviewExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            if (e.Command == ApplicationCommands.Cut)
-            {
+            if (e.Command == ApplicationCommands.Cut) {
                 e.Handled = true; //Disable default Cut operation - use my own
                 Cut();
-            }
-            else if (e.Command == ApplicationCommands.Copy)
-            {
+            } else if (e.Command == ApplicationCommands.Copy) {
                 e.Handled = true; //Disable default Copy operation - use my own
                 Copy();
-            }
-            else if (e.Command == ApplicationCommands.Paste)
-            {
+            } else if (e.Command == ApplicationCommands.Paste) {
                 Paste();
                 //Allow default Paste operation afterwards
-            }
-            else if (e.Command == ApplicationCommands.SelectAll)
-            {
+            } else if (e.Command == ApplicationCommands.SelectAll) {
                 log.addLog("Request: Select All");
                 //Allow default Select All operation
-            }
-            else if (e.Command == ApplicationCommands.Undo)
-            {
+            } else if (e.Command == ApplicationCommands.Undo) {
                 log.addLog("Request: Undo");
                 //Allow default Undo operation
-            }
-            else if (e.Command == ApplicationCommands.Redo)
-            {
+            } else if (e.Command == ApplicationCommands.Redo) {
                 log.addLog("Request: Redo");
                 //Allow default Redo operation
             }
@@ -1046,14 +1006,13 @@ namespace KuroNote
         /// <param name="_includeFont">True if you want to change the font to the font that comes with the theme, false otherwise</param>
         public void setTheme(int _themeId, bool _includeFont)
         {
-            if(_includeFont) {
+            if (_includeFont) {
                 log.addLog("Changing theme to: Theme ID " + _themeId + " (w/ font)");
             } else {
                 log.addLog("Changing theme to: Theme ID " + _themeId + " (w/o font)");
             }
 
-            if(_themeId < 1000) //Custom themes start at ID 1000
-            {
+            if (_themeId < 1000) { //Custom themes start at ID 1000
                 //Preset themen because selected id is < 1000
 
                 //Apply the selected theme information to the UI
@@ -1067,8 +1026,7 @@ namespace KuroNote
                 MainMenu.Background = themeCollection[_themeId].menuBrush;
                 MainStatus.Background = themeCollection[_themeId].statusBrush;
 
-                if (_includeFont)
-                {
+                if (_includeFont) {
                     setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
                 } else
                 {
@@ -1080,8 +1038,7 @@ namespace KuroNote
                 
                 //Get the custom theme file specified by its themeId
                 try {
-                    using (StreamReader sr = new StreamReader(customThemePath + _themeId + CUSTOM_THEME_EXT))
-                    {
+                    using (StreamReader sr = new StreamReader(customThemePath + _themeId + CUSTOM_THEME_EXT)) {
                         string json = sr.ReadToEnd();
                         KuroNoteCustomTheme kntFile = JsonConvert.DeserializeObject<KuroNoteCustomTheme>(json);
                         selectedCustomTheme = kntFile;
@@ -1096,8 +1053,7 @@ namespace KuroNote
                     setTheme(appSettings.themeId, true);
                 }
 
-                if (selectedCustomTheme != null)
-                {
+                if (selectedCustomTheme != null) {
                     //in JSON format, colour values are stored as hex, convert them to ARGB so we can create new SolidColorBrush instances
                     byte[] bgBrushArgb = getARGBFromHex(selectedCustomTheme.bgBrush.ToString());
                     byte[] solidBrushArgb = getARGBFromHex(selectedCustomTheme.solidBrush.ToString());
@@ -1108,8 +1064,7 @@ namespace KuroNote
                     //Apply the selected theme information to the UI
                     this.Background = new SolidColorBrush(Color.FromRgb(bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
                     MainRtb.Foreground = new SolidColorBrush(Color.FromRgb(textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
-                    if (selectedCustomTheme.hasImage)
-                    {
+                    if (selectedCustomTheme.hasImage) {
                         try {
                             MainRtb.Background = new ImageBrush
                             {
@@ -1122,19 +1077,15 @@ namespace KuroNote
                             //Apply the solid brush instead
                             MainRtb.Background = new SolidColorBrush(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
                         }
-                    }
-                    else
-                    {
+                    } else {
                         MainRtb.Background = new SolidColorBrush(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
                     }
                     MainMenu.Background = new SolidColorBrush(Color.FromRgb(menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
                     MainStatus.Background = new SolidColorBrush(Color.FromRgb(statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
 
-                    if (_includeFont)
-                    {
+                    if (_includeFont) {
                         setFont(selectedCustomTheme.fontFamily, selectedCustomTheme.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
-                    } else
-                    {
+                    } else {
                         setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                     }
                 }
@@ -1167,8 +1118,7 @@ namespace KuroNote
         /// </summary>
         private void ShowLog_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (temporaryLogEnabledFlag)
-            {
+            if (temporaryLogEnabledFlag) {
                 log.addLog("Request: Show Log");
                 log.toggleVisibility(true);
             }
@@ -1195,7 +1145,7 @@ namespace KuroNote
         /// </summary>
         private void SaveStatusItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if(editedFlag) {
+            if (editedFlag) {
                 MessageBox.Show("Some changes have been made to this file.\nKuroNote will offer to save these changes when you close the file.", SaveStatusTb.Text, MessageBoxButton.OK, MessageBoxImage.Information);
             } else {
                 MessageBox.Show("No changes have been made to this file.\nYou can safely close the file at any time.", SaveStatusTb.Text, MessageBoxButton.OK, MessageBoxImage.Information);
@@ -1221,7 +1171,7 @@ namespace KuroNote
             MatchCollection words = Regex.Matches(document.Text, @"\S+");
 
             string wordsPost;
-            if(words.Count == 1) {
+            if (words.Count == 1) {
                 wordsPost = "Word";
             } else {
                 wordsPost = "Words";
@@ -1267,7 +1217,7 @@ namespace KuroNote
         /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(!doExit()) {
+            if (!doExit()) {
                 e.Cancel = true;  //cancel the exit
             }
         }

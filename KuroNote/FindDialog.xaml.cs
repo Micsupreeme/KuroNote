@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -71,8 +64,7 @@ namespace KuroNote
         /// <param name="enable">True to set Replace UI, false to set Find UI</param>
         private void toggleReplaceUI(bool replace)
         {
-            if (replace)
-            {
+            if (replace) {
                 lblReplaceWith.Visibility = Visibility.Visible;
                 txtReplaceWith.Visibility = Visibility.Visible;
                 btnReplace.Visibility = Visibility.Visible;
@@ -95,7 +87,7 @@ namespace KuroNote
         /// <param name="enable">True to enable controls, false otherwise</param>
         private void toggleEnabled(bool enable)
         {
-            if(enable) {
+            if (enable) {
                 btnFind.IsEnabled = true;
                 btnCount.IsEnabled = true;
                 btnReplaceAll.IsEnabled = true;
@@ -134,14 +126,13 @@ namespace KuroNote
             }
 
             Match match;
-            if(caseSensitive) {
+            if (caseSensitive) {
                 match = Regex.Match(document.Text, findPhrase);
             } else {
                 match = Regex.Match(document.Text, findPhrase, RegexOptions.IgnoreCase);
             }
             
-            if (match.Success)
-            {
+            if (match.Success) {
                 //MessageBox.Show("found at pos " + (searchPosition + match.Index));
                 selectionStart = document.Start.GetPositionAtOffset(match.Index);
                 selectionEnd = selectionStart.GetPositionAtOffset(findPhrase.Length);
@@ -150,8 +141,7 @@ namespace KuroNote
                 //GetPositionAtOffset includes invisible non-text characters that can make the selection start too early
                 //Fix the pointers here
                 int correctionOffset = 0;
-                if (caseSensitive)
-                {
+                if (caseSensitive) {
                     while (!main.MainRtb.Selection.Text.Equals(findPhrase))
                     {
                         selectionStart = selectionStart.GetPositionAtOffset(1);
@@ -179,9 +169,7 @@ namespace KuroNote
                 //we have a match selected, we can now optionally replace it
                 log.addLog("Match selected!");
                 btnReplace.IsEnabled = true;
-            }
-            else
-            {
+            } else {
                 if (searchPosition == 0) {
                     MessageBox.Show("There are no occurances of this search term.", "Find results", MessageBoxButton.OK, MessageBoxImage.Information);
                 } else {
@@ -215,7 +203,7 @@ namespace KuroNote
             log.addLog("Count occurances of: " + findPhrase);
             TextRange document = new TextRange(main.MainRtb.Document.ContentStart, main.MainRtb.Document.ContentEnd);
 
-            if(caseSensitive) {
+            if (caseSensitive) {
                 MatchCollection csMatches = Regex.Matches(document.Text, findPhrase); //REGEX is case sensitive by default
                 log.addLog("Result: " + csMatches.Count);
                 return csMatches.Count;
@@ -239,12 +227,9 @@ namespace KuroNote
         /// </summary>
         private void txtFindReplace_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txtFindWhat.Text.Length > 0)
-            { //don't let the user search for null
+            if (txtFindWhat.Text.Length > 0) { //don't let the user search for null
                 toggleEnabled(true);
-            }
-            else
-            {
+            } else {
                 toggleEnabled(false);
             }
         }
@@ -256,13 +241,10 @@ namespace KuroNote
         {
             string findPhrase = txtFindWhat.Text;
             string replacePhrase = txtReplaceWith.Text;
-            if (main.MainRtb.Selection.Text == findPhrase)
-            { //ensure the selection is correct before replacing it
+            if (main.MainRtb.Selection.Text == findPhrase) { //ensure the selection is correct before replacing it
                 main.MainRtb.Selection.Text = replacePhrase;
                 log.addLog("Single replace completed: \"" + findPhrase + "\" -> \"" + replacePhrase + "\"");
-            }
-            else
-            {
+            } else {
                 log.addLog("Unable to perform single replace, the selection did not match the findPhrase \"" + findPhrase + "\" (selection length: " + main.MainRtb.Selection.Text.Length + ")");
             }
             btnReplace.IsEnabled = false; //Once completed, there is no need to repeat a single replace operation, it will be enabled again if a new match is found
@@ -274,7 +256,7 @@ namespace KuroNote
         private void btnReplaceAll_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult replaceAllConfirmation = MessageBox.Show("Are you sure you want to replace the " + getCount() + " occurances of \"" + txtFindWhat.Text + "\" with \"" + txtReplaceWith.Text + "\"?", "Replace All?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if(replaceAllConfirmation == MessageBoxResult.Yes) {
+            if (replaceAllConfirmation == MessageBoxResult.Yes) {
                 replaceAll();
             }
         }
@@ -290,12 +272,9 @@ namespace KuroNote
             log.addLog("Replace All \"" + findPhrase + "\" with \"" + replacePhrase + "\"");
             TextRange document = new TextRange(main.MainRtb.Document.ContentStart, main.MainRtb.Document.ContentEnd);
 
-            if (caseSensitive)
-            {
+            if (caseSensitive) {
                 document.Text = Regex.Replace(document.Text, findPhrase, replacePhrase); //REGEX is case sensitive by default
-            }
-            else
-            {
+            } else {
                 document.Text = Regex.Replace(document.Text, findPhrase, replacePhrase, RegexOptions.IgnoreCase);
             }
 

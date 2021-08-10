@@ -1,16 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -52,7 +44,7 @@ namespace KuroNote
             if (size > 1024) {
                 size /= 1024;
                 formattedSize = Math.Round(size, 2) + " KB";
-                if(size > 1024) {
+                if (size > 1024) {
                     size /= 1024;
                     formattedSize = Math.Round(size, 2) + " MB";
                 }
@@ -109,13 +101,10 @@ namespace KuroNote
         /// </summary>
         public void toggleVisibility(bool vis)
         {
-            if (vis)
-            {
+            if (vis) {
                 log.addLog("Open EncDecFinishDialog");
                 this.Visibility = Visibility.Visible;
-            }
-            else
-            {
+            } else {
                 log.addLog("Collapse EncDecFinishDialog");
                 this.Visibility = Visibility.Collapsed;
             }
@@ -146,14 +135,11 @@ namespace KuroNote
                 AddExtension = true,
                 Filter = FILE_FILTER
             };
-            if (dlg.ShowDialog() == true)
-            {
+            if (dlg.ShowDialog() == true) {
                 MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(processedContent));
 
-                try
-                {
-                    using (FileStream file = new FileStream(dlg.FileName, FileMode.Create, System.IO.FileAccess.Write))
-                    {
+                try {
+                    using (FileStream file = new FileStream(dlg.FileName, FileMode.Create, System.IO.FileAccess.Write)) {
 
                         byte[] bytes = new byte[ms.Length];
                         ms.Read(bytes, 0, (int)ms.Length);
@@ -161,9 +147,7 @@ namespace KuroNote
                         log.addLog("Successfully saved " + dlg.FileName);
                         ms.Close();
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());
                     MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
