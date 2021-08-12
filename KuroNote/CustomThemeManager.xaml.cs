@@ -11,8 +11,7 @@ using System.Windows.Media.Imaging;
 namespace KuroNote
 {
     //TODO (optional): change "Auto-Preview" visibility icon to eye with line through it and back to regular eye depending on toggle button state
-    //TODO: custom theme transparency (RGB -> ARGB)
-    //TODO: field validation
+    //TODO: warning message when an image source greater than 2MB (1MB advised) is selected for an image background - it will be slower to switch to the theme and slower to launch KuroNote
 
     //VERY OBSCURE KNOWN BUG: If you open ThemeSelector and CustomThemeManager at the same time, open a theme in CustomThemeManager,
     //  close ThemeSelector (triggers revert back theme change), then change the opacity of the image in CustomThemeManager
@@ -165,19 +164,19 @@ namespace KuroNote
         /// </summary>
         private void migrateThemeToNewId()
         {
-            string fileToMigrate = customThemePath + currentTheme.themeId + CUSTOM_THEME_EXT;
-            int oldThemeId = currentTheme.themeId;
+            string fileToMigrate = customThemePath + currentTheme.themeId + CUSTOM_THEME_EXT;          
+            KuroNoteCustomTheme oldThemeObject = currentTheme;
             int newThemeId = generateNewThemeId();
 
             currentTheme = new KuroNoteCustomTheme
             (
-                newThemeId, themeNameTxt.Text, true,
-                bgBrushCol.Color.ToString(), 0.25,
-                solidBrushCol.Color.ToString(),
-                menuBrushCol.Color.ToString(),
-                statusBrushCol.Color.ToString(),
-                textBrushCol.Color.ToString(),
-                fontTxt.Text, 18, FontWeights.Regular, FontStyles.Normal
+                newThemeId, oldThemeObject.themeName, true,
+                oldThemeObject.bgBrush, oldThemeObject.imgBrushOpacity,
+                oldThemeObject.solidBrush,
+                oldThemeObject.menuBrush,
+                oldThemeObject.statusBrush,
+                oldThemeObject.textBrush,
+                oldThemeObject.fontFamily, oldThemeObject.fontSize, oldThemeObject.fontWeight, oldThemeObject.fontStyle
             );
 
             updateThemeFile();
@@ -192,7 +191,7 @@ namespace KuroNote
             //delete the combo box listing for the old id
             for (int i = 0; i < cmbCustomTheme.Items.Count; i++) {
                 ComboBoxItem cmbItem = (ComboBoxItem)cmbCustomTheme.Items.GetItemAt(i);
-                if ((int)cmbItem.Tag == oldThemeId) {
+                if ((int)cmbItem.Tag == oldThemeObject.themeId) {
                     cmbCustomTheme.Items.RemoveAt(i);
                 }
             }
@@ -278,15 +277,15 @@ namespace KuroNote
 
             themeNameTxt.Text = currentTheme.themeName;
             fontTxt.Text = currentTheme.fontFamily + ", " + currentTheme.fontSize + "pt (W: " + currentTheme.fontWeight + ", S: " + currentTheme.fontStyle + ")";
-            bgBrushCol.SetColor(Color.FromRgb(bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
-            menuBrushCol.SetColor(Color.FromRgb(menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
-            statusBrushCol.SetColor(Color.FromRgb(statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
+            bgBrushCol.SetColor(Color.FromArgb(bgBrushArgb[0], bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
+            menuBrushCol.SetColor(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
+            statusBrushCol.SetColor(Color.FromArgb(statusBrushArgb[0], statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
             imageOpacitySlide.Value = currentTheme.imgBrushOpacity;
-            solidBrushCol.SetColor(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
-            textBrushCol.SetColor(Color.FromRgb(textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
+            solidBrushCol.SetColor(Color.FromArgb(solidBrushArgb[0], solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
+            textBrushCol.SetColor(Color.FromArgb(textBrushArgb[0], textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
 
             //toggleImageSolidUI(currentTheme.hasImage);
-            imageBrowseTxt.Text = "Not set";
+            imageBrowseTxt.Text = string.Empty;
             if (currentTheme.hasImage) {
 
                 //Show confirmation in the browse text box that an image has actually been set
@@ -556,7 +555,8 @@ namespace KuroNote
                 if (fieldsPopulated) {
                     updateThemeObject();
                     updateThemeFile();
-                    if (tbtnAutoPreview.IsChecked == true) {
+                    //Only attempt to render a preview if the user has chosen auto-preview AND there is an image set for the ImageBrush
+                    if (tbtnAutoPreview.IsChecked == true && imageBrowseTxt.Text.Length > 0) {
                         //A full re-render preview every time the opacity value changes is too much, this is a minimal version for opacity changes only
                         try {
                             main.MainRtb.Background = new ImageBrush

@@ -21,6 +21,8 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Options window
+    /// TODO: Tooltips in EnUIDict and CustomThemeManager.cs
+    /// TODO: internal flag to toggle between showing full file path in the app title and just the file name
     /// 
     /// </summary>
     public partial class MainWindow : Window
@@ -459,7 +461,7 @@ namespace KuroNote
 
             //main.MainRtb.SelectionBrush = new SolidColorBrush(Color.FromRgb(255, 255, 0));
             MainRtb.BorderThickness = new Thickness(0, 0, 0, 0); //No blue outline when you click inside the RTB
-            MainRtb.Padding = new Thickness(5, 5, 5, 5); //So you don't start typing right on the edge of the RTB
+            MainRtb.Padding = new Thickness(5, 10, 5, 10); //So you don't start typing right on the edge of the RTB
             MainRtb.SetValue(Paragraph.LineHeightProperty, 1.0);
         }
 
@@ -1062,8 +1064,8 @@ namespace KuroNote
                     byte[] textBrushArgb = getARGBFromHex(selectedCustomTheme.textBrush.ToString());
 
                     //Apply the selected theme information to the UI
-                    this.Background = new SolidColorBrush(Color.FromRgb(bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
-                    MainRtb.Foreground = new SolidColorBrush(Color.FromRgb(textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
+                    this.Background = new SolidColorBrush(Color.FromArgb(bgBrushArgb[0], bgBrushArgb[1], bgBrushArgb[2], bgBrushArgb[3]));
+                    MainRtb.Foreground = new SolidColorBrush(Color.FromArgb(textBrushArgb[0], textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
                     if (selectedCustomTheme.hasImage) {
                         try {
                             MainRtb.Background = new ImageBrush
@@ -1075,13 +1077,13 @@ namespace KuroNote
                             log.addLog("Custom theme has an image but the internal image file could not be accessed, it might be not set");
                             log.addLog(e.ToString());
                             //Apply the solid brush instead
-                            MainRtb.Background = new SolidColorBrush(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
+                            MainRtb.Background = new SolidColorBrush(Color.FromArgb(solidBrushArgb[0], solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
                         }
                     } else {
-                        MainRtb.Background = new SolidColorBrush(Color.FromRgb(solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
+                        MainRtb.Background = new SolidColorBrush(Color.FromArgb(solidBrushArgb[0], solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
                     }
-                    MainMenu.Background = new SolidColorBrush(Color.FromRgb(menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
-                    MainStatus.Background = new SolidColorBrush(Color.FromRgb(statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
+                    MainMenu.Background = new SolidColorBrush(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
+                    MainStatus.Background = new SolidColorBrush(Color.FromArgb(statusBrushArgb[0], statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
 
                     if (_includeFont) {
                         setFont(selectedCustomTheme.fontFamily, selectedCustomTheme.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
