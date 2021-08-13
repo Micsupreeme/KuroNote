@@ -10,9 +10,6 @@ using System.Windows.Media.Imaging;
 
 namespace KuroNote
 {
-    //TODO (optional): change "Auto-Preview" visibility icon to eye with line through it and back to regular eye depending on toggle button state
-    //TODO: warning message when an image source greater than 2MB (1MB advised) is selected for an image background - it will be slower to switch to the theme and slower to launch KuroNote
-
     //VERY OBSCURE KNOWN BUG: If you open ThemeSelector and CustomThemeManager at the same time, open a theme in CustomThemeManager,
     //  close ThemeSelector (triggers revert back theme change), then change the opacity of the image in CustomThemeManager
     //  (does a partial preview re-render- only changed background, not the menu/status), the custom theme preview will have
@@ -30,6 +27,7 @@ namespace KuroNote
         private const string INTERNAL_IMAGE_EXT = ".jpg";
         private const string BGIMAGE_FILE_FILTER =
             "JPEG (*.jpg;*.jpeg;*.jpe;*.jfif)|*.jpg;*.jpeg;*.jpe;*.jfif";
+        private const long IMAGE_MAX_SIZE = 2097152; //Background images selected exceedomg this size (2MB) will trigger a file size warning
 
         //Globals
         private string appName, appPath;
@@ -70,6 +68,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// Populates the custom themes combobox with the custom themes defined in the custom themes directory
+        /// </summary>
         private void loadCustomThemeList()
         {
             cmbCustomTheme.Items.Clear();
@@ -115,6 +116,18 @@ namespace KuroNote
             if (ofd.ShowDialog() == true) {
                 imageBrowseTxt.Text = ofd.FileName;
 
+                //if the selected image exceeds the recommended size limit, throw a confirmation before proceeding
+                long selectedImageSize = getFileSize(ofd.FileName);
+                if(selectedImageSize > IMAGE_MAX_SIZE)
+                {
+                    MessageBoxResult response = MessageBox.Show("The selected image exceeds 2MB in size, which may cause delays when applying this theme. Are you sure you want to use this image?", "Image size exceeds recommended limit", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if(response == MessageBoxResult.Yes) {
+                        log.addLog("Proceeding with >2MB custom theme image of " + selectedImageSize + "B");
+                    } else {
+                        return;
+                    }
+                }
+
                 //copy specified image to custom theme directory
                 string newFilePath = customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT;
                 try {
@@ -141,6 +154,20 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Gets the size of the contents of a specified file
+        /// </summary>
+        /// <param name="path">The path to the file that will be measured</param>
+        /// <returns>The number of bytes in the file, or -1 if a blank path is provided</returns>
+        private long getFileSize(string _path)
+        {
+            if (!_path.Equals(string.Empty)) {
+                return new FileInfo(_path).Length;
+            } else {
+                return -1;
+            }
+        }
+
+        /// <summary>
         /// Generates a new theme object with default values
         /// </summary>
         private void generateNewTheme()
@@ -155,7 +182,7 @@ namespace KuroNote
                 "#FFF0F0F0",
                 "#FFF0F0F0",
                 "#FF000000",
-                "Verdana", 18, FontWeights.Regular, FontStyles.Normal
+                "Verdana", 17, FontWeights.Regular, FontStyles.Normal
             );
         }
 
@@ -197,6 +224,13 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// Update the currentTheme object with the specified font values, populate the readonly textbox and trigger a preview
+        /// </summary>
+        /// <param name="_fontFamily"></param>
+        /// <param name="_fontSize"></param>
+        /// <param name="_fontWeight"></param>
+        /// <param name="_fontStyle"></param>
         public void setFont(String _fontFamily, short _fontSize, FontWeight _fontWeight, FontStyle _fontStyle)
         {
             //update theme object here because these values are not yet stored in fields
@@ -316,7 +350,7 @@ namespace KuroNote
                     string json = JsonConvert.SerializeObject(currentTheme, Formatting.Indented);
 
                     sw.Write(json);
-                    log.addLog("Custom theme file for theme" + currentTheme.themeId + " successfully updated");
+                    log.addLog("Custom theme file for theme " + currentTheme.themeId + " successfully updated");
                 }
             } catch (Exception e) {
                 log.addLog("WARN: " + e.GetType().ToString() + " occurred while updating theme file");
@@ -352,6 +386,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the Add ("+") button is clicked
+        /// </summary>
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             generateNewTheme();
@@ -363,12 +400,11 @@ namespace KuroNote
             }
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
-        {
-            updateThemeObject();
-            updateThemeFile();
-        }
-
+        /// <summary>
+        /// When the Delete button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult conf = MessageBox.Show("Are you sure you want to delete \"" + currentTheme.themeName + "\"?", "Delete custom theme?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -379,6 +415,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the "Image mode" radiobutton is checked
+        /// </summary>
         private void imageBgRadio_Checked(object sender, RoutedEventArgs e)
         {
             toggleImageSolidUI(true);
@@ -395,6 +434,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the "Solid colour mode" radiobutton is checked
+        /// </summary>
         private void solidBgRadio_Checked(object sender, RoutedEventArgs e)
         {
             toggleImageSolidUI(false);
@@ -456,6 +498,43 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the "Auto-Preview" togglebutton is checked
+        /// </summary>
+        private void tbtnAutoPreview_Checked(object sender, RoutedEventArgs e)
+        {
+            try {
+                previewBtnImage.Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_visibility_black_18dp.png"));
+
+                if (fieldsPopulated)
+                {
+                    updateThemeObject();
+                    updateThemeFile();
+                    if (tbtnAutoPreview.IsChecked == true) {
+                        main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                    }
+                }
+
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleButton_Checked Event fired before object initialisation ");
+            }
+        }
+
+        /// <summary>
+        /// When the "Auto-Preview" togglebutton is unchecked
+        /// </summary>
+        private void tbtnAutoPreview_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try {
+                previewBtnImage.Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_visibility_off_black_18dp.png"));
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleButton_Unchecked Event fired before object initialisation ");
+            }
+        }
+
+        /// <summary>
+        /// When an item in the custom themes combobox is selected
+        /// </summary>
         private void cmbCustomTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try {
@@ -468,6 +547,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When a background brush colour is picked
+        /// </summary>
         private void bgBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
@@ -484,6 +566,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When a menu bar brush colour is picked
+        /// </summary>
         private void menuBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
@@ -499,6 +584,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When a status bar brush colour is picked
+        /// </summary>
         private void statusBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
@@ -514,25 +602,9 @@ namespace KuroNote
             }
         }
 
-        private void imageBrowseBtn_Click(object sender, RoutedEventArgs e)
-        {
-            selectBackgroundImage();
-        }
-
         /// <summary>
-        /// When the mouse moves anywhere in the content of this Window
+        /// When a solid background brush colour is picked
         /// </summary>
-        private void masterStack_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (newImageSet) {
-                log.addLog("test");
-                newImageSet = false;
-                if (tbtnAutoPreview.IsChecked == true) {
-                    main.setTheme(currentTheme.themeId, true); //always auto-preview with font
-                }
-            }
-        }
-
         private void solidBrushCol_OnPick(object sender, EventArgs e)
         {
             try {
@@ -548,6 +620,35 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the "Pick" button to change the image background source is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void imageBrowseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            selectBackgroundImage();
+        }
+
+        /// <summary>
+        /// When the mouse moves anywhere in the content of this Window
+        /// </summary>
+        private void masterStack_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (newImageSet)
+            {
+                log.addLog("test");
+                newImageSet = false;
+                if (tbtnAutoPreview.IsChecked == true)
+                {
+                    main.setTheme(currentTheme.themeId, true); //always auto-preview with font
+                }
+            }
+        }
+
+        /// <summary>
+        /// When the image brush opacity slider value changes
+        /// </summary>
         private void imageOpacitySlide_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             try {
@@ -575,6 +676,11 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the theme name textbox is edited
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void themeNameTxt_TextChanged(object sender, TextChangedEventArgs e)
         {
             try {
@@ -588,12 +694,18 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the "Pick" button to change the font is clicked
+        /// </summary>
         private void fontBtn_Click(object sender, RoutedEventArgs e)
         {
             FontDialog fontDialog = new FontDialog(main, settings, log, this, currentTheme);
             fontDialog.toggleVisibility(true);
         }
 
+        /// <summary>
+        /// While the window is closing
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             main.setTheme(settings.themeId, settings.themeWithFont); //ensure that the theme selected in settings is restored when custom theme manager is closed
