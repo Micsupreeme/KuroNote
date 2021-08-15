@@ -32,6 +32,7 @@
         <CommandBinding Command="local:CustomCommands.AESDec" Executed="AESDec_Executed" />
         
         <!--Options-->
+        <CommandBinding Command="local:CustomCommands.Options" Executed="Options_Executed" />
         <CommandBinding Command="local:CustomCommands.Theme" Executed="Theme_Executed" />
         <CommandBinding Command="local:CustomCommands.CustomThemes" Executed="CustomThemes_Executed" />
         <CommandBinding Command="local:CustomCommands.ShowLog" Executed="ShowLog_Executed" />
@@ -58,18 +59,18 @@
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
             <MenuItem Name="FileMi" Header="{Binding [FileMi], Mode=OneTime}">
-                <MenuItem Name="NewMi" Header="{Binding [NewMi], Mode=OneTime}" Command="local:CustomCommands.New" InputGestureText="Ctrl+N">
+                <MenuItem Name="NewMi" Header="{Binding [NewMi], Mode=OneTime}" ToolTip="{Binding [NewMiTT], Mode=OneTime}" Command="local:CustomCommands.New" InputGestureText="Ctrl+N">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_file_new_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="NewWinMi" Header="{Binding [NewWinMi], Mode=OneTime}">
-                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" Command="local:CustomCommands.NewRegWin" InputGestureText="Alt+N">
+                    <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" ToolTip="{Binding [NewRegularWinMiTT], Mode=OneTime}" Command="local:CustomCommands.NewRegWin" InputGestureText="Alt+N">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/kuronote_logo.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}" Command="local:CustomCommands.NewAdminWin">
+                    <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}" ToolTip="{Binding [NewAdminWinMiTT], Mode=OneTime}" Command="local:CustomCommands.NewAdminWin">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/kuronote_logo_admin.png"/>
                         </MenuItem.Icon>
@@ -78,81 +79,81 @@
                         <Image Source="pack://application:,,,/img/icons/kuronote_logo.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold">
+                <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" ToolTip="{Binding [OpenMiTT], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_folder_open_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="SaveMi" Header="{Binding [SaveMi], Mode=OneTime}" Command="local:CustomCommands.Save" InputGestureText="Ctrl+S">
+                <MenuItem Name="SaveMi" Header="{Binding [SaveMi], Mode=OneTime}" ToolTip="{Binding [SaveMiTT], Mode=OneTime}" Command="local:CustomCommands.Save" InputGestureText="Ctrl+S">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_save_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="SaveAsMi" Header="{Binding [SaveAsMi], Mode=OneTime}" Command="local:CustomCommands.SaveAs" InputGestureText="Ctrl+Shift+S" FontWeight="DemiBold">
+                <MenuItem Name="SaveAsMi" Header="{Binding [SaveAsMi], Mode=OneTime}" ToolTip="{Binding [SaveAsMiTT], Mode=OneTime}" Command="local:CustomCommands.SaveAs" InputGestureText="Ctrl+Shift+S" FontWeight="DemiBold">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_save_as_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Name="PrintMi" Header="{Binding [PrintMi], Mode=OneTime}" Command="local:CustomCommands.Print" InputGestureText="Ctrl+P">
+                <MenuItem Name="PrintMi" Header="{Binding [PrintMi], Mode=OneTime}" ToolTip="{Binding [PrintMiTT], Mode=OneTime}" Command="local:CustomCommands.Print" InputGestureText="Ctrl+P">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_print_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Name="ExitMi" Header="{Binding [ExitMi], Mode=OneTime}" Command="local:CustomCommands.Exit" InputGestureText="Alt+F4">
+                <MenuItem Name="ExitMi" Header="{Binding [ExitMi], Mode=OneTime}" ToolTip="{Binding [ExitMiTT], Mode=OneTime}" Command="local:CustomCommands.Exit" InputGestureText="Alt+F4">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_power_settings_new_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <MenuItem Name="EditMi" Header="{Binding [EditMi], Mode=OneTime}">
-                <MenuItem Name="CutMi" Header="{Binding [CutMi], Mode=OneTime}" Command="ApplicationCommands.Cut" FontWeight="DemiBold">
+                <MenuItem Name="CutMi" Header="{Binding [CutMi], Mode=OneTime}" ToolTip="{Binding [CutMiTT], Mode=OneTime}" Command="ApplicationCommands.Cut" FontWeight="DemiBold">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_content_cut_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="CopyMi" Header="{Binding [CopyMi], Mode=OneTime}" Command="ApplicationCommands.Copy" FontWeight="DemiBold">
+                <MenuItem Name="CopyMi" Header="{Binding [CopyMi], Mode=OneTime}" ToolTip="{Binding [CopyMiTT], Mode=OneTime}" Command="ApplicationCommands.Copy" FontWeight="DemiBold">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_content_copy_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="PasteMi" Header="{Binding [PasteMi], Mode=OneTime}" Command="ApplicationCommands.Paste" FontWeight="DemiBold">
+                <MenuItem Name="PasteMi" Header="{Binding [PasteMi], Mode=OneTime}" ToolTip="{Binding [PasteMiTT], Mode=OneTime}" Command="ApplicationCommands.Paste" FontWeight="DemiBold">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_content_paste_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Name="UndoMi" Header="{Binding [UndoMi], Mode=OneTime}" Command="ApplicationCommands.Undo">
+                <MenuItem Name="UndoMi" Header="{Binding [UndoMi], Mode=OneTime}" ToolTip="{Binding [UndoMiTT], Mode=OneTime}" Command="ApplicationCommands.Undo">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_undo_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="RedoMi" Header="{Binding [RedoMi], Mode=OneTime}" Command="ApplicationCommands.Redo">
+                <MenuItem Name="RedoMi" Header="{Binding [RedoMi], Mode=OneTime}" ToolTip="{Binding [RedoMiTT], Mode=OneTime}" Command="ApplicationCommands.Redo">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_redo_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Name="FindMi" Header="{Binding [FindMi], Mode=OneTime}" Command="local:CustomCommands.Find" InputGestureText="Ctrl+F">
+                <MenuItem Name="FindMi" Header="{Binding [FindMi], Mode=OneTime}" ToolTip="{Binding [FindMiTT], Mode=OneTime}" Command="local:CustomCommands.Find" InputGestureText="Ctrl+F">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_search_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="ReplaceMi" Header="{Binding [ReplaceMi], Mode=OneTime}" Command="local:CustomCommands.Replace" InputGestureText="Ctrl+H">
+                <MenuItem Name="ReplaceMi" Header="{Binding [ReplaceMi], Mode=OneTime}" ToolTip="{Binding [ReplaceMiTT], Mode=OneTime}" Command="local:CustomCommands.Replace" InputGestureText="Ctrl+H">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_find_replace_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Name="SelectAllMi" Header="{Binding [SelectAllMi], Mode=OneTime}" Command="ApplicationCommands.SelectAll">
+                <MenuItem Name="SelectAllMi" Header="{Binding [SelectAllMi], Mode=OneTime}" ToolTip="{Binding [SelectAllMiTT], Mode=OneTime}" Command="ApplicationCommands.SelectAll">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_select_all_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <MenuItem Name="FormatMi" Header="{Binding [FormatMi], Mode=OneTime}">
-                <MenuItem Name="FontMi" Header="{Binding [FontMi], Mode=OneTime}" Command="local:CustomCommands.Font">
+                <MenuItem Name="FontMi" Header="{Binding [FontMi], Mode=OneTime}" ToolTip="{Binding [FontMiTT], Mode=OneTime}" Command="local:CustomCommands.Font">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_text_format_black_18dp.png"/>
                     </MenuItem.Icon>
@@ -160,12 +161,12 @@
             </MenuItem>
             <MenuItem Name="ToolsMi" Header="{Binding [ToolsMi], Mode=OneTime}">
                 <MenuItem Name="AESMi" Header="{Binding [AESMi], Mode=OneTime}">
-                    <MenuItem Name="AESEncMi" Header="{Binding [AESEncMi], Mode=OneTime}" Command="local:CustomCommands.AESEnc">
+                    <MenuItem Name="AESEncMi" Header="{Binding [AESEncMi], Mode=OneTime}" ToolTip="{Binding [AESEncMiTT], Mode=OneTime}" Command="local:CustomCommands.AESEnc">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_lock_black_18dp.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="AESDecMi" Header="{Binding [AESDecMi], Mode=OneTime}" Command="local:CustomCommands.AESDec">
+                    <MenuItem Name="AESDecMi" Header="{Binding [AESDecMi], Mode=OneTime}" ToolTip="{Binding [AESDecMiTT], Mode=OneTime}" Command="local:CustomCommands.AESDec">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_lock_open_black_18dp.png"/>
                         </MenuItem.Icon>
@@ -176,24 +177,30 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Name="OptionsMi" HorizontalAlignment="Right" FlowDirection="LeftToRight" Width="24px">
-                <MenuItem Name="ThemeMi" Header="{Binding [ThemeMi], Mode=OneTime}" Command="local:CustomCommands.Theme">
+                <MenuItem Name="OptionsDialogMi" Header="{Binding [OptionsDialogMi], Mode=OneTime}" ToolTip="{Binding [OptionsDialogMiTT], Mode=OneTime}" Command="local:CustomCommands.Options">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_settings_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Name="ThemeMi" Header="{Binding [ThemeMi], Mode=OneTime}" ToolTip="{Binding [ThemeMiTT], Mode=OneTime}" Command="local:CustomCommands.Theme">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_color_lens_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="CustomThemesMi" Header="{Binding [CustomThemesMi], Mode=OneTime}" Command="local:CustomCommands.CustomThemes">
+                <MenuItem Name="CustomThemesMi" Header="{Binding [CustomThemesMi], Mode=OneTime}" ToolTip="{Binding [CustomThemesMiTT], Mode=OneTime}" Command="local:CustomCommands.CustomThemes">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_create_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
                 <MenuItem Name="LoggingMi" Header="{Binding [LoggingMi], Mode=OneTime}">
-                    <MenuItem Name="ShowLogMi" Header="{Binding [ShowLogMi], Mode=OneTime}" Command="local:CustomCommands.ShowLog">
+                    <MenuItem Name="ShowLogMi" Header="{Binding [ShowLogMi], Mode=OneTime}" ToolTip="{Binding [ShowLogMiTT], Mode=OneTime}" Command="local:CustomCommands.ShowLog">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_timeline_black_18dp.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="ShowLogFilesMi" Header="{Binding [ShowLogFilesMi], Mode=OneTime}" Command="local:CustomCommands.ShowLogFiles">
+                    <MenuItem Name="ShowLogFilesMi" Header="{Binding [ShowLogFilesMi], Mode=OneTime}" ToolTip="{Binding [ShowLogFilesMiTT], Mode=OneTime}" Command="local:CustomCommands.ShowLogFiles">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_folder_timeline_black_18dp.png"/>
                         </MenuItem.Icon>
@@ -203,7 +210,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1">
+                <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" ToolTip="{Binding [AboutMiTT], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/kuronote_logo.png"/>
                     </MenuItem.Icon>

@@ -71,6 +71,8 @@ namespace KuroNote
                 btnReplaceAll.Visibility = Visibility.Visible;
                 btnCount.Visibility = Visibility.Collapsed;
                 this.Height = REPLACE_MODE_HEIGHT;
+                this.MinHeight = REPLACE_MODE_HEIGHT;
+                this.MaxHeight = REPLACE_MODE_HEIGHT;
             } else {
                 lblReplaceWith.Visibility = Visibility.Collapsed;
                 txtReplaceWith.Visibility = Visibility.Collapsed;
@@ -78,6 +80,8 @@ namespace KuroNote
                 btnReplaceAll.Visibility = Visibility.Collapsed;
                 btnCount.Visibility = Visibility.Visible;
                 this.Height = FIND_MODE_HEIGHT;
+                this.MinHeight = FIND_MODE_HEIGHT;
+                this.MaxHeight = FIND_MODE_HEIGHT;
             }
         }
 

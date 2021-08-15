@@ -21,7 +21,7 @@
                 <Button Name="btnOk" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="OK" IsDefault="True" FontSize="14"/>
             </StackPanel>
         </StackPanel>
-        <Grid Margin="10px">
+        <Grid Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>

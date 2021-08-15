@@ -20,9 +20,12 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Options window
-    /// TODO: Tooltips in EnUIDict
-    /// TODO: internal flag to toggle between showing full file path in the app title and just the file name
+    /// TODO: holiday greetings
+    /// TODO: option to toggle between showing full file path in the app title and just the file name
+    /// TODO: options to remember window size
+    /// TODO: option to change saving/loading encoding
+    /// TODO: Drag and drop
+    /// 
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
     /// 
     /// </summary>
@@ -37,6 +40,8 @@ namespace KuroNote
         private const string CUSTOM_THEME_EXT = ".kurotheme";
         private const string INTERNAL_IMAGE_EXT = ".jpg";           //custom theme destination extension is always this
         private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
+        private const double DEFAULT_WINDOW_HEIGHT = 500;
+        private const double DEFAULT_WINDOW_WIDTH = 750;
 
         //Globals
         public string appName = "KuroNote";
@@ -48,8 +53,6 @@ namespace KuroNote
 
         private bool editedFlag = false;                    //Are there any unsaved changes?
         private Encoding selectedEncoding = Encoding.UTF8;  //Encoding for opening and saving files (Encoding.ASCII blocks unicode)
-
-        private bool temporaryLogEnabledFlag = true;
 
         public KuroNoteTheme[] themeCollection;
 
@@ -77,14 +80,19 @@ namespace KuroNote
         public MainWindow()
         {
             InitializeComponent();
-            InitialiseLog(); 
             InitialiseSettings();
+            InitialiseLog();
             InitialiseUIDictionary();
             InitialiseErrorDictionary();
             InitialiseFont();
             InitialiseThemeCollection();
             InitialiseTheme();
             processCmdLineArgs();
+            processImmediateSettings();
+            if(appSettings.rememberWindowSize) {
+                this.Height = appSettings.windowHeight;
+                this.Width = appSettings.windowWidth;
+            }
             purgeOrphanedThemeImages();
 
             toggleEdited(false);
@@ -93,6 +101,12 @@ namespace KuroNote
                 "Ready! Awaiting instructions"
             , true);
             setStatus("Welcome");
+            /*
+            if(appSettings.gamification) {
+                processHolidayGreetings();
+                InitialiseGamification();
+            }
+            */
         }
 
         /// <summary>
@@ -102,42 +116,68 @@ namespace KuroNote
         {
             EnUIDict = new Dictionary<string, string>();
             //File
-            EnUIDict["FileMi"] = "New";
+            EnUIDict["FileMi"] = "File";
             EnUIDict["NewMi"] = "New";
+                EnUIDict["NewMiTT"] = "Closes this file and creates a new file.";
             EnUIDict["NewWinMi"] = "New Window";
             EnUIDict["NewRegularWinMi"] = "New Window";
+                EnUIDict["NewRegularWinMiTT"] = "Opens a new " + appName + " window.";
             EnUIDict["NewAdminWinMi"] = "New Administrator Window";
+                EnUIDict["NewAdminWinMiTT"] = "Opens a new " + appName + " window with administrator rights.";
             EnUIDict["OpenMi"] = "Open...";
+                EnUIDict["OpenMiTT"] = "Opens an existing file.";
             EnUIDict["SaveMi"] = "Save";
+                EnUIDict["SaveMiTT"] = "Saves over this file if it already exists, otherwise saves this file as a specified file.";
             EnUIDict["SaveAsMi"] = "Save As...";
+                EnUIDict["SaveAsMiTT"] = "Saves this file as a specified file.";
             EnUIDict["PrintMi"] = "Print...";
+                EnUIDict["PrintMiTT"] = "Prints this file.";
             EnUIDict["ExitMi"] = "Exit";
+                EnUIDict["ExitMiTT"] = "Closes " + appName + ".";
             //Edit
             EnUIDict["EditMi"] = "Edit";
             EnUIDict["CutMi"] = "Cut";
+                EnUIDict["CutMiTT"] = "Moves any selected text to the clipboard.";
             EnUIDict["CopyMi"] = "Copy";
+                EnUIDict["CopyMiTT"] = "Copies any selected text to the clipboard.";
             EnUIDict["PasteMi"] = "Paste";
+                EnUIDict["PasteMiTT"] = "Pastes text from the clipboard over any selected text.";
             EnUIDict["UndoMi"] = "Undo";
+                EnUIDict["UndoMiTT"] = "Undoes the last change made to this file.";
             EnUIDict["RedoMi"] = "Redo";
+                EnUIDict["RedoMiTT"] = "Redoes the last undone change made to this file.";
             EnUIDict["FindMi"] = "Find...";
+                EnUIDict["FindMiTT"] = "Searches this file for a specified phrase.";
             EnUIDict["ReplaceMi"] = "Replace...";
+                EnUIDict["ReplaceMiTT"] = "Searches this file for a specified phrase and replaces it with another specified phrase.";
             EnUIDict["SelectAllMi"] = "Select All";
+                EnUIDict["SelectAllMiTT"] = "Selects all text within this file.";
             //Format
             EnUIDict["FormatMi"] = "Format";
             EnUIDict["FontMi"] = "Font...";
+                EnUIDict["FontMiTT"] = "Changes the font to a specified font.";
             //Tools
             EnUIDict["ToolsMi"] = "Tools";
             EnUIDict["AESMi"] = "AES Encryption";
             EnUIDict["AESEncMi"] = "AES Encrypt...";
+                EnUIDict["AESEncMiTT"] = "Creates a copy of this file that is encrypted with a specified password by the Advanced Encryption Standard.";
             EnUIDict["AESDecMi"] = "AES Decrypt...";
+                EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard.";
             //Options
             EnUIDict["OptionsMi"] = string.Empty;
+            EnUIDict["OptionsDialogMi"] = "Options...";
+                EnUIDict["OptionsDialogMiTT"] = "Displays various options that you can change to optimise your experience using " + appName + ".";
             EnUIDict["ThemeMi"] = "Select Theme...";
+                EnUIDict["ThemeMiTT"] = "Changes the theme to a specified theme.";
             EnUIDict["CustomThemesMi"] = "Custom Themes...";
+                EnUIDict["CustomThemesMiTT"] = "Opens the custom themes manager.";
             EnUIDict["LoggingMi"] = "Logging";
             EnUIDict["ShowLogMi"] = "Show Log...";
+                EnUIDict["ShowLogMiTT"] = "Opens the log for the current session.";
             EnUIDict["ShowLogFilesMi"] = "Show Log Files...";
+                EnUIDict["ShowLogFilesMiTT"] = "Opens the directory where " + appName + " log files are stored.";
             EnUIDict["AboutMi"] = "About " + appName;
+                EnUIDict["AboutMiTT"] = "Displays information about " + appName + ".";
             this.DataContext = EnUIDict;
         }
 
@@ -149,7 +189,7 @@ namespace KuroNote
             EnErrMsgDict = new Dictionary<int, string>();
             EnErrTitleDict = new Dictionary<int, string>();
 
-            EnErrMsgDict[1] = "KuroNote is not designed to load files larger than " + FILE_MAX_SIZE + " B. " +
+            EnErrMsgDict[1] =  appName + " is not designed to load files larger than " + FILE_MAX_SIZE + " B. " +
                 "Files of this size may significantly compromise performance. " +
                 "Are you sure you want to open this file which exceeds the limit?";
             EnErrTitleDict[1] = "File size exceeds limit";
@@ -182,7 +222,7 @@ namespace KuroNote
         {
             appSettings = new KuroNoteSettings(log);
             appSettings.RetrieveSettings();
-            log.addLog("Settings initialised");
+            //Cannot be logged because logging is a settings choice that must first be retrieved here
         }
 
         /// <summary>
@@ -190,9 +230,11 @@ namespace KuroNote
         /// </summary>
         private void InitialiseLog()
         {
-            log = new Log(this, temporaryLogEnabledFlag);
-            if (temporaryLogEnabledFlag) {
+            log = new Log(this, appSettings.logging);
+            if (appSettings.logging) {
                 log.beginLog();
+            } else {
+                ShowLogMi.IsEnabled = false; //No point in showing the log if we aren't logging
             }
         }
 
@@ -256,6 +298,19 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Process and apply settings that can take effect immediately (i.e. without restart)
+        /// </summary>
+        public void processImmediateSettings()
+        {
+            //Float above other windows
+            if (appSettings.floating) {
+                this.Topmost = true;
+            } else {
+                this.Topmost = false;
+            }
+        }
+
+        /// <summary>
         /// Check for images in the custom themes directory that don't have associated .kurotheme files and delete them
         /// </summary>
         private void purgeOrphanedThemeImages()
@@ -301,7 +356,7 @@ namespace KuroNote
             {
                 new KuroNoteTheme
                 (
-                    0, "Spectrum", "(Image by Gradienta on Pexels)", 0,
+                    0, "Spectrum", "Image by Gradienta on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985193.jpg", UriKind.Absolute)),
                                      Opacity = 0.5 },
@@ -312,18 +367,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    1, "ShiroNote", "cissalC", 2912,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute)),
-                                     Opacity = 0.38 },
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    2, "Soft Light", "(Image by Gradienta on Pexels)", 0,
+                    1, "Spectrum II", "Image by Gradienta on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985045.jpg")),
                                      Opacity = 0.44 },
@@ -334,18 +378,18 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    3, "Layers of Time", "(Image by Fillipe Gomes on Pexels)", 0,
+                    2, "Eternal", "Image by Skyler Ewing", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fillipe-gomes-5611219.jpg")),
-                                     Opacity = 0.33 },
-                    new SolidColorBrush(Color.FromRgb(255, 244, 231)),
-                    new SolidColorBrush(Color.FromRgb(255, 244, 231)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-skyler-ewing-5748311.jpg", UriKind.Absolute)),
+                                     Opacity = 0.42 },
+                    new SolidColorBrush(Color.FromRgb(244, 239, 235)),
+                    new SolidColorBrush(Color.FromRgb(244, 239, 235)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                    "Palatino Linotype", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
-                    4, "Endless Sky", "(Image by Pixabay on Pexels)", 0,
+                    3, "Boundless Sky", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-258149.jpg")),
                                      Opacity = 0.28 },
@@ -356,29 +400,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    5, "Morning Dew", "(Image by Pixabay)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-276205.jpg")),
-                                     Opacity = 0.26 },
-                    new SolidColorBrush(Color.FromRgb(255, 243, 230)),
-                    new SolidColorBrush(Color.FromRgb(255, 243, 230)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    6, "Leafy Green", "(Image by Karolina Grabowska on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
-                                     Opacity = 0.34 },
-                    new SolidColorBrush(Color.FromRgb(208, 203, 169)),
-                    new SolidColorBrush(Color.FromRgb(208, 203, 169)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    7, "Overly Orangey", "(Image by Karolina Grabowska on Pexels)", 0,
+                    4, "Overly Orangey", "Image by Karolina Grabowska on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4022107.jpg")),
                                      Opacity = 0.27 },
@@ -389,18 +411,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    8, "Paradise Found", "(Image by Asad Photo Maldives on Pexels)", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-asad-photo-maldives-3320516.jpg")),
-                                     Opacity = 0.29 },
-                    new SolidColorBrush(Color.FromRgb(201, 228, 255)),
-                    new SolidColorBrush(Color.FromRgb(254, 254, 254)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    9, "Sunset Ripples", "(Image by Ben Mack on Pexels)", 0,
+                    5, "Sunset Ripples", "Image by Ben Mack on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-ben-mack-5326909.jpg")),
                                      Opacity = 0.33 },
@@ -411,7 +422,84 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    10, "Abyss", "Distraction-free!", 0,
+                    6, "Spotless Snow", "Image by Pixabay on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-60561.jpg")),
+                                     Opacity = 0.36 },
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    7, "Sakura", "Image by Antonio Janeski on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-antonio-janeski-cherry blossoms-4052701.jpg")),
+                                     Opacity = 0.29 },
+                    new SolidColorBrush(Color.FromRgb(231, 216, 240)),
+                    new SolidColorBrush(Color.FromRgb(231, 216, 240)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    8, "Leafy Green", "Image by Karolina Grabowska on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
+                                     Opacity = 0.34 },
+                    new SolidColorBrush(Color.FromRgb(208, 203, 169)),
+                    new SolidColorBrush(Color.FromRgb(208, 203, 169)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    9, "Paradise Found", "Image by Asad Photo Maldives on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-asad-photo-maldives-3320516.jpg")),
+                                     Opacity = 0.29 },
+                    new SolidColorBrush(Color.FromRgb(201, 228, 255)),
+                    new SolidColorBrush(Color.FromRgb(254, 254, 254)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    10, "Layers of Time", "Image by Fillipe Gomes on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fillipe-gomes-5611219.jpg")),
+                                     Opacity = 0.33 },
+                    new SolidColorBrush(Color.FromRgb(255, 244, 231)),
+                    new SolidColorBrush(Color.FromRgb(255, 244, 231)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    11, "Bold Gold", "Image by NaMaKuKi on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 215, 0)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-namakuki-751374.jpg")),
+                                     Opacity = 0.55 },
+                    new SolidColorBrush(Color.FromRgb(255, 226, 51)),
+                    new SolidColorBrush(Color.FromRgb(255, 226, 51)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    12, "Pleases and Sparkles", "Image by Sharon McCutcheon on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 236, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-5922574.jpg")),
+                                     Opacity = 0.30 },
+                    new SolidColorBrush(Color.FromRgb(255, 216, 255)),
+                    new SolidColorBrush(Color.FromRgb(254, 218, 243)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    13, "Abyss", "Distraction-free!", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(249, 249, 249)),
                     new SolidColorBrush(Color.FromRgb(249, 249, 249)),
@@ -421,7 +509,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    11, "Onyx", "Sleepy-eye friendly!", 0,
+                    14, "Onyx", "Sleepy-eye friendly!", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(15, 15, 15)),
                     new SolidColorBrush(Color.FromRgb(190, 190, 190)),
@@ -431,23 +519,56 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    12, "Notepad", "Mightier than the sword!", 0,
+                    15, "Notepad", "Mightier than the sword!", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(255, 255, 210)),
                     new SolidColorBrush(Color.FromRgb(220, 220, 175)),
                     new SolidColorBrush(Color.FromRgb(220, 220, 175)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                    "Comic Sans MS", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
-                    13, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[13]; }", 0,
+                    16, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[16]; }", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     new SolidColorBrush(Color.FromRgb(190, 190, 190)),
                     new SolidColorBrush(Color.FromRgb(190, 190, 190)),
                     new SolidColorBrush(Color.FromRgb(0, 255, 0)),
                     "Consolas", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    17, "Antiqua", "Image by Pixabay on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-235985.jpg")),
+                                     Opacity = 0.48 },
+                    new SolidColorBrush(Color.FromRgb(170, 152, 143)),
+                    new SolidColorBrush(Color.FromRgb(170, 152, 143)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Book Antiqua", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    18, "Contour", "Image by David Yu on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-yu-2684383.jpg")),
+                                     Opacity = 0.39 },
+                    new SolidColorBrush(Color.FromRgb(219, 223, 229)),
+                    new SolidColorBrush(Color.FromRgb(219, 223, 229)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Arial", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    19, "Droplets of Hope", "Image by Karolina Grabowska on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4194853.jpg")),
+                                     Opacity = 0.45 },
+                    new SolidColorBrush(Color.FromRgb(236, 233, 252)),
+                    new SolidColorBrush(Color.FromRgb(236, 233, 252)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 )
             };
         }
@@ -465,7 +586,7 @@ namespace KuroNote
 
             //main.MainRtb.SelectionBrush = new SolidColorBrush(Color.FromRgb(255, 255, 0));
             MainRtb.BorderThickness = new Thickness(0, 0, 0, 0); //No blue outline when you click inside the RTB
-            MainRtb.Padding = new Thickness(5, 10, 5, 10); //So you don't start typing right on the edge of the RTB
+            MainRtb.Padding = new Thickness(5, 9, 5, 9); //So you don't start typing right on the edge of the RTB
             MainRtb.SetValue(Paragraph.LineHeightProperty, 1.0);
         }
 
@@ -856,10 +977,22 @@ namespace KuroNote
                     }
                     return false;
                 } else {
+                    //Remember window size if the option is enabled
+                    if (appSettings.rememberWindowSize) {
+                        appSettings.windowHeight = this.Height;
+                        appSettings.windowWidth = this.Width;
+                        appSettings.UpdateSettings();
+                    }
                     log.addLog("Exiting");
                     return true;
                 }
             } else {
+                //Remember window size if the option is enabled
+                if (appSettings.rememberWindowSize) {
+                    appSettings.windowHeight = this.Height;
+                    appSettings.windowWidth = this.Width;
+                    appSettings.UpdateSettings();
+                }
                 log.addLog("Exiting");
                 return true;
             }
@@ -879,11 +1012,16 @@ namespace KuroNote
         /// </summary>
         private void Cut()
         {
-            log.addLog("Request: Cut");
-            TextRange cutRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
-            string textToCut = cutRange.Text;
-            cutRange.Text = String.Empty;
-            Clipboard.SetData(DataFormats.UnicodeText, textToCut);
+            try {
+                log.addLog("Request: Cut");
+                TextRange cutRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
+                string textToCut = cutRange.Text;
+                cutRange.Text = String.Empty;
+                Clipboard.SetData(DataFormats.UnicodeText, textToCut);
+            } catch (Exception e) {
+                log.addLog("ERROR: Clipboard error during Cut");
+                log.addLog(e.ToString());
+            }
         }
 
         /// <summary>
@@ -891,10 +1029,15 @@ namespace KuroNote
         /// </summary>
         private void Copy()
         {
-            log.addLog("Request: Copy");
-            TextRange copyRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
-            string textToCopy = copyRange.Text;
-            Clipboard.SetData(DataFormats.UnicodeText, textToCopy);
+            try {
+                log.addLog("Request: Copy");
+                TextRange copyRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
+                string textToCopy = copyRange.Text;
+                Clipboard.SetData(DataFormats.UnicodeText, textToCopy);
+            } catch (Exception e) {
+                log.addLog("ERROR: Clipboard error during Copy");
+                log.addLog(e.ToString());
+            }
         }
 
         /// <summary>
@@ -902,10 +1045,15 @@ namespace KuroNote
         /// </summary>
         private void Paste()
         {
-            log.addLog("Request: Paste");
-            string textToPaste = Clipboard.GetText();
-            Clipboard.SetData(DataFormats.UnicodeText, textToPaste);
-            //Default paste operation runs
+            try {
+                log.addLog("Request: Paste");
+                string textToPaste = Clipboard.GetText();
+                Clipboard.SetData(DataFormats.UnicodeText, textToPaste);
+                //Default paste operation runs
+            } catch (Exception e) {
+                log.addLog("ERROR: Clipboard error during Paste");
+                log.addLog(e.ToString());
+            }
         }
 
         /// <summary>
@@ -1099,6 +1247,16 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Menu > Options > Options...
+        /// </summary>
+        private void Options_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: Options...");
+            OptionsDialog optionsDialog = new OptionsDialog(this, appSettings, log);
+            optionsDialog.toggleVisibility(true);
+        }
+
+        /// <summary>
         /// Menu > Options > Theme...
         /// </summary>
         private void Theme_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1124,7 +1282,7 @@ namespace KuroNote
         /// </summary>
         private void ShowLog_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (temporaryLogEnabledFlag) {
+            if (appSettings.logging) {
                 log.addLog("Request: Show Log");
                 log.toggleVisibility(true);
             }
@@ -1152,7 +1310,7 @@ namespace KuroNote
         private void SaveStatusItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (editedFlag) {
-                MessageBox.Show("Some changes have been made to this file.\nKuroNote will offer to save these changes when you close the file.", SaveStatusTb.Text, MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Some changes have been made to this file.\n" + appName + " will offer to save these changes when you close the file.", SaveStatusTb.Text, MessageBoxButton.OK, MessageBoxImage.Information);
             } else {
                 MessageBox.Show("No changes have been made to this file.\nYou can safely close the file at any time.", SaveStatusTb.Text, MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -1164,7 +1322,12 @@ namespace KuroNote
         private void WordCountItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
             TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-            MessageBox.Show(generateWordCount() + "\n" + document.Text.Length + " Characters (including spaces)", "Word Count", MessageBoxButton.OK, MessageBoxImage.Information);
+            int characterCount = document.Text.Length - 2; //this includes the "start" and "end" characters which most consider to be "not real" characters
+            if(characterCount < 0) {
+                characterCount = 0;
+            }
+
+            MessageBox.Show(generateWordCount() + "\n" + characterCount + " Characters (including spaces)", "Word Count", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
@@ -1259,6 +1422,7 @@ namespace KuroNote
         public static RoutedCommand AESDec = new RoutedCommand();
 
         //Options
+        public static RoutedCommand Options = new RoutedCommand();
         public static RoutedCommand Theme = new RoutedCommand();
         public static RoutedCommand CustomThemes = new RoutedCommand();
         public static RoutedCommand ShowLog = new RoutedCommand();

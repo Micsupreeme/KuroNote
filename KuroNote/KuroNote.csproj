@@ -20,8 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg" />
     <None Remove="img\bgs\pexels-asad-photo-maldives-3320516.jpg" />
     <None Remove="img\bgs\pexels-ben-mack-5326909.jpg" />
+    <None Remove="img\bgs\pexels-david-yu-2684383.jpg" />
     <None Remove="img\bgs\pexels-fillipe-gomes-5611219.jpg" />
     <None Remove="img\bgs\pexels-freestocksorg-863908.jpg" />
     <None Remove="img\bgs\pexels-fwstudio-168447.jpg" />
@@ -29,8 +31,14 @@
     <None Remove="img\bgs\pexels-gradienta-6985193.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4022107.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4046687.jpg" />
+    <None Remove="img\bgs\pexels-karolina-grabowska-4194853.jpg" />
+    <None Remove="img\bgs\pexels-namakuki-751374.jpg" />
+    <None Remove="img\bgs\pexels-pixabay-235985.jpg" />
     <None Remove="img\bgs\pexels-pixabay-258149.jpg" />
     <None Remove="img\bgs\pexels-pixabay-276205.jpg" />
+    <None Remove="img\bgs\pexels-pixabay-60561.jpg" />
+    <None Remove="img\bgs\pexels-sharon-mccutcheon-5922574.jpg" />
+    <None Remove="img\bgs\pexels-skyler-ewing-5748311.jpg" />
     <None Remove="img\icons\kuronote_logo.ico" />
     <None Remove="img\icons\kuronote_logo.png" />
     <None Remove="img\icons\kuronote_logo_admin.png" />
@@ -104,13 +112,20 @@
   <ItemGroup>
     <PackageReference Include="ColorPickerWPF" Version="1.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="WPFSpark" Version="1.5.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\bgs\pexels-asad-photo-maldives-3320516.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-ben-mack-5326909.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-david-yu-2684383.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-fillipe-gomes-5611219.jpg">
@@ -128,10 +143,25 @@
     <Resource Include="img\bgs\pexels-karolina-grabowska-4046687.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\bgs\pexels-karolina-grabowska-4194853.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-namakuki-751374.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-pixabay-235985.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\bgs\pexels-pixabay-258149.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\bgs\pexels-pixabay-276205.jpg">
+    <Resource Include="img\bgs\pexels-pixabay-60561.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-sharon-mccutcheon-5922574.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-skyler-ewing-5748311.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\kuronote_logo.ico">

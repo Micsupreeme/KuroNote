@@ -14,13 +14,19 @@ namespace KuroNote
         private string appPath = AppDomain.CurrentDomain.BaseDirectory;
 
         //attributes with default values
-        public string fontFamily = "Arial";
-        public int fontSize = 14;
+        public string fontFamily = "Verdana";
+        public int fontSize = 17;
         public FontWeight fontWeight = FontWeights.Normal;
         public FontStyle fontStyle = FontStyles.Normal;
         public int themeId = 0;
         public bool themeWithFont = true;
         public int customThemeIndex = 1000;
+        public bool gamification = true;
+        public bool logging = false;
+        public bool floating = false;
+        public bool rememberWindowSize = false;
+        public double windowHeight = 500;
+        public double windowWidth = 750;
 
         public KuroNoteSettings(Log mainLog)
         {
@@ -33,7 +39,9 @@ namespace KuroNote
         public void RetrieveSettings()
         {
             try {
-                log.addLog("Reading conf.json");
+                if(log != null) {
+                    log.addLog("Reading conf.json");
+                }
                 using (StreamReader sr = new StreamReader(appPath + "conf/conf.json")) {
                     string json = sr.ReadToEnd();
                     KuroNoteSettings knsFile = JsonConvert.DeserializeObject<KuroNoteSettings>(json);
@@ -45,10 +53,24 @@ namespace KuroNote
                     this.themeId = knsFile.themeId;
                     this.themeWithFont = knsFile.themeWithFont;
                     this.customThemeIndex = knsFile.customThemeIndex;
-                    log.addLog("Successfully read conf.json");
+                    this.gamification = knsFile.gamification;
+                    this.logging = knsFile.logging;
+                    this.floating = knsFile.floating;
+                    this.rememberWindowSize = knsFile.rememberWindowSize;
+                    this.windowHeight = knsFile.windowHeight;
+                    this.windowWidth = knsFile.windowWidth;
+                    if (log != null) {
+                        log.addLog("Successfully read conf.json");
+                    }
                 }
             } catch (Exception e) {
-                log.addLog(e.ToString());
+                if (log != null) {
+                    log.addLog(e.ToString());
+                } else {
+                    Console.Error.WriteLine("Error during RetrieveSettings before log initialised:");
+                    Console.Error.WriteLine(e.ToString());
+                }
+                UpdateSettings(); //Creates a new conf file with default values (since the values weren't changed from the defaults)
             }
         }
 
@@ -58,15 +80,24 @@ namespace KuroNote
         public void UpdateSettings()
         {
             try {
-                log.addLog("Updating conf.json");
+                if(log != null) {
+                    log.addLog("Updating conf.json");
+                }
                 using (StreamWriter sw = new StreamWriter(appPath + "conf/conf.json")) {
                     string json = JsonConvert.SerializeObject(this);
 
                     sw.Write(json);
-                    log.addLog("Successfully updated conf.json");
+                    if(log != null) {
+                        log.addLog("Successfully updated conf.json");
+                    }
                 }
             } catch (Exception e) {
-                MessageBox.Show(e.ToString());
+                if (log != null) {
+                    log.addLog(e.ToString());
+                } else {
+                    Console.Error.WriteLine("Error during UpdateSettings before log initialised:");
+                    Console.Error.WriteLine(e.ToString());
+                }
             }
         }
     }

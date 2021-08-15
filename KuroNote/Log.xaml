@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="Log" Height="450" Width="600" MinHeight="250" MinWidth="500"
+        Title="Log" Height="450" Width="600" MinHeight="272" MinWidth="500"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         Background="#404040"
         WindowStartupLocation="CenterScreen"

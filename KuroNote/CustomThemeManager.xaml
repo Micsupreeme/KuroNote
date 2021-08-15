@@ -6,7 +6,7 @@
         xmlns:ColorPickerWPF="clr-namespace:ColorPickerWPF;assembly=ColorPickerWPF"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="CustomThemeManager" Width="700" Height="600" MaxHeight="600"
+        Title="CustomThemeManager" Width="700" Height="600" MinWidth="640" MinHeight="600" MaxHeight="600"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         Background="#404040"
         WindowStartupLocation="CenterScreen"
