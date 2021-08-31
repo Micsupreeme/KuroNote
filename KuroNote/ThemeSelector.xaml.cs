@@ -78,7 +78,8 @@ namespace KuroNote
             }
 
             foreach (KuroNoteTheme theme in themeCollection) {
-                if (theme.unlockCode == 0) { //to support unlocks - check that an array contains a specified unlockCode
+                //Add themes that are already unlocked OR the unlock code is stored in the achievements arry (i.e. previously locked, now unlocked)
+                if (theme.unlockCode == 0 || settings.achList.Contains(theme.unlockCode)) {
                     ComboBoxItem themeItem = new ComboBoxItem();
                     themeItem.Tag = theme.themeId;
                     themeItem.Content = theme.themeName;

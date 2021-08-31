@@ -66,6 +66,21 @@ namespace KuroNote
                     this.Title = "AES Encryption - " + appName;
                     statusDescription = "AES Encryption Complete" + Environment.NewLine + Environment.NewLine + "File Size: " + getFormattedSize();
                     btnSave.IsEnabled = true;
+
+                    if (settings.gamification) {
+                        settings.achEncrypts++;
+                        settings.UpdateSettings();
+
+                        switch(settings.achEncrypts) {
+                            case 10:
+                                main.unlockAchievement(9);
+                                break;
+                            case 50:
+                                main.unlockAchievement(10);
+                                break;
+                        }
+                    }
+
                     break;
                 case 1:
                     //AES Encrypt Failure

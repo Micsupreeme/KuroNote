@@ -1,15 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using WPFSpark;
 
 namespace KuroNote
 {
@@ -65,6 +55,8 @@ namespace KuroNote
             loggingTs.IsChecked = settings.logging;
             floatingTs.IsChecked = settings.floating;
             windowsizeTs.IsChecked = settings.rememberWindowSize;
+            useasciiTs.IsChecked = settings.useAscii;
+            fullfilepathTs.IsChecked = settings.fullFilePath;
         }
 
         /// <summary>
@@ -76,6 +68,8 @@ namespace KuroNote
             settings.logging = (bool)loggingTs.IsChecked;
             settings.floating = (bool)floatingTs.IsChecked;
             settings.rememberWindowSize = (bool)windowsizeTs.IsChecked;
+            settings.useAscii = (bool)useasciiTs.IsChecked;
+            settings.fullFilePath = (bool)fullfilepathTs.IsChecked;
             settings.UpdateSettings();
         }
 
@@ -160,6 +154,42 @@ namespace KuroNote
         {
             try {
                 windowsizeLbl.Content = BOOL0;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
+            }
+        }
+
+        private void fullfilepathTs_Checked(object sender, RoutedEventArgs e)
+        {
+            try {
+                fullfilepathLbl.Content = BOOL1;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
+            }
+        }
+
+        private void fullfilepathTs_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try {
+                fullfilepathLbl.Content = BOOL0;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
+            }
+        }
+
+        private void useasciiTs_Checked(object sender, RoutedEventArgs e)
+        {
+            try {
+                useasciiLbl.Content = BOOL1;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
+            }
+        }
+
+        private void useasciiTs_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try {
+                useasciiLbl.Content = BOOL0;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }

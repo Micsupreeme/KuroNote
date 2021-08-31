@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Collections.Generic;
 
 namespace KuroNote
 {
@@ -24,9 +25,18 @@ namespace KuroNote
         public bool gamification = true;
         public bool logging = false;
         public bool floating = false;
+        public bool useAscii = false;
         public bool rememberWindowSize = false;
+        public bool fullFilePath = false;
         public double windowHeight = 500;
         public double windowWidth = 750;
+        public List<int> achList = new List<int>() { };
+        public int achStartups = 0;
+        public int achOpens = 0;
+        public int achSaves = 0;
+        public int achSaveAs = 0;
+        public int achEncrypts = 0;
+        public int achCustoms = 0;
 
         public KuroNoteSettings(Log mainLog)
         {
@@ -56,9 +66,18 @@ namespace KuroNote
                     this.gamification = knsFile.gamification;
                     this.logging = knsFile.logging;
                     this.floating = knsFile.floating;
+                    this.useAscii = knsFile.useAscii;
                     this.rememberWindowSize = knsFile.rememberWindowSize;
+                    this.fullFilePath = knsFile.fullFilePath;
                     this.windowHeight = knsFile.windowHeight;
                     this.windowWidth = knsFile.windowWidth;
+                    this.achList = knsFile.achList;
+                    this.achStartups = knsFile.achStartups;
+                    this.achOpens = knsFile.achOpens;
+                    this.achSaves = knsFile.achSaves;
+                    this.achSaveAs = knsFile.achSaveAs;
+                    this.achEncrypts = knsFile.achEncrypts;
+                    this.achCustoms = knsFile.achCustoms;
                     if (log != null) {
                         log.addLog("Successfully read conf.json");
                     }

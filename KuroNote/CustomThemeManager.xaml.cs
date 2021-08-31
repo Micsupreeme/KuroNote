@@ -184,6 +184,20 @@ namespace KuroNote
                 "#FF000000",
                 "Verdana", 17, FontWeights.Regular, FontStyles.Normal
             );
+
+            if (settings.gamification) {
+                settings.achCustoms++;
+                settings.UpdateSettings();
+
+                switch (settings.achCustoms) {
+                    case 5:
+                        main.unlockAchievement(4);
+                        break;
+                    case 15:
+                        main.unlockAchievement(15);
+                        break;
+                }
+            }
         }
 
         /// <summary>

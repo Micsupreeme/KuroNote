@@ -20,12 +20,20 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: holiday greetings
-    /// TODO: option to toggle between showing full file path in the app title and just the file name
-    /// TODO: options to remember window size
-    /// TODO: option to change saving/loading encoding
     /// TODO: Drag and drop
+    /// TODO: Arbitrary points, levels and ranks
+    ///     More spammable actions = less points
+    ///         Launch:                 10ap
+    ///         Save:                   10ap
+    ///         Open:                   15ap
+    ///         Change font:            20ap
+    ///         Select theme:           20ap
+    ///         Create custom theme:    20ap
+    ///         Save As:                30ap
+    ///         Encrypt:                30ap
+    /// TODO: about and dependencies
     /// 
+    /// TODO: don't let user encrypt/decrypt nothing
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
     /// 
     /// </summary>
@@ -49,19 +57,22 @@ namespace KuroNote
         private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
         private KuroNoteSettings appSettings;
         private Log log;
-        private string fileName = string.Empty;             //Name of the loaded file - null if no file loaded
+        private string fileName = string.Empty;                     //Name of the loaded file - null if no file loaded
 
-        private bool editedFlag = false;                    //Are there any unsaved changes?
-        private Encoding selectedEncoding = Encoding.UTF8;  //Encoding for opening and saving files (Encoding.ASCII blocks unicode)
+        private bool editedFlag = false;                            //Are there any unsaved changes?
+        private Encoding selectedEncoding = Encoding.UTF8;          //Encoding for opening and saving files (Encoding.ASCII blocks unicode)
 
         public KuroNoteTheme[] themeCollection;
 
-        //UI Dictionaries for different languages
+        //English UI dictionary
         public Dictionary<string, string> EnUIDict;
 
-        //Error Dictionaries for different languages
+        //English Error dictionary
         public Dictionary<int, string> EnErrMsgDict;
         public Dictionary<int, string> EnErrTitleDict;
+
+        //English Achievment dictionary
+        public KuroNoteAchievement[] EnAchDict;
 
         #region Code for reference
         /*
@@ -82,10 +93,15 @@ namespace KuroNote
             InitializeComponent();
             InitialiseSettings();
             InitialiseLog();
+            InitialiseThemeCollection();
+            if (appSettings.gamification) {
+                InitialiseAchievementDictionary();
+                processHolidayGreetings();
+                processStartupAchievements();
+            }
             InitialiseUIDictionary();
             InitialiseErrorDictionary();
             InitialiseFont();
-            InitialiseThemeCollection();
             InitialiseTheme();
             processCmdLineArgs();
             processImmediateSettings();
@@ -96,17 +112,7 @@ namespace KuroNote
             purgeOrphanedThemeImages();
 
             toggleEdited(false);
-            log.addLog(
-                Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " +
-                "Ready! Awaiting instructions"
-            , true);
-            setStatus("Welcome");
-            /*
-            if(appSettings.gamification) {
-                processHolidayGreetings();
-                InitialiseGamification();
-            }
-            */
+            log.addLog(Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " + "Ready! Awaiting instructions", true);
         }
 
         /// <summary>
@@ -207,12 +213,68 @@ namespace KuroNote
         /// <summary>
         /// Retrieves the specified error message and error message title
         /// </summary>
-        /// <param name="_errorCode"></param>
+        /// <param name="_errorCode">The unique code of the error message to retrieve</param>
         /// <returns>An array containing the error message [0], and the error message title [1]</returns>
         private string[] getErrorMessage(int _errorCode)
         {
             string[] errorMessage = new string[] {EnErrMsgDict[_errorCode], EnErrTitleDict[_errorCode]};
             return errorMessage;
+        }
+
+        /// <summary>
+        /// Defines achievement names, descriptions and reward themes
+        /// </summary>
+        private void InitialiseAchievementDictionary()
+        {
+            EnAchDict = new KuroNoteAchievement[] {
+                //Holiday achievmenets
+                new KuroNoteAchievement(11, "New Year's Day", "Launch KuroNote on January 1st"),
+                new KuroNoteAchievement(214, "Valentine's Day", "Launch KuroNote on February 14th", themeCollection[24]), //"Hearts" theme
+                new KuroNoteAchievement(317, "Saint Patrick's Day", "Launch KuroNote on March 17th"),
+                new KuroNoteAchievement(320, "International Day of Happiness", "Launch KuroNote on March 20th", themeCollection[26]), //"Yellow" theme
+                new KuroNoteAchievement(422, "Earth Day", "Launch KuroNote on April 22nd", themeCollection[10]), //"Earth" theme
+                new KuroNoteAchievement(54, "Star Wars Day", "May the 4th be with you!"),
+                new KuroNoteAchievement(621, "World Music Day", "Launch KuroNote on June 21st"),
+                new KuroNoteAchievement(720, "National Moon Day", "Launch KuroNote on July 20th", themeCollection[14]), //"Moon" theme
+                new KuroNoteAchievement(88, "International Cat Day", "Launch KuroNote on August 8th"),
+                new KuroNoteAchievement(826, "International Dog Day", "Launch KuroNote on August 26th"),
+                new KuroNoteAchievement(921, "International Day of Peace", "Launch KuroNote on September 21st", themeCollection[3]), //"Eternal" theme
+                new KuroNoteAchievement(1031, "Halloween", "Launch KuroNote on October 31st"),
+                new KuroNoteAchievement(1111, "Origami Day", "Launch KuroNote on November 11th", themeCollection[6]), //"Origami" theme
+                new KuroNoteAchievement(1225, "Christmas Day", "Launch KuroNote on December 25th"),
+                //Other achievements
+                new KuroNoteAchievement(1, "You actually read it", "Read KuroNote's product description"),
+                new KuroNoteAchievement(100, "Centurion", "Launch KuroNote 100 times", themeCollection[1]), //"Spectrum II" theme
+                new KuroNoteAchievement(1000, "Startup Millenium", "Launch KuroNote 1000 times", themeCollection[2]), //"Spectrum III" theme
+                new KuroNoteAchievement(5000, "1001110001000", "Launch KuroNote 5000 times"),
+                new KuroNoteAchievement(2, "Salvare", "\"Save As...\" 500 times"),
+                new KuroNoteAchievement(3, "Creator of Worlds", "\"Save As...\" 2000 times", themeCollection[16]), //"Creation Magic" theme
+                new KuroNoteAchievement(4, "Make it Yours", "Create 5 custom themes"),
+                new KuroNoteAchievement(5, "Customs Connoisseur", "Create 15 custom themes"),
+                new KuroNoteAchievement(9, "Ne0phyt3", "\"AES Encrypt...\" 10 times"),
+                new KuroNoteAchievement(10, "Crypt0r", "\"AES Encrypt...\" 50 times"),
+                new KuroNoteAchievement(12, "Qualified CTRL+S'er", "\"Save\" 1000 times"),
+                new KuroNoteAchievement(13, "Better Save than Sorry", "\"Save\" 10000 times"),
+                new KuroNoteAchievement(14, "Nobody has ever done that", "Set the font to \"Wingdings\" or \"Webdings\""),
+                new KuroNoteAchievement(15, "Open Sesame", "\"Open...\" 2500 times"),
+                new KuroNoteAchievement(16, "CTRL+Outstanding", "\"Open...\" 7500 times"),
+                new KuroNoteAchievement(42, "The Meaning of Life", "We rolled the dice, you got 42!")
+            };
+        }
+
+        /// <summary>
+        /// Retrieves the specified achievement information
+        /// </summary>
+        /// <param name="_achievementId">The unique achievmentId of the achievment to retrieve (NOTE: disregards EnAchDict's array index)</param>
+        /// <returns>The specified KuroNoteAchievment object</returns>
+        private KuroNoteAchievement getAchievement(int _achievementId)
+        {
+            foreach (KuroNoteAchievement achievement in EnAchDict) {
+                if (achievement.achievementId == _achievementId) {
+                    return achievement;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -297,6 +359,25 @@ namespace KuroNote
             }
         }
 
+        ///<summary>
+        ///Adds the specified achievement code to the achievement array if it does not already exist
+        ///</summary>
+        public void unlockAchievement(int achievementCode)
+        {
+            if(!appSettings.achList.Contains(achievementCode)) {
+                this.Topmost = false; //If KuroNote is topmost, this prevents AchievementDialog from appearing
+                log.addLog("Achievement unlocked: " + achievementCode);
+                appSettings.achList.Add(achievementCode);
+                appSettings.UpdateSettings();
+
+                //Call AchievementDialog to notify the user of the new achievement unlock
+                AchievementDialog achievementDialog = new AchievementDialog(this, appSettings, getAchievement(achievementCode), log);
+                achievementDialog.toggleVisibility(true);
+            } else {
+                log.addLog("Achievement repeat: " + achievementCode);
+            }
+        }
+
         /// <summary>
         /// Process and apply settings that can take effect immediately (i.e. without restart)
         /// </summary>
@@ -307,6 +388,169 @@ namespace KuroNote
                 this.Topmost = true;
             } else {
                 this.Topmost = false;
+            }
+
+            //Use ASCII instead of UTF-8
+            if (appSettings.useAscii) {
+                selectedEncoding = Encoding.ASCII;
+            } else {
+                selectedEncoding = Encoding.UTF8;
+            }
+
+            //Show full file path in title
+            updateAppTitle();
+        }
+
+        /// <summary>
+        /// Process holiday greetings and achievements
+        /// </summary>
+        private void processHolidayGreetings()
+        {
+            int nowDay = DateTime.Now.Day;
+            int nowMonth = DateTime.Now.Month;
+            int nowYear = DateTime.Now.Year;
+            string user = Environment.UserName;
+
+            setStatus("Welcome", true);
+            switch (nowMonth)
+            {
+                //January
+                case 1:
+                    //New Years Day
+                    if (nowDay == 1) {
+                        appName = nowYear + "Note";
+                        setStatus("Happy " + nowYear + " " + user + "!", false);
+                        unlockAchievement(11);
+                    }
+                    break;
+                //February
+                case 2:
+                    //Valentine's Day
+                    if (nowDay == 14) {
+                        setStatus("Happy Valentine's " + user + "!", false);
+                        unlockAchievement(214); //Unlocks "Hearts" theme
+                    }
+                    break;
+                //March
+                case 3:
+                    //St. Patrick's Day, Happiness Day
+                    if (nowDay == 17) {
+                        setStatus("Happy St. Patrick's Day " + user + "!", false);
+                        unlockAchievement(317);
+                    } else if (nowDay == 20) {
+                        appName = "HappyNote";
+                        setStatus("Happy Happiness Day " + user + "!", false);
+                        unlockAchievement(320); //Unlocks "Yellow" theme
+                    }
+                    break;
+                //April
+                case 4:
+                    //Earth Day
+                    if (nowDay == 22) {
+                        setStatus("Happy Earth Day " + user + "!", false);
+                        unlockAchievement(422);
+                    }
+                    break;
+                //May
+                case 5:
+                    //Star Wars Day
+                    if (nowDay == 4) {
+                        setStatus("May the fourth be with you " + user + "!", false);
+                        unlockAchievement(54);
+                    }
+                    break;
+                //June
+                case 6:
+                    //Music Day
+                    if (nowDay == 21) {
+                        setStatus("Happy Music Day " + user + "!", false);
+                        unlockAchievement(621);
+                    }
+                    break;
+                //July
+                case 7:
+                    //Moon Day
+                    if (nowDay == 20) {
+                        appName = "LunarNote";
+                        setStatus("Happy Moon Day " + user + "!", false);
+                        unlockAchievement(720);
+                    }
+                    break;
+                //August
+                case 8:
+                    //World Cat Day, International Dog Day
+                    if (nowDay == 8) {
+                        setStatus("Meow! Happy Cat Day " + user + "!", false);
+                        unlockAchievement(88);
+                    } else if (nowDay == 26) {
+                        setStatus("Woof! Happy Dog Day " + user + "!", false);
+                        unlockAchievement(826);
+                    }
+                    break;
+                //September
+                case 9:
+                    //International Peace Day
+                    if (nowDay == 21) {
+                        setStatus("Happy Peace Day " + user + "!", false);
+                        unlockAchievement(921); //Unlocks "Eternal" theme
+                    }
+                    break;
+                //October
+                case 10:
+                    //Halloween
+                    if (nowDay == 31) {
+                        appName = "DeathNote";
+                        setStatus("Happy Halloween " + user + "!", false);
+                        unlockAchievement(1031);
+                    }
+                    break;
+                //November
+                case 11:
+                    //Origami day
+                    if (nowDay == 11) {
+                        setStatus("Happy Origami day " + user + "!", false);
+                        unlockAchievement(1111); //Unlocks "Origami" theme
+                    }
+                    break;
+                //December
+                case 12:
+                    //Christmas, Creator Birthday
+                    if (nowDay == 25) {
+                        appName = "FestiveNote";
+                        setStatus("Merry Christmas " + user + "!", false);
+                        unlockAchievement(1225);
+                    } else if (nowDay == 29) {
+                        appName = "ShiroNote";
+                        setStatus("Today my creator turns " + (nowYear - 1996) + "!", false);
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Process achievements obtainable by starting KuroNote
+        /// </summary>
+        private void processStartupAchievements()
+        {
+            appSettings.achStartups++;
+            appSettings.UpdateSettings();
+
+            switch (appSettings.achStartups) {
+                case 100:
+                    unlockAchievement(100);
+                    break;
+                case 1000:
+                    unlockAchievement(1000);
+                    break;
+                case 5000:
+                    unlockAchievement(5000);
+                    break;
+            }
+
+            Random rnd = new Random();
+            int luckyStartup = rnd.Next(1, 101); //Random between 1 and 100
+            if(luckyStartup == 42) {
+                unlockAchievement(42);
             }
         }
 
@@ -358,7 +602,7 @@ namespace KuroNote
                 (
                     0, "Spectrum", "Image by Gradienta on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985193.jpg", UriKind.Absolute)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985193.jpg")),
                                      Opacity = 0.5 },
                     new SolidColorBrush(Color.FromRgb(250, 250, 250)),
                     new SolidColorBrush(Color.FromRgb(250, 250, 250)),
@@ -367,7 +611,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    1, "Spectrum II", "Image by Gradienta on Pexels", 0,
+                    1, "Spectrum II", "Image by Gradienta on Pexels", 100,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985045.jpg")),
                                      Opacity = 0.44 },
@@ -378,9 +622,20 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    2, "Eternal", "Image by Skyler Ewing", 0,
+                    2, "Spectrum III", "Image by Sharon McCutcheon on Pexels", 1000,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-skyler-ewing-5748311.jpg", UriKind.Absolute)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-3847178.jpg")),
+                                     Opacity = 0.36 },
+                    new SolidColorBrush(Color.FromRgb(255, 253, 233)),
+                    new SolidColorBrush(Color.FromRgb(243, 210, 234)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Palatino Linotype", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    3, "Eternal", "Image by Skyler Ewing on Pexels", 921,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-skyler-ewing-5748311.jpg")),
                                      Opacity = 0.42 },
                     new SolidColorBrush(Color.FromRgb(244, 239, 235)),
                     new SolidColorBrush(Color.FromRgb(244, 239, 235)),
@@ -389,7 +644,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    3, "Boundless Sky", "Image by Pixabay on Pexels", 0,
+                    4, "Boundless Sky", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-258149.jpg")),
                                      Opacity = 0.28 },
@@ -400,7 +655,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    4, "Overly Orangey", "Image by Karolina Grabowska on Pexels", 0,
+                    5, "Overly Orangey", "Image by Karolina Grabowska on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4022107.jpg")),
                                      Opacity = 0.27 },
@@ -411,7 +666,18 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    5, "Sunset Ripples", "Image by Ben Mack on Pexels", 0,
+                    6, "Origami", "Image by David Yu on Pexels", 1111,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-yu-1631516.jpg")),
+                                     Opacity = 0.41 },
+                    new SolidColorBrush(Color.FromRgb(223, 211, 201)),
+                    new SolidColorBrush(Color.FromRgb(231, 217, 209)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    7, "Sunset Ripples", "Image by Ben Mack on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-ben-mack-5326909.jpg")),
                                      Opacity = 0.33 },
@@ -422,7 +688,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    6, "Spotless Snow", "Image by Pixabay on Pexels", 0,
+                    8, "Spotless Snow", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-60561.jpg")),
                                      Opacity = 0.36 },
@@ -433,7 +699,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    7, "Sakura", "Image by Antonio Janeski on Pexels", 0,
+                    9, "Sakura", "Image by Antonio Janeski on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-antonio-janeski-cherry blossoms-4052701.jpg")),
                                      Opacity = 0.29 },
@@ -444,7 +710,18 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    8, "Leafy Green", "Image by Karolina Grabowska on Pexels", 0,
+                    10, "Earth", "Image by Olha Ruskykh on Pexels", 422,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-olha-ruskykh-7166020.jpg")),
+                                     Opacity = 0.28 },
+                    new SolidColorBrush(Color.FromRgb(243, 242, 237)),
+                    new SolidColorBrush(Color.FromRgb(246, 244, 240)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    11, "Leafy Green", "Image by Karolina Grabowska on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
                                      Opacity = 0.34 },
@@ -455,7 +732,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    9, "Paradise Found", "Image by Asad Photo Maldives on Pexels", 0,
+                    12, "Paradise Found", "Image by Asad Photo Maldives on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-asad-photo-maldives-3320516.jpg")),
                                      Opacity = 0.29 },
@@ -466,7 +743,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    10, "Layers of Time", "Image by Fillipe Gomes on Pexels", 0,
+                    13, "Layers of Time", "Image by Fillipe Gomes on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fillipe-gomes-5611219.jpg")),
                                      Opacity = 0.33 },
@@ -477,10 +754,21 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    11, "Bold Gold", "Image by NaMaKuKi on Pexels", 0,
+                    14, "Moon", "Image by David Selbert on Pexels", 720,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-selbert-6468238.jpg")),
+                                     Opacity = 0.41 },
+                    new SolidColorBrush(Color.FromRgb(167, 199, 211)),
+                    new SolidColorBrush(Color.FromRgb(160, 170, 176)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    15, "Bold Gold", "Image by NaMaKuKi on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 215, 0)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-namakuki-751374.jpg")),
-                                     Opacity = 0.55 },
+                                     Opacity = 0.53 },
                     new SolidColorBrush(Color.FromRgb(255, 226, 51)),
                     new SolidColorBrush(Color.FromRgb(255, 226, 51)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -488,7 +776,18 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    12, "Pleases and Sparkles", "Image by Sharon McCutcheon on Pexels", 0,
+                    16, "Creation Magic", "Image by Tamanna Rumee on Pexels", 2,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-tamanna-rumee-7986299.jpg")),
+                                     Opacity = 0.46 },
+                    new SolidColorBrush(Color.FromRgb(207, 235, 249)),
+                    new SolidColorBrush(Color.FromRgb(252, 227, 139)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    17, "Pleases and Sparkles", "Image by Sharon McCutcheon on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 236, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-5922574.jpg")),
                                      Opacity = 0.30 },
@@ -499,7 +798,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    13, "Abyss", "Distraction-free!", 0,
+                    18, "Abyss", "Distraction-free!", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(249, 249, 249)),
                     new SolidColorBrush(Color.FromRgb(249, 249, 249)),
@@ -509,7 +808,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    14, "Onyx", "Sleepy-eye friendly!", 0,
+                    19, "Onyx", "Sleepy-eye friendly!", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(15, 15, 15)),
                     new SolidColorBrush(Color.FromRgb(190, 190, 190)),
@@ -519,7 +818,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    15, "Notepad", "Mightier than the sword!", 0,
+                    20, "Notepad", "Mightier than the sword!", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(255, 255, 210)),
                     new SolidColorBrush(Color.FromRgb(220, 220, 175)),
@@ -529,7 +828,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    16, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[16]; }", 0,
+                    21, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[18]; }", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     new SolidColorBrush(Color.FromRgb(190, 190, 190)),
@@ -539,7 +838,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    17, "Antiqua", "Image by Pixabay on Pexels", 0,
+                    22, "Antiqua", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-235985.jpg")),
                                      Opacity = 0.48 },
@@ -550,7 +849,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    18, "Contour", "Image by David Yu on Pexels", 0,
+                    23, "Contour", "Image by David Yu on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-yu-2684383.jpg")),
                                      Opacity = 0.39 },
@@ -561,12 +860,34 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    19, "Droplets of Hope", "Image by Karolina Grabowska on Pexels", 0,
+                    24, "Hearts", "Image by Monstera on Pexels", 214,
+                    new SolidColorBrush(Color.FromRgb(255, 151, 202)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-monstera-5874714.jpg")),
+                                     Opacity = 0.45 },
+                    new SolidColorBrush(Color.FromRgb(187, 163, 199)),
+                    new SolidColorBrush(Color.FromRgb(189, 165, 202)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Italic
+                ),
+                new KuroNoteTheme
+                (
+                    25, "Droplets of Hope", "Image by Karolina Grabowska on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4194853.jpg")),
                                      Opacity = 0.45 },
                     new SolidColorBrush(Color.FromRgb(236, 233, 252)),
                     new SolidColorBrush(Color.FromRgb(236, 233, 252)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    26, "Yellow", "Image by Luis Quintero on Pexels", 320,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-luis-quintero-3101527.jpg")),
+                                     Opacity = 0.48 },
+                    new SolidColorBrush(Color.FromRgb(254, 229, 131)),
+                    new SolidColorBrush(Color.FromRgb(254, 210, 130)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 )
@@ -594,9 +915,28 @@ namespace KuroNote
         /// Sets the status text in the bottom-left corner to the specified text
         /// </summary>
         /// <param name="_text">The status text to display</param>
-        private void setStatus(string _text)
+        private void setStatus(string _text, bool _includeTime)
         {
-            StatusTb.Text = DateTime.Now.ToShortTimeString() + ": " + _text;
+            if(_includeTime) {
+                StatusTb.Text = DateTime.Now.ToShortTimeString() + ": " + _text;
+            } else {
+                StatusTb.Text = _text;
+            }
+        }
+
+        /// <summary>
+        /// Sets the app title to "fileName - appName"
+        /// Accounting for the "fullFilePath" preference which determines if the full path or just the name are shown
+        /// </summary>
+        private void updateAppTitle()
+        {
+            if (fileName != string.Empty) {
+                if (appSettings.fullFilePath) {
+                    this.Title = fileName + " - " + appName;
+                } else {
+                    this.Title = Path.GetFileName(fileName) + " - " + appName;
+                }
+            }
         }
 
         /// <summary>
@@ -638,7 +978,7 @@ namespace KuroNote
             range.Text = string.Empty;
             this.Title = "New File - " + appName;
             toggleEdited(false);
-            setStatus("New File");
+            setStatus("New File", true);
             log.addLog("Content deleted");
             return true;
         }
@@ -701,9 +1041,25 @@ namespace KuroNote
                         ms.Close();
 
                         fileName = dlg.FileName;
-                        this.Title = fileName + " - " + appName;
+                        updateAppTitle();
                         toggleEdited(false);
-                        setStatus("Opened");
+                        setStatus("Opened", true);
+
+                        if (appSettings.gamification) {
+                            appSettings.achOpens++;
+                            appSettings.UpdateSettings();
+
+                            switch (appSettings.achOpens)
+                            {
+                                case 2500:
+                                    unlockAchievement(15);
+                                    break;
+                                case 7500:
+                                    unlockAchievement(16);
+                                    break;
+                            }
+                        }
+
                     } catch (Exception ex) {
                         //File cannot be accessed (e.g. used by another process)
                         log.addLog(ex.ToString());
@@ -738,9 +1094,9 @@ namespace KuroNote
                     ms.Close();
 
                     fileName = _path;
-                    this.Title = fileName + " - " + appName;
+                    updateAppTitle();
                     toggleEdited(false);
-                    setStatus("Opened");
+                    setStatus("Opened", true);
                 } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());
@@ -774,7 +1130,22 @@ namespace KuroNote
                             ms.Close();
                         }
                         toggleEdited(false);
-                        setStatus("Saved");
+                        setStatus("Saved", true);
+
+                        if (appSettings.gamification) {
+                            appSettings.achSaves++;
+                            appSettings.UpdateSettings();
+
+                            switch (appSettings.achSaves) {
+                                case 1000:
+                                    unlockAchievement(12);
+                                    break;
+                                case 10000:
+                                    unlockAchievement(13);
+                                    break;
+                            }
+                        }
+
                     } catch (Exception ex) {
                         //File cannot be accessed (e.g. used by another process)
                         log.addLog(ex.ToString());
@@ -811,9 +1182,24 @@ namespace KuroNote
                     }
 
                     fileName = dlg.FileName;
-                    this.Title = fileName + " - " + appName;
+                    updateAppTitle();
                     toggleEdited(false);
-                    setStatus("Saved");
+                    setStatus("Saved", true);
+
+                    if (appSettings.gamification) {
+                        appSettings.achSaveAs++;
+                        appSettings.UpdateSettings();
+
+                        switch (appSettings.achSaveAs) {
+                            case 500:
+                                unlockAchievement(2);
+                                break;
+                            case 2000:
+                                unlockAchievement(3);
+                                break;
+                        }
+                    }
+
                 } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());

@@ -20,9 +20,41 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="img\achievements\1.png" />
+    <None Remove="img\achievements\10.png" />
+    <None Remove="img\achievements\100.png" />
+    <None Remove="img\achievements\1000.png" />
+    <None Remove="img\achievements\1031.png" />
+    <None Remove="img\achievements\11.png" />
+    <None Remove="img\achievements\1111.png" />
+    <None Remove="img\achievements\12.png" />
+    <None Remove="img\achievements\1225.png" />
+    <None Remove="img\achievements\13.png" />
+    <None Remove="img\achievements\14.png" />
+    <None Remove="img\achievements\15.png" />
+    <None Remove="img\achievements\16.png" />
+    <None Remove="img\achievements\2.png" />
+    <None Remove="img\achievements\214.png" />
+    <None Remove="img\achievements\3.png" />
+    <None Remove="img\achievements\317.png" />
+    <None Remove="img\achievements\320.png" />
+    <None Remove="img\achievements\4.png" />
+    <None Remove="img\achievements\42.png" />
+    <None Remove="img\achievements\422.png" />
+    <None Remove="img\achievements\5.png" />
+    <None Remove="img\achievements\5000.png" />
+    <None Remove="img\achievements\54.png" />
+    <None Remove="img\achievements\621.png" />
+    <None Remove="img\achievements\720.png" />
+    <None Remove="img\achievements\826.png" />
+    <None Remove="img\achievements\88.png" />
+    <None Remove="img\achievements\9.png" />
+    <None Remove="img\achievements\921.png" />
     <None Remove="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg" />
     <None Remove="img\bgs\pexels-asad-photo-maldives-3320516.jpg" />
     <None Remove="img\bgs\pexels-ben-mack-5326909.jpg" />
+    <None Remove="img\bgs\pexels-david-selbert-6468238.jpg" />
+    <None Remove="img\bgs\pexels-david-yu-1631516.jpg" />
     <None Remove="img\bgs\pexels-david-yu-2684383.jpg" />
     <None Remove="img\bgs\pexels-fillipe-gomes-5611219.jpg" />
     <None Remove="img\bgs\pexels-freestocksorg-863908.jpg" />
@@ -32,13 +64,19 @@
     <None Remove="img\bgs\pexels-karolina-grabowska-4022107.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4046687.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4194853.jpg" />
+    <None Remove="img\bgs\pexels-luis-quintero-3101527.jpg" />
+    <None Remove="img\bgs\pexels-monstera-5874714.jpg" />
     <None Remove="img\bgs\pexels-namakuki-751374.jpg" />
+    <None Remove="img\bgs\pexels-olha-ruskykh-7166020.jpg" />
     <None Remove="img\bgs\pexels-pixabay-235985.jpg" />
     <None Remove="img\bgs\pexels-pixabay-258149.jpg" />
     <None Remove="img\bgs\pexels-pixabay-276205.jpg" />
     <None Remove="img\bgs\pexels-pixabay-60561.jpg" />
+    <None Remove="img\bgs\pexels-sharon-mccutcheon-3847178.jpg" />
     <None Remove="img\bgs\pexels-sharon-mccutcheon-5922574.jpg" />
     <None Remove="img\bgs\pexels-skyler-ewing-5748311.jpg" />
+    <None Remove="img\bgs\pexels-tamanna-rumee-7986299.jpg" />
+    <None Remove="img\icons\filled_star_eee_48dp.png" />
     <None Remove="img\icons\kuronote_logo.ico" />
     <None Remove="img\icons\kuronote_logo.png" />
     <None Remove="img\icons\kuronote_logo_admin.png" />
@@ -51,6 +89,7 @@
     <None Remove="img\icons\outline_bug_report_black_18dp.png" />
     <None Remove="img\icons\outline_build_black_18dp.png" />
     <None Remove="img\icons\outline_color_lens_black_18dp.png" />
+    <None Remove="img\icons\outline_color_lens_eee_48dp.png" />
     <None Remove="img\icons\outline_content_copy_black_18dp.png" />
     <None Remove="img\icons\outline_content_cut_black_18dp.png" />
     <None Remove="img\icons\outline_content_paste_black_18dp.png" />
@@ -116,6 +155,93 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="img\achievements\1.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\10.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\100.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\1000.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\1031.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\11.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\1111.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\12.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\1225.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\13.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\14.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\15.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\16.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\214.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\317.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\320.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\4.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\42.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\422.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\5.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\5000.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\54.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\621.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\720.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\826.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\88.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\9.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\921.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -123,6 +249,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-ben-mack-5326909.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-david-selbert-6468238.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-david-yu-1631516.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-david-yu-2684383.jpg">
@@ -146,7 +278,16 @@
     <Resource Include="img\bgs\pexels-karolina-grabowska-4194853.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\bgs\pexels-luis-quintero-3101527.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-monstera-5874714.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\bgs\pexels-namakuki-751374.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-olha-ruskykh-7166020.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-pixabay-235985.jpg">
@@ -158,10 +299,19 @@
     <Resource Include="img\bgs\pexels-pixabay-60561.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\bgs\pexels-sharon-mccutcheon-3847178.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\bgs\pexels-sharon-mccutcheon-5922574.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-skyler-ewing-5748311.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-tamanna-rumee-7986299.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\filled_star_eee_48dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\kuronote_logo.ico">
@@ -198,6 +348,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_color_lens_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_color_lens_eee_48dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_content_copy_black_18dp.png">

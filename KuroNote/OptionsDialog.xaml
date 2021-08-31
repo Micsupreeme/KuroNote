@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         xmlns:spark="clr-namespace:WPFSpark;assembly=WPFSpark"
         mc:Ignorable="d"
-        Title="OptionsDialog" Height="375" Width="410" MinHeight="375" MinWidth="410" MaxHeight="375" MaxWidth="410"
+        Title="OptionsDialog" Height="395" Width="410" MinHeight="395" MinWidth="410" MaxHeight="395" MaxWidth="410"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
@@ -36,8 +36,7 @@
 
             <StackPanel Grid.Column="0" Grid.Row="0">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="*" FontSize="18" FontFamily="Verdana"  Margin="0,0,-5,0" Foreground="#FF0000"/>
-                    <Label Content="Holiday greetings" FontSize="14" Foreground="#EEEEEE"/>
+                    <Label Content="Holidays and gamification" FontSize="14" Foreground="#EEEEEE"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                     <spark:ToggleSwitch x:Name="gamificationTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="gamificationTs_Checked" Unchecked="gamificationTs_Unchecked"/>
@@ -72,6 +71,26 @@
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                     <spark:ToggleSwitch x:Name="windowsizeTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="windowsizeTs_Checked"  Unchecked="windowsizeTs_Unchecked"/>
                     <Label x:Name="windowsizeLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="0" Grid.Row="2">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="Use ASCII instead of UTF-8" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <spark:ToggleSwitch x:Name="useasciiTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="useasciiTs_Checked"  Unchecked="useasciiTs_Unchecked"/>
+                    <Label x:Name="useasciiLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Grid.Row="2">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="Display full file paths" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <spark:ToggleSwitch x:Name="fullfilepathTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="fullfilepathTs_Checked"  Unchecked="fullfilepathTs_Unchecked"/>
+                    <Label x:Name="fullfilepathLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
