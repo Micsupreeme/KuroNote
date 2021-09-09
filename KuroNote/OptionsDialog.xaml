@@ -36,6 +36,7 @@
 
             <StackPanel Grid.Column="0" Grid.Row="0">
                 <StackPanel Orientation="Horizontal">
+                    <Label Content="*" FontSize="18" FontFamily="Verdana"  Margin="0,0,-5,0" Foreground="#FF0000"/>
                     <Label Content="Holidays and gamification" FontSize="14" Foreground="#EEEEEE"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">

@@ -20,22 +20,27 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Drag and drop
-    /// TODO: Arbitrary points, levels and ranks
-    ///     More spammable actions = less points
-    ///         Launch:                 10ap
-    ///         Save:                   10ap
-    ///         Open:                   15ap
-    ///         Change font:            20ap
-    ///         Select theme:           20ap
-    ///         Create custom theme:    20ap
-    ///         Save As:                30ap
-    ///         Encrypt:                30ap
     /// TODO: about and dependencies
+    /// TODO: achievements list
+    /// TODO Later: Hashing tool
+    /// TODO Later: Fullscreen
     /// 
-    /// TODO: don't let user encrypt/decrypt nothing
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
     /// 
+    /// Arbitrary points
+    /// More spammable actions = less points
+    ///         Launch:                 10ap
+    ///         Cut:                    10ap
+    ///         Copy:                   10ap
+    ///         Save:                   10ap
+    ///         Open:                   12ap
+    ///         Change font:            15ap
+    ///         Select theme:           18ap
+    ///         Encrypt:                30ap
+    ///         Delete custom theme:    30ap
+    ///         Create custom theme:    30ap
+    ///         Save As:                30ap
+    ///         Decrypt:                35ap 
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -51,6 +56,15 @@ namespace KuroNote
         private const double DEFAULT_WINDOW_HEIGHT = 500;
         private const double DEFAULT_WINDOW_WIDTH = 750;
 
+        //Gamification constants
+        private const int MAX_RANK = 25; //Ranks beyond this are treated as this value in the backend
+        private const int AP_COPY = 2;
+        private const int AP_LAUNCH = 10;
+        private const int AP_CUT = 10;
+        private const int AP_SAVE = 12;
+        private const int AP_OPEN = 15;
+        private const int AP_SAVE_AS = 30;
+
         //Globals
         public string appName = "KuroNote";
         public string appPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -63,6 +77,7 @@ namespace KuroNote
         private Encoding selectedEncoding = Encoding.UTF8;          //Encoding for opening and saving files (Encoding.ASCII blocks unicode)
 
         public KuroNoteTheme[] themeCollection;
+        public KuroNoteRank[] rankCollection;
 
         //English UI dictionary
         public Dictionary<string, string> EnUIDict;
@@ -74,27 +89,15 @@ namespace KuroNote
         //English Achievment dictionary
         public KuroNoteAchievement[] EnAchDict;
 
-        #region Code for reference
-        /*
-            JpUIDict = new Dictionary<string, object>();
-                JpUIDict["NewMi"] = "しんき";
-                JpUIDict["OpenMi"] = "あく";
-                //etc.
-                this.DataContext = JpUIDict;
-
-
-                new ImageBrush { ImageSource = new BitmapImage(new Uri(appPath + "conf\\custom.jpg", UriKind.Absolute)),
-                                     Opacity = 0.33 },
-        */
-        #endregion
-
         public MainWindow()
         {
             InitializeComponent();
             InitialiseSettings();
             InitialiseLog();
             InitialiseThemeCollection();
+            setStatus("Welcome", true);
             if (appSettings.gamification) {
+                InitialiseRankCollection();
                 InitialiseAchievementDictionary();
                 processHolidayGreetings();
                 processStartupAchievements();
@@ -103,14 +106,11 @@ namespace KuroNote
             InitialiseErrorDictionary();
             InitialiseFont();
             InitialiseTheme();
-            processCmdLineArgs();
             processImmediateSettings();
-            if(appSettings.rememberWindowSize) {
-                this.Height = appSettings.windowHeight;
-                this.Width = appSettings.windowWidth;
-            }
+            processStartupSettings();
             purgeOrphanedThemeImages();
 
+            processCmdLineArgs();
             toggleEdited(false);
             log.addLog(Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " + "Ready! Awaiting instructions", true);
         }
@@ -170,6 +170,8 @@ namespace KuroNote
             EnUIDict["AESDecMi"] = "AES Decrypt...";
                 EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard.";
             //Options
+            EnUIDict["ProfileMi"] = "My Profile...";
+                EnUIDict["ProfileMiTT"] = "Displays your " + appName + " level and achievements.";
             EnUIDict["OptionsMi"] = string.Empty;
             EnUIDict["OptionsDialogMi"] = "Options...";
                 EnUIDict["OptionsDialogMiTT"] = "Displays various options that you can change to optimise your experience using " + appName + ".";
@@ -184,6 +186,14 @@ namespace KuroNote
                 EnUIDict["ShowLogFilesMiTT"] = "Opens the directory where " + appName + " log files are stored.";
             EnUIDict["AboutMi"] = "About " + appName;
                 EnUIDict["AboutMiTT"] = "Displays information about " + appName + ".";
+
+            /*
+                JpUIDict = new Dictionary<string, object>();
+                    JpUIDict["NewMi"] = "しんき";
+                    JpUIDict["OpenMi"] = "あく";
+                    //etc.
+                    this.DataContext = JpUIDict;
+            */
             this.DataContext = EnUIDict;
         }
 
@@ -263,10 +273,62 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Initiates preset ranks
+        /// </summary>
+        private void InitialiseRankCollection()
+        {
+            //Declare array of ranks
+            //NOTE: rankId = displayed level - 1 (e.g. level 25 is rankId 24)
+            rankCollection = new KuroNoteRank[]
+            {
+                new KuroNoteRank(0, "Apprentice Wordcrafter", 1000, "#FFEEEEEE"),
+                new KuroNoteRank(1, "Wordcrafter Initiate", 1200, "#FFEEEEEE"),
+                new KuroNoteRank(2, "Wordwrapper", 1440, "#FFEEEEEE"),
+                new KuroNoteRank(3, ".TXT Enthusiast", 1728, "#FFEEEEEE"),
+                new KuroNoteRank(4, "Wordcrafter", 1987, "#FFEEEEEE"),
+                new KuroNoteRank(5, "ASCII Associate", 2285, "#FFEEEEEE"),
+                new KuroNoteRank(6, ".TXT Specialist", 2628, "#FFEEEEEE"),
+                new KuroNoteRank(7, "Master Wordcrafter", 3022, "#FFEEEEEE"),
+                new KuroNoteRank(8, "ASCIIKnight", 3476, "#FFEEEEEE"),
+                new KuroNoteRank(9, "Unicoder", 3997, "#FFEEEEEE"),
+                new KuroNoteRank(10, "Unicoder++", 4317, "#FFEEEEEE"),
+                new KuroNoteRank(11, "Apex ASCIIKnight", 4662, "#FFEEEEEE"),
+                new KuroNoteRank(12, "Notemaster Novitiate", 5035, "#FFEEEEEE"),
+                new KuroNoteRank(13, "ANSINaut", 5438, "#FFEEEEEE"),
+                new KuroNoteRank(14, "UTF-7 Supremo", 5873, "#FFEEEEEE"),
+                new KuroNoteRank(15, "UTF-8 Ultima", 6343, "#FFEEEEEE"),
+                new KuroNoteRank(16, "Notemaster", 7294, "#FFEEEEEE"),
+                new KuroNoteRank(17, "Expert Encoder", 8388, "#FFEEEEEE"),
+                new KuroNoteRank(18, "Editor Extraordinaire", 9646, "#FFEEEEEE"),
+                new KuroNoteRank(19, "Editor in Chief", 11093, "#FFEEEEEE"),
+                new KuroNoteRank(20, "Plain Text Paragon", 12757, "#FFEEEEEE"),
+                new KuroNoteRank(21, "Notemaster Shiro", 14671, "#FFEEEEEE"),
+                new KuroNoteRank(22, "Notemaster Kuro", 16872, "#FFEEEEEE"),
+                new KuroNoteRank(23, "Infinite ISONaut", 25000, "#FFEEEEEE"),
+                new KuroNoteRank(24, "Grand Notemaster", 25000, "#FFEEEEEE"),
+                new KuroNoteRank(25, "Grand Notemaster +", 25000, "#FFEEEEEE")
+            };
+        }
+
+        /// <summary>
+        /// Calls Settings to add the specified amount of AP and can handle levelling up (one level at a time only).
+        /// This wrapper method accomodates MAX_RANK AP and automatically fills in the AP limit for each rank.
+        /// </summary>
+        /// <param name="ap">The amount of AP to add (NOTE: must not be large enough trigger multiple level-ups at once)</param>
+        public void incrementAp(int ap)
+        {
+            if (appSettings.profL >= MAX_RANK) {
+                appSettings.incrementAp(ap, rankCollection[MAX_RANK].apToNext);
+            } else {
+                appSettings.incrementAp(ap, rankCollection[appSettings.profL].apToNext);
+            }
+        }
+
+        /// <summary>
         /// Retrieves the specified achievement information
         /// </summary>
         /// <param name="_achievementId">The unique achievmentId of the achievment to retrieve (NOTE: disregards EnAchDict's array index)</param>
-        /// <returns>The specified KuroNoteAchievment object</returns>
+        /// <returns>The specified KuroNoteAchievement object</returns>
         private KuroNoteAchievement getAchievement(int _achievementId)
         {
             foreach (KuroNoteAchievement achievement in EnAchDict) {
@@ -282,7 +344,7 @@ namespace KuroNote
         /// </summary>
         private void InitialiseSettings()
         {
-            appSettings = new KuroNoteSettings(log);
+            appSettings = new KuroNoteSettings();
             appSettings.RetrieveSettings();
             //Cannot be logged because logging is a settings choice that must first be retrieved here
         }
@@ -368,6 +430,7 @@ namespace KuroNote
                 this.Topmost = false; //If KuroNote is topmost, this prevents AchievementDialog from appearing
                 log.addLog("Achievement unlocked: " + achievementCode);
                 appSettings.achList.Add(achievementCode);
+                appSettings.achLast = achievementCode;
                 appSettings.UpdateSettings();
 
                 //Call AchievementDialog to notify the user of the new achievement unlock
@@ -402,6 +465,23 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Process and apply settings that only take effect upon launch (i.e. not immediately)
+        /// </summary>
+        private void processStartupSettings()
+        {
+            //Holidays and gamification
+            if (appSettings.gamification) {
+                ProfileMi.IsEnabled = true;
+            }
+
+            //Remember window size
+            if (appSettings.rememberWindowSize) {
+                this.Height = appSettings.windowHeight;
+                this.Width = appSettings.windowWidth;
+            }
+        }
+
+        /// <summary>
         /// Process holiday greetings and achievements
         /// </summary>
         private void processHolidayGreetings()
@@ -411,7 +491,6 @@ namespace KuroNote
             int nowYear = DateTime.Now.Year;
             string user = Environment.UserName;
 
-            setStatus("Welcome", true);
             switch (nowMonth)
             {
                 //January
@@ -532,6 +611,7 @@ namespace KuroNote
         /// </summary>
         private void processStartupAchievements()
         {
+            incrementAp(AP_LAUNCH);
             appSettings.achStartups++;
             appSettings.UpdateSettings();
 
@@ -1046,6 +1126,7 @@ namespace KuroNote
                         setStatus("Opened", true);
 
                         if (appSettings.gamification) {
+                            incrementAp(AP_OPEN);
                             appSettings.achOpens++;
                             appSettings.UpdateSettings();
 
@@ -1071,7 +1152,7 @@ namespace KuroNote
             else
             {
                 //File specified - open without using a dialog
-                log.addLog("Request: Open from cmd - " + _path);
+                log.addLog("Request: Open from cmd/drop - " + _path);
                 MemoryStream ms = new MemoryStream();
                 try {
                     if (fileTooBig(_path)) {
@@ -1097,6 +1178,23 @@ namespace KuroNote
                     updateAppTitle();
                     toggleEdited(false);
                     setStatus("Opened", true);
+
+                    if (appSettings.gamification) {
+                        incrementAp(AP_OPEN);
+                        appSettings.achOpens++;
+                        appSettings.UpdateSettings();
+
+                        switch (appSettings.achOpens)
+                        {
+                            case 2500:
+                                unlockAchievement(15);
+                                break;
+                            case 7500:
+                                unlockAchievement(16);
+                                break;
+                        }
+                    }
+
                 } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());
@@ -1133,6 +1231,7 @@ namespace KuroNote
                         setStatus("Saved", true);
 
                         if (appSettings.gamification) {
+                            incrementAp(AP_SAVE);
                             appSettings.achSaves++;
                             appSettings.UpdateSettings();
 
@@ -1187,6 +1286,7 @@ namespace KuroNote
                     setStatus("Saved", true);
 
                     if (appSettings.gamification) {
+                        incrementAp(AP_SAVE_AS);
                         appSettings.achSaveAs++;
                         appSettings.UpdateSettings();
 
@@ -1404,6 +1504,7 @@ namespace KuroNote
                 string textToCut = cutRange.Text;
                 cutRange.Text = String.Empty;
                 Clipboard.SetData(DataFormats.UnicodeText, textToCut);
+                incrementAp(AP_CUT);
             } catch (Exception e) {
                 log.addLog("ERROR: Clipboard error during Cut");
                 log.addLog(e.ToString());
@@ -1420,6 +1521,7 @@ namespace KuroNote
                 TextRange copyRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
                 string textToCopy = copyRange.Text;
                 Clipboard.SetData(DataFormats.UnicodeText, textToCopy);
+                incrementAp(AP_COPY);
             } catch (Exception e) {
                 log.addLog("ERROR: Clipboard error during Copy");
                 log.addLog(e.ToString());
@@ -1643,6 +1745,17 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Menu > Options > My Profile...
+        /// NOTE: this option will be disabled in the UI if KuroNote launches with gamification = false
+        /// </summary>
+        private void Profile_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: My Profile...");
+            ProfileDialog profileDialog = new ProfileDialog(this, appSettings, rankCollection, EnAchDict, log);
+            profileDialog.toggleVisibility(true);
+        }
+
+        /// <summary>
         /// Menu > Options > Theme...
         /// </summary>
         private void Theme_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1665,13 +1778,12 @@ namespace KuroNote
 
         /// <summary>
         /// Menu > Options > Logging > Show Log...
+        /// NOTE: this option will be disabled in the UI if KuroNote launches with gamification = false
         /// </summary>
         private void ShowLog_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (appSettings.logging) {
-                log.addLog("Request: Show Log");
-                log.toggleVisibility(true);
-            }
+            log.addLog("Request: Show Log");
+            log.toggleVisibility(true);
         }
 
         /// <summary>
@@ -1751,6 +1863,43 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// When an item is dragged into/over MainRtb
+        /// </summary>
+        private void MainRtb_PreviewDragEnterOver(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// When a dragged item is dropped into MainRtb
+        /// </summary>
+        private void MainRtb_PreviewDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {  //If the item is a file (or multiple files)...                      
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                if (files.Length == 1) {                        //If there is only 1 file...
+                    if (editedFlag) {
+                        log.addLog("WARNING: Open before saving");
+                        var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                        if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
+                            log.addLog("Open cancelled");
+                            if (res == MessageBoxResult.Yes) {
+                                doSave();   //save
+                            }
+                            return;   //don't continue with open operation
+                        }
+                    }
+
+                    log.addLog("Request: Open dropped file");
+                    doOpen(files[0]);
+                } else {
+                    log.addLog("WARNING: Attempted to drop multiple files");
+                }
+            }
+        }
+
+        /// <summary>
         /// When the RTB caret moves
         /// </summary>
         private void MainRtb_SelectionChanged(object sender, RoutedEventArgs e)
@@ -1808,6 +1957,7 @@ namespace KuroNote
         public static RoutedCommand AESDec = new RoutedCommand();
 
         //Options
+        public static RoutedCommand Profile = new RoutedCommand();
         public static RoutedCommand Options = new RoutedCommand();
         public static RoutedCommand Theme = new RoutedCommand();
         public static RoutedCommand CustomThemes = new RoutedCommand();

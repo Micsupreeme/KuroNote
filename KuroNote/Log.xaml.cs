@@ -130,7 +130,7 @@ namespace KuroNote
                     writeToLogFile(content);
                 } else {
                     string logEntry = Environment.NewLine + DateTime.Now.ToLongTimeString() + ": " + content;
-                    LogTxt.Text += logEntry;
+                    LogTxt.Text += logEntry; //Care of InvalidOperationException
                     writeToLogFile(logEntry);
                 }
                 LogTxt.ScrollToEnd();

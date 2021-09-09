@@ -14,6 +14,10 @@ namespace KuroNote
         //Constants
         private const string FILE_FILTER = "KuroNotes (*.kuro)|*.kuro|Text files (*.txt)|*.txt|All files (*.*)|*.*";  //For opening and saving encrypted/decrypted files
 
+        //Gamification constants
+        private const int AP_ENCRYPT = 30;
+        private const int AP_DECRYPT = 35;
+
         //Globals
         private string appName;
         MainWindow main;
@@ -137,9 +141,11 @@ namespace KuroNote
             {
                 case 0:
                     dialogTitle = "Save AES Encrypted Content As";
+                    main.incrementAp(AP_ENCRYPT);
                     break;
                 case 2:
                     dialogTitle = "Save AES Decrypted Content As";
+                    main.incrementAp(AP_DECRYPT);
                     break;
             }
 

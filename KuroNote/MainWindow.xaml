@@ -8,7 +8,8 @@
         Title="MainWindow" Height="500" Width="750"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStartupLocation="CenterScreen"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        AllowDrop="True">
     <Window.CommandBindings>
         <!--File-->
         <CommandBinding Command="local:CustomCommands.New" Executed="New_Executed" />
@@ -33,6 +34,7 @@
         
         <!--Options-->
         <CommandBinding Command="local:CustomCommands.Options" Executed="Options_Executed" />
+        <CommandBinding Command="local:CustomCommands.Profile" Executed="Profile_Executed" />
         <CommandBinding Command="local:CustomCommands.Theme" Executed="Theme_Executed" />
         <CommandBinding Command="local:CustomCommands.CustomThemes" Executed="CustomThemes_Executed" />
         <CommandBinding Command="local:CustomCommands.ShowLog" Executed="ShowLog_Executed" />
@@ -182,6 +184,11 @@
                         <Image Source="pack://application:,,,/img/icons/outline_settings_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Name="ProfileMi" Header="{Binding [ProfileMi], Mode=OneTime}" ToolTip="{Binding [ProfileMiTT], Mode=OneTime}" IsEnabled="False" Command="local:CustomCommands.Profile">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_account_circle_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator/>
                 <MenuItem Name="ThemeMi" Header="{Binding [ThemeMi], Mode=OneTime}" ToolTip="{Binding [ThemeMiTT], Mode=OneTime}" Command="local:CustomCommands.Theme">
                     <MenuItem.Icon>
@@ -233,7 +240,7 @@
                 <TextBlock Name="WordCountTb" Text="0 Words"/>
             </StatusBarItem>
         </StatusBar>
-        <RichTextBox Name="MainRtb" AcceptsTab="True" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" VerticalScrollBarVisibility="Auto" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
+        <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
             <FlowDocument/>
         </RichTextBox>
     </DockPanel>

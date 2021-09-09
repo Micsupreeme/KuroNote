@@ -50,7 +50,7 @@ namespace KuroNote
             try {
                 string achievementImageUri = "pack://application:,,,/img/achievements/" + achievement.achievementId + ".png";
                 imgAchievementIcon.Source = new BitmapImage(new Uri(achievementImageUri));
-            } catch(Exception e) {
+            } catch(Exception) {
                 log.addLog("ERROR: Could not access achievement icon " + achievement.achievementId);
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -68,14 +69,16 @@ namespace KuroNote
 
             //https://stackoverflow.com/users/188474/brett's Simple SimpleDecryptWithPassword
             RijndaelManaged aesAlg = null;
-            try {
+            try
+            {
                 // generate the key from the shared secret and the salt
                 Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(args.key, _salt);
                 //allow iteration count to change?
 
                 // Create the streams used for decryption.                
                 byte[] bytes = Convert.FromBase64String(args.content);
-                using (MemoryStream msDecrypt = new MemoryStream(bytes)) {
+                using (MemoryStream msDecrypt = new MemoryStream(bytes))
+                {
                     // Create a RijndaelManaged object
                     // with the specified key and IV.
                     aesAlg = new RijndaelManaged();
@@ -84,19 +87,25 @@ namespace KuroNote
                     aesAlg.IV = ReadByteArray(msDecrypt);
                     // Create a decrytor to perform the stream transform.
                     ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read)) {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
                         using (StreamReader srDecrypt = new StreamReader(csDecrypt))
 
                             // Read the decrypted bytes from the decrypting stream
                             // and place them in a string.
-                            try {
+                            try
+                            {
                                 AESdecryptedContent = srDecrypt.ReadToEnd();
-                            } catch (CryptographicException ctEx) {
+                            }
+                            catch (CryptographicException ctEx)
+                            {
                                 //Incorrect decryption key
-                                Console.Error.WriteLine(ctEx.ToString());
+                                Debug.WriteLine(ctEx.ToString());
                             }
                     }
                 }
+            } catch (FormatException fex) {
+                Debug.WriteLine(fex.ToString());
             } finally {
                 // Clear the RijndaelManaged object.
                 if (aesAlg != null)
@@ -132,7 +141,7 @@ namespace KuroNote
                     toggleVisibility(false);
                     edf.toggleVisibility(true);
                 } else {
-                    log.addLog("AES Decryption Failed: Incorrect Password");
+                    log.addLog("AES Decryption Failed");
 
                     log.addLog("Request: EncDecFinish");
                     EncDecFinishDialog edf = new EncDecFinishDialog(main, settings, log, 3, AESdecryptedContent);

@@ -8,14 +8,29 @@
     <RootNamespace>KuroNote</RootNamespace>
     <Version>2.0.0</Version>
     <Authors>Michael Whatley</Authors>
-    <Copyright>Copyright © 2020 KuroNote</Copyright>
+    <Copyright>Copyright © 2021 KuroNote</Copyright>
     <Company>Michael Whatley</Company>
+    <PackageIcon>kuronote_logo.png</PackageIcon>
+    <PackageTags>text editor, plain text, customisable, gamification</PackageTags>
+    <RepositoryUrl>https://github.com/Micsupreeme/KuroNote</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <SignAssembly>false</SignAssembly>
+    <ApplicationIcon>kuronote_logo.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="img\ico\**" />
     <EmbeddedResource Remove="img\ico\**" />
     <None Remove="img\ico\**" />
+    <None Include="img\icons\kuronote_logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <Page Remove="img\ico\**" />
   </ItemGroup>
 
@@ -141,7 +156,33 @@
     <None Remove="img\icons\outline_wallpaper_black_18dp.png" />
     <None Remove="img\icons\outline_zoom_in_black_18dp.png" />
     <None Remove="img\icons\outline_zoom_out_black_18dp.png" />
-    <None Remove="img\water.png" />
+    <None Remove="img\ranks\0.png" />
+    <None Remove="img\ranks\1.png" />
+    <None Remove="img\ranks\10.png" />
+    <None Remove="img\ranks\11.png" />
+    <None Remove="img\ranks\12.png" />
+    <None Remove="img\ranks\13.png" />
+    <None Remove="img\ranks\14.png" />
+    <None Remove="img\ranks\15.png" />
+    <None Remove="img\ranks\16.png" />
+    <None Remove="img\ranks\17.png" />
+    <None Remove="img\ranks\18.png" />
+    <None Remove="img\ranks\19.png" />
+    <None Remove="img\ranks\2.png" />
+    <None Remove="img\ranks\20.png" />
+    <None Remove="img\ranks\21.png" />
+    <None Remove="img\ranks\22.png" />
+    <None Remove="img\ranks\23.png" />
+    <None Remove="img\ranks\24.png" />
+    <None Remove="img\ranks\25.png" />
+    <None Remove="img\ranks\3.png" />
+    <None Remove="img\ranks\4.png" />
+    <None Remove="img\ranks\5.png" />
+    <None Remove="img\ranks\6.png" />
+    <None Remove="img\ranks\7.png" />
+    <None Remove="img\ranks\8.png" />
+    <None Remove="img\ranks\9.png" />
+    <None Remove="img\ranks\x.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -504,6 +545,84 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_zoom_out_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\0.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\1.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\10.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\11.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\12.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\13.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\14.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\15.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\16.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\17.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\18.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\19.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\20.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\21.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\22.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\23.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\24.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\3.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\4.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\5.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\6.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\7.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\8.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\9.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\x.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

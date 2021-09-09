@@ -15,6 +15,9 @@ namespace KuroNote
         private const string WINDOW_NAME = "Theme";
         private const string CUSTOM_THEME_EXT = ".kurotheme";
 
+        //Gamification constants
+        private const int AP_SELECT_THEME = 18;
+
         //Globals
         private string appName;
         MainWindow main;
@@ -159,6 +162,7 @@ namespace KuroNote
 
             main.setTheme(newThemeId, themeIncludesFont);
             applyTheme(newThemeId, themeIncludesFont);
+            main.incrementAp(AP_SELECT_THEME);
             toggleVisibility(false);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -96,6 +97,8 @@ namespace KuroNote
                     }
                     AESencryptedContent = Convert.ToBase64String(msEncrypt.ToArray());
                 }
+            } catch (FormatException fex) {
+                Debug.WriteLine(fex.ToString());
             } finally {
                 // Clear the RijndaelManaged object.
                 if (aesAlg != null)

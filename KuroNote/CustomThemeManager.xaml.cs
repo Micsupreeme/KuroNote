@@ -29,6 +29,10 @@ namespace KuroNote
             "JPEG (*.jpg;*.jpeg;*.jpe;*.jfif)|*.jpg;*.jpeg;*.jpe;*.jfif";
         private const long IMAGE_MAX_SIZE = 2097152; //Background images selected exceedomg this size (2MB) will trigger a file size warning
 
+        //Gamification constants
+        private const int AP_CREATE_CUSTOM = 30;
+        private const int AP_DELETE_CUSTOM = 30;
+
         //Globals
         private string appName, appPath;
         MainWindow main;
@@ -409,6 +413,7 @@ namespace KuroNote
             updateThemeFile();
             loadCustomThemeList(); //refresh custom theme list because we've added a new file to the custom theme directory
             loadThemeObjectFromFile(settings.customThemeIndex - 1); //the theme that was just created
+            main.incrementAp(AP_CREATE_CUSTOM);
             if (tbtnAutoPreview.IsChecked == true) {
                 main.setTheme(currentTheme.themeId, true); //always auto-preview with font
             }
@@ -426,6 +431,7 @@ namespace KuroNote
                 deleteThemeFile();
                 loadCustomThemeList();      //refresh custom theme list because we've removed a new file from the custom theme directory
                 toggleCustomiseUI(false);   //the theme was just deleted so now there is no theme loaded
+                main.incrementAp(AP_DELETE_CUSTOM);
             }
         }
 
