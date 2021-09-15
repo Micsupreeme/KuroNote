@@ -198,7 +198,7 @@ namespace KuroNote
                         main.unlockAchievement(4);
                         break;
                     case 15:
-                        main.unlockAchievement(15);
+                        main.unlockAchievement(5);
                         break;
                 }
             }

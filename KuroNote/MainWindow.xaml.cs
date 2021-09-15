@@ -20,34 +20,32 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: about and dependencies
-    /// TODO: achievements list
+    /// TODO: about and dependencies - and unlock achievement ID 1
+    /// TODO: font up and font down
+    /// 
     /// TODO Later: Hashing tool
     /// TODO Later: Fullscreen
+    /// TODO Later: Recently opened
+    /// TODO Later: Add more error messages to language dictionary
     /// 
+    /// TODO: Add a new flag then check conf.json migration - how modifying code-behind without modifying conf.json works
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
-    /// 
-    /// Arbitrary points
-    /// More spammable actions = less points
-    ///         Launch:                 10ap
-    ///         Cut:                    10ap
-    ///         Copy:                   10ap
-    ///         Save:                   10ap
-    ///         Open:                   12ap
-    ///         Change font:            15ap
-    ///         Select theme:           18ap
-    ///         Encrypt:                30ap
-    ///         Delete custom theme:    30ap
-    ///         Create custom theme:    30ap
-    ///         Save As:                30ap
-    ///         Decrypt:                35ap 
     /// </summary>
     public partial class MainWindow : Window
     {
         //Constants
-        private const string FILE_FILTER =  "Text Documents (*.txt, *.kuro)|*.txt; *.kuro|" +
+        private const string OPEN_FILE_FILTER =  "Common Plain Text Files (*.txt, *.md, *.json, *.bat, *.html, *.css, *.kuro)|*.txt; *.md; *.json; *.bat; *.html; *.css; *.kuro|" +
+                                            "Text Files (*.txt)|*.txt|" +
                                             "KuroNotes (*.kuro)|*.kuro|" +
-                                            "All Files (*.*)|*.*";  //For opening and saving files
+                                            "All Files (*.*)|*.*";
+        private const string SAVE_FILE_FILTER = "Text File (*.txt)|*.txt|" +
+                                            "KuroNote (*.kuro)|*.kuro|" +
+                                            "Markdown File (*.md)|*.md|" +
+                                            "JSON File (*.json)|*.json|" +
+                                            "Batch File (*.bat)|*.bat|" +
+                                            "HTML File (*.html)|*.html|" +
+                                            "CSS File (*.css)|*.css|" +
+                                            "All Files (*.*)|*.*";
         private const long FILE_MAX_SIZE = 1048576;                 //Maximum supported file size in bytes (1MB)
         private const string FILE_SEARCH_EXE = "*.exe";
         private const string CUSTOM_THEME_EXT = ".kurotheme";
@@ -59,11 +57,12 @@ namespace KuroNote
         //Gamification constants
         private const int MAX_RANK = 25; //Ranks beyond this are treated as this value in the backend
         private const int AP_COPY = 2;
-        private const int AP_LAUNCH = 10;
         private const int AP_CUT = 10;
         private const int AP_SAVE = 12;
         private const int AP_OPEN = 15;
+        private const int AP_LAUNCH = 15;
         private const int AP_SAVE_AS = 30;
+        private const int AP_ACHIEVEMENT = 125;
 
         //Globals
         public string appName = "KuroNote";
@@ -239,11 +238,11 @@ namespace KuroNote
             EnAchDict = new KuroNoteAchievement[] {
                 //Holiday achievmenets
                 new KuroNoteAchievement(11, "New Year's Day", "Launch KuroNote on January 1st"),
-                new KuroNoteAchievement(214, "Valentine's Day", "Launch KuroNote on February 14th", themeCollection[24]), //"Hearts" theme
+                new KuroNoteAchievement(214, "Valentine's Day", "Launch KuroNote on February 14th", themeCollection[25]), //"Hearts" theme
                 new KuroNoteAchievement(317, "Saint Patrick's Day", "Launch KuroNote on March 17th"),
-                new KuroNoteAchievement(320, "International Day of Happiness", "Launch KuroNote on March 20th", themeCollection[26]), //"Yellow" theme
+                new KuroNoteAchievement(320, "International Day of Happiness", "Launch KuroNote on March 20th", themeCollection[27]), //"Yellow" theme
                 new KuroNoteAchievement(422, "Earth Day", "Launch KuroNote on April 22nd", themeCollection[10]), //"Earth" theme
-                new KuroNoteAchievement(54, "Star Wars Day", "May the 4th be with you!"),
+                new KuroNoteAchievement(54, "Star Wars Day", "Launch KuroNote on May 4th"),
                 new KuroNoteAchievement(621, "World Music Day", "Launch KuroNote on June 21st"),
                 new KuroNoteAchievement(720, "National Moon Day", "Launch KuroNote on July 20th", themeCollection[14]), //"Moon" theme
                 new KuroNoteAchievement(88, "International Cat Day", "Launch KuroNote on August 8th"),
@@ -262,10 +261,10 @@ namespace KuroNote
                 new KuroNoteAchievement(4, "Make it Yours", "Create 5 custom themes"),
                 new KuroNoteAchievement(5, "Customs Connoisseur", "Create 15 custom themes"),
                 new KuroNoteAchievement(9, "Ne0phyt3", "\"AES Encrypt...\" 10 times"),
-                new KuroNoteAchievement(10, "Crypt0r", "\"AES Encrypt...\" 50 times"),
+                new KuroNoteAchievement(10, "Crypt0r", "\"AES Encrypt...\" 50 times", themeCollection[22]), //"<C0de Red/>" theme"
                 new KuroNoteAchievement(12, "Qualified CTRL+S'er", "\"Save\" 1000 times"),
                 new KuroNoteAchievement(13, "Better Save than Sorry", "\"Save\" 10000 times"),
-                new KuroNoteAchievement(14, "Nobody has ever done that", "Set the font to \"Wingdings\" or \"Webdings\""),
+                new KuroNoteAchievement(14, "Nobody has ever done that", "Set the font to \"Wingdings\""),
                 new KuroNoteAchievement(15, "Open Sesame", "\"Open...\" 2500 times"),
                 new KuroNoteAchievement(16, "CTRL+Outstanding", "\"Open...\" 7500 times"),
                 new KuroNoteAchievement(42, "The Meaning of Life", "We rolled the dice, you got 42!")
@@ -282,31 +281,31 @@ namespace KuroNote
             rankCollection = new KuroNoteRank[]
             {
                 new KuroNoteRank(0, "Apprentice Wordcrafter", 1000, "#FFEEEEEE"),
-                new KuroNoteRank(1, "Wordcrafter Initiate", 1200, "#FFEEEEEE"),
-                new KuroNoteRank(2, "Wordwrapper", 1440, "#FFEEEEEE"),
-                new KuroNoteRank(3, ".TXT Enthusiast", 1728, "#FFEEEEEE"),
-                new KuroNoteRank(4, "Wordcrafter", 1987, "#FFEEEEEE"),
-                new KuroNoteRank(5, "ASCII Associate", 2285, "#FFEEEEEE"),
-                new KuroNoteRank(6, ".TXT Specialist", 2628, "#FFEEEEEE"),
-                new KuroNoteRank(7, "Master Wordcrafter", 3022, "#FFEEEEEE"),
-                new KuroNoteRank(8, "ASCIIKnight", 3476, "#FFEEEEEE"),
-                new KuroNoteRank(9, "Unicoder", 3997, "#FFEEEEEE"),
-                new KuroNoteRank(10, "Unicoder++", 4317, "#FFEEEEEE"),
-                new KuroNoteRank(11, "Apex ASCIIKnight", 4662, "#FFEEEEEE"),
-                new KuroNoteRank(12, "Notemaster Novitiate", 5035, "#FFEEEEEE"),
-                new KuroNoteRank(13, "ANSINaut", 5438, "#FFEEEEEE"),
-                new KuroNoteRank(14, "UTF-7 Supremo", 5873, "#FFEEEEEE"),
-                new KuroNoteRank(15, "UTF-8 Ultima", 6343, "#FFEEEEEE"),
-                new KuroNoteRank(16, "Notemaster", 7294, "#FFEEEEEE"),
-                new KuroNoteRank(17, "Expert Encoder", 8388, "#FFEEEEEE"),
-                new KuroNoteRank(18, "Editor Extraordinaire", 9646, "#FFEEEEEE"),
-                new KuroNoteRank(19, "Editor in Chief", 11093, "#FFEEEEEE"),
-                new KuroNoteRank(20, "Plain Text Paragon", 12757, "#FFEEEEEE"),
-                new KuroNoteRank(21, "Notemaster Shiro", 14671, "#FFEEEEEE"),
-                new KuroNoteRank(22, "Notemaster Kuro", 16872, "#FFEEEEEE"),
-                new KuroNoteRank(23, "Infinite ISONaut", 25000, "#FFEEEEEE"),
-                new KuroNoteRank(24, "Grand Notemaster", 25000, "#FFEEEEEE"),
-                new KuroNoteRank(25, "Grand Notemaster +", 25000, "#FFEEEEEE")
+                new KuroNoteRank(1, "Wordcrafter Initiate", 1200, "#FFF3F3FF"),
+                new KuroNoteRank(2, "Wordwrapper", 1440, "#FFE3E3FF"),
+                new KuroNoteRank(3, ".TXT Enthusiast", 1728, "#FFD3D3FF"),
+                new KuroNoteRank(4, "Wordcrafter", 1987, "#FFC3C3FF"),
+                new KuroNoteRank(5, "ASCII Associate", 2285, "#FFC3FFC3"),
+                new KuroNoteRank(6, ".TXT Specialist", 2628, "#FFB9FFB9"),
+                new KuroNoteRank(7, "Master Wordcrafter", 3022, "#FFAFFFAF"),
+                new KuroNoteRank(8, "ASCIIKnight", 3476, "#FFA5FFA5"),
+                new KuroNoteRank(9, "Unicoder", 3997, "#FF9BFF9B"),
+                new KuroNoteRank(10, "Unicoder++", 4317, "#FF91FF91"),
+                new KuroNoteRank(11, "Apex ASCIIKnight", 4662, "#FFFFFFC3"),
+                new KuroNoteRank(12, "Notemaster Novitiate", 5035, "#FFFFFFB9"),
+                new KuroNoteRank(13, "ANSINaut", 5438, "#FFFFFFAF"),
+                new KuroNoteRank(14, "UTF-7 Supremo", 5873, "#FFFFFFA5"),
+                new KuroNoteRank(15, "UTF-8 Ultima", 6343, "#FFFFFF9B"),
+                new KuroNoteRank(16, "Notemaster", 7294, "#FFFFFF91"),
+                new KuroNoteRank(17, "Expert Encoder", 8388, "#FFFFC3C3"),
+                new KuroNoteRank(18, "Editor Extraordinaire", 9646, "#FFFFB9B9"),
+                new KuroNoteRank(19, "Editor in Chief", 11093, "#FFFFAFAF"),
+                new KuroNoteRank(20, "Plain Text Paragon", 12757, "#FFFFA5A5"),
+                new KuroNoteRank(21, "Notemaster Shiro", 14671, "#FFFF9B9B"),
+                new KuroNoteRank(22, "Notemaster Kuro", 16872, "#FFFF9191"),
+                new KuroNoteRank(23, "Infinite ISONaut", 25000, "#FFFF8787"),
+                new KuroNoteRank(24, "Grand Notemaster", 25000, "#FFFF87FF"),
+                new KuroNoteRank(25, "Grand Notemaster +", 25000, "#FFFF5FFF")
             };
         }
 
@@ -431,6 +430,7 @@ namespace KuroNote
                 log.addLog("Achievement unlocked: " + achievementCode);
                 appSettings.achList.Add(achievementCode);
                 appSettings.achLast = achievementCode;
+                incrementAp(AP_ACHIEVEMENT);
                 appSettings.UpdateSettings();
 
                 //Call AchievementDialog to notify the user of the new achievement unlock
@@ -867,7 +867,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    17, "Pleases and Sparkles", "Image by Sharon McCutcheon on Pexels", 0,
+                    17, "Sparkly Pink", "Image by Sharon McCutcheon on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 236, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-5922574.jpg")),
                                      Opacity = 0.30 },
@@ -908,7 +908,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    21, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[18]; }", 0,
+                    21, "Terminal", "if (this.geek == true) { chosenTheme = themeCollection[21]; }", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     new SolidColorBrush(Color.FromRgb(190, 190, 190)),
@@ -918,7 +918,17 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    22, "Antiqua", "Image by Pixabay on Pexels", 0,
+                    22, "<C0de Red/>", "Bleed your message at the tone", 10,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(8, 8, 8)),
+                    new SolidColorBrush(Color.FromRgb(255, 55, 55)),
+                    new SolidColorBrush(Color.FromRgb(255, 55, 55)),
+                    new SolidColorBrush(Color.FromRgb(255, 8, 8)),
+                    "Consolas", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    23, "Antiqua", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-235985.jpg")),
                                      Opacity = 0.48 },
@@ -929,7 +939,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    23, "Contour", "Image by David Yu on Pexels", 0,
+                    24, "Contour", "Image by David Yu on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-yu-2684383.jpg")),
                                      Opacity = 0.39 },
@@ -940,7 +950,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    24, "Hearts", "Image by Monstera on Pexels", 214,
+                    25, "Hearts", "Image by Monstera on Pexels", 214,
                     new SolidColorBrush(Color.FromRgb(255, 151, 202)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-monstera-5874714.jpg")),
                                      Opacity = 0.45 },
@@ -951,7 +961,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    25, "Droplets of Hope", "Image by Karolina Grabowska on Pexels", 0,
+                    26, "Droplets of Hope", "Image by Karolina Grabowska on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4194853.jpg")),
                                      Opacity = 0.45 },
@@ -962,7 +972,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    26, "Yellow", "Image by Luis Quintero on Pexels", 320,
+                    27, "Yellow", "Image by Luis Quintero on Pexels", 320,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-luis-quintero-3101527.jpg")),
                                      Opacity = 0.48 },
@@ -1096,7 +1106,7 @@ namespace KuroNote
 
                 OpenFileDialog dlg = new OpenFileDialog
                 {
-                    Filter = FILE_FILTER
+                    Filter = OPEN_FILE_FILTER
                 };
                 if (dlg.ShowDialog() == true) {
                     MemoryStream ms = new MemoryStream();
@@ -1264,7 +1274,7 @@ namespace KuroNote
             {
                 DefaultExt = ".txt",
                 AddExtension = true,
-                Filter = FILE_FILTER
+                Filter = SAVE_FILE_FILTER
             };
             if (dlg.ShowDialog() == true) {
                 TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);

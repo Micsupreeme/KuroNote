@@ -246,6 +246,9 @@ namespace KuroNote
         /// </summary>
         private void applyFont()
         {
+            if (selectedFontFamily.Equals("Wingdings")) {
+                main.unlockAchievement(14);
+            }
             if (customThemeManager != null & customThemeObject != null) {
                 //apply for CustomThemeManager
                 log.addLog("Sending [" + selectedFontFamily + " (" + txtFontStyle.Text + ") " + selectedFontSize + "] to CustomThemeManager");

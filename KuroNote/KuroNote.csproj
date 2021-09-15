@@ -65,6 +65,7 @@
     <None Remove="img\achievements\88.png" />
     <None Remove="img\achievements\9.png" />
     <None Remove="img\achievements\921.png" />
+    <None Remove="img\achievements\locked.png" />
     <None Remove="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg" />
     <None Remove="img\bgs\pexels-asad-photo-maldives-3320516.jpg" />
     <None Remove="img\bgs\pexels-ben-mack-5326909.jpg" />
@@ -157,36 +158,67 @@
     <None Remove="img\icons\outline_zoom_in_black_18dp.png" />
     <None Remove="img\icons\outline_zoom_out_black_18dp.png" />
     <None Remove="img\ranks\0.png" />
+    <None Remove="img\ranks\0b.png" />
     <None Remove="img\ranks\1.png" />
     <None Remove="img\ranks\10.png" />
+    <None Remove="img\ranks\10b.png" />
     <None Remove="img\ranks\11.png" />
+    <None Remove="img\ranks\11b.png" />
     <None Remove="img\ranks\12.png" />
+    <None Remove="img\ranks\12b.png" />
     <None Remove="img\ranks\13.png" />
+    <None Remove="img\ranks\13b.png" />
     <None Remove="img\ranks\14.png" />
+    <None Remove="img\ranks\14b.png" />
     <None Remove="img\ranks\15.png" />
+    <None Remove="img\ranks\15b.png" />
     <None Remove="img\ranks\16.png" />
+    <None Remove="img\ranks\16b.png" />
     <None Remove="img\ranks\17.png" />
+    <None Remove="img\ranks\17b.png" />
     <None Remove="img\ranks\18.png" />
+    <None Remove="img\ranks\18b.png" />
     <None Remove="img\ranks\19.png" />
+    <None Remove="img\ranks\19b.png" />
+    <None Remove="img\ranks\1b.png" />
     <None Remove="img\ranks\2.png" />
     <None Remove="img\ranks\20.png" />
+    <None Remove="img\ranks\20b.png" />
     <None Remove="img\ranks\21.png" />
+    <None Remove="img\ranks\21b.png" />
     <None Remove="img\ranks\22.png" />
+    <None Remove="img\ranks\22b.png" />
     <None Remove="img\ranks\23.png" />
+    <None Remove="img\ranks\23b.png" />
     <None Remove="img\ranks\24.png" />
+    <None Remove="img\ranks\24b.png" />
     <None Remove="img\ranks\25.png" />
+    <None Remove="img\ranks\2b.png" />
     <None Remove="img\ranks\3.png" />
+    <None Remove="img\ranks\3b.png" />
     <None Remove="img\ranks\4.png" />
+    <None Remove="img\ranks\4b.png" />
     <None Remove="img\ranks\5.png" />
+    <None Remove="img\ranks\5b.png" />
     <None Remove="img\ranks\6.png" />
+    <None Remove="img\ranks\6b.png" />
     <None Remove="img\ranks\7.png" />
+    <None Remove="img\ranks\7b.png" />
     <None Remove="img\ranks\8.png" />
+    <None Remove="img\ranks\8b.png" />
     <None Remove="img\ranks\9.png" />
+    <None Remove="img\ranks\9b.png" />
     <None Remove="img\ranks\x.png" />
+    <None Remove="img\ranks\xb.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <Resource Include="img\achievements\locked.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\6b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -550,37 +582,73 @@
     <Resource Include="img\ranks\0.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\0b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\1.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\10.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\10b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\11.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\11b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\12.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\12b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\13.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\13b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\14.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\14b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\15.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\15b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\16.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\16b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\17.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\17b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\18.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\18b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\19.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\19b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\1b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\2.png">
@@ -589,25 +657,52 @@
     <Resource Include="img\ranks\20.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\20b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\21.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\21b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\22.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\22b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\23.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\23b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\24.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\24b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\2b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\3.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\3b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\4.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\4b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\5.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\5b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\6.png">
@@ -616,13 +711,25 @@
     <Resource Include="img\ranks\7.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\7b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\8.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\8b.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\9.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\ranks\9b.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\ranks\x.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\ranks\xb.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

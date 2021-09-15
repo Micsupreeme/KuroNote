@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="Profile" Height="400" Width="420"
+        Title="Profile" Height="400" Width="420" MinHeight="400" MinWidth="420" MaxHeight="400" MaxWidth="600"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStyle="ToolWindow"
         Background="#404040"
@@ -17,9 +17,9 @@
             <Button Name="btnAchievements" Click="btnAchievements_Click" Width="130" Margin="10,0,10,0" Padding="0,4,0,4" Content="Achievements" IsDefault="True" FontSize="14"/>
         </StackPanel>
         <StackPanel>
-            <Image Name="imgRankIcon" Source="pack://application:,,,/img/ranks/0.png" Height="96"/>
+            <Image Name="imgRankIcon" Source="pack://application:,,,/img/ranks/0.png" Height="96" MouseEnter="imgRankIcon_MouseEnter" MouseLeave="imgRankIcon_MouseLeave"/>
             <Label  Name="lblRankName" Content="" HorizontalContentAlignment="Center" FontSize="18" Foreground="#EEEEEE" BorderThickness="0"/>
-            <ProgressBar Name="prgRankAp" Height="12" Margin="0,5,0,0" Minimum="0" Maximum="1000" Background="#EEEEEE"/>
+            <ProgressBar Name="prgRankAp" Height="14" BorderThickness="2" Margin="0,5,0,0" Minimum="0" Maximum="1000" Background="#404040" Foreground="#EEEEEE"/>
             <Label Name="lblRankAp" FontStyle="Italic" Content="0/1000 AP" HorizontalContentAlignment="Center" FontSize="12" Foreground="#EEEEEE" BorderThickness="0" Margin="0,0,0,5"/>
             <TextBox x:Name="txtApExplained" Text="KuroNote awards AP simply by using the application. Actions such as opening and saving files award a fixed amount of AP." FontFamily="Arial" FontSize="12" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap" Background="#404040" Foreground="#DDDDDD" TextAlignment="Center" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"/>
             <StackPanel>
