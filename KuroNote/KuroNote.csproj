@@ -115,6 +115,10 @@
     <None Remove="img\icons\outline_done_outline_black_18dp.png" />
     <None Remove="img\icons\outline_enhanced_encryption_black_18dp.png" />
     <None Remove="img\icons\outline_exit_to_app_black_18dp.png" />
+    <None Remove="img\icons\outline_exposure_neg_1_black_18dp.png" />
+    <None Remove="img\icons\outline_exposure_neg_2_black_18dp.png" />
+    <None Remove="img\icons\outline_exposure_plus_1_black_18dp.png" />
+    <None Remove="img\icons\outline_exposure_plus_2_black_18dp.png" />
     <None Remove="img\icons\outline_face_black_18dp.png" />
     <None Remove="img\icons\outline_file_new_black_18dp.png" />
     <None Remove="img\icons\outline_find_in_page_black_18dp.png" />
@@ -214,6 +218,18 @@
 
   <ItemGroup>
     <Resource Include="img\achievements\locked.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_exposure_neg_1_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_exposure_neg_2_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_exposure_plus_1_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_exposure_plus_2_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\6b.png">

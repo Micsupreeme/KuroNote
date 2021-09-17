@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace KuroNote
 {
@@ -21,7 +22,8 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: about and dependencies - and unlock achievement ID 1
-    /// TODO: font up and font down
+    /// TODO: Font Up/Down behaviour setting:
+    /// Temporary font size - Permenant font size - Overrides theme font size
     /// 
     /// TODO Later: Hashing tool
     /// TODO Later: Fullscreen
@@ -53,6 +55,8 @@ namespace KuroNote
         private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
         private const double DEFAULT_WINDOW_HEIGHT = 500;
         private const double DEFAULT_WINDOW_WIDTH = 750;
+        private const double PAGE_WIDTH_MAX = 1000000;
+        private const double PAGE_WIDTH_RIGHT_MARGIN = 25;          //Number of width units to add (as a padding/buffer) in addition to the measured width of the content
 
         //Gamification constants
         private const int MAX_RANK = 25; //Ranks beyond this are treated as this value in the backend
@@ -161,6 +165,10 @@ namespace KuroNote
             EnUIDict["FormatMi"] = "Format";
             EnUIDict["FontMi"] = "Font...";
                 EnUIDict["FontMiTT"] = "Changes the font to a specified font.";
+            EnUIDict["FontUpMi"] = "Font Up";
+                EnUIDict["FontUpMiTT"] = "Increases the font size by 1";
+            EnUIDict["FontDownMi"] = "Font Down";
+                EnUIDict["FontDownMiTT"] = "Decreases the font size by 1";
             //Tools
             EnUIDict["ToolsMi"] = "Tools";
             EnUIDict["AESMi"] = "AES Encryption";
@@ -459,6 +467,9 @@ namespace KuroNote
             } else {
                 selectedEncoding = Encoding.UTF8;
             }
+
+            //Word wrap
+            processPageWidth();
 
             //Show full file path in title
             updateAppTitle();
@@ -1618,6 +1629,48 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Menu > Format > Font Up
+        /// </summary>
+        private void FontUp_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            doFontUp();
+        }
+
+        /// <summary>
+        /// Increase font size by 1
+        /// </summary>
+        private void doFontUp()
+        {
+            log.addLog("Request: FontUp");
+            try {
+                MainRtb.FontSize += 1;
+            } catch(Exception) {
+                log.addLog("ERROR: Cannot increase font size from " + MainRtb.FontSize);
+            }
+        }
+
+        /// <summary>
+        /// Menu > Format > Font Down
+        /// </summary>
+        private void FontDown_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            doFontDown();
+        }
+
+        /// <summary>
+        /// Decrease font size by 1
+        /// </summary>
+        private void doFontDown()
+        {
+            log.addLog("Request: FontDown");
+            try {
+                MainRtb.FontSize -= 1;
+            } catch (Exception) {
+                log.addLog("ERROR: Cannot decrease font size from " + MainRtb.FontSize);
+            }
+        }
+
+        /// <summary>
         /// Menu > Format > Font...
         /// </summary>
         private void Font_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1858,6 +1911,42 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// If word wrap is enabled: ensures page width is automatically determined (NaN)
+        /// else: automatically adjusts the page width (and horizontal scrollbar) to match the width of the content
+        /// </summary>
+        private void processPageWidth()
+        {
+            try {
+                if (appSettings.wordWrap) {
+                    //Word wrap enabled - determine page width automatically
+                    MainRtb.Document.PageWidth = double.NaN;
+                } else {
+                    //Word wrap disabled - determine ideal page width
+                    try {
+                        //Attempt to set page width according to content width (i.e. make the horizontal scrollbar always appropriate)
+                        FormattedText rtbText = new FormattedText(
+                            new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd).Text,
+                            CultureInfo.GetCultureInfo("en-us"), //Can plug a localisation setting string here, else use "CultureInfo.InvariantCulture"
+                            FlowDirection.LeftToRight,
+                            new Typeface(MainRtb.FontFamily.ToString()),
+                            MainRtb.FontSize,
+                            MainRtb.Foreground,
+                            VisualTreeHelper.GetDpi(this).PixelsPerDip);
+                        MainRtb.Document.PageWidth = rtbText.WidthIncludingTrailingWhitespace + PAGE_WIDTH_RIGHT_MARGIN;
+                    } catch (ArgumentException) {
+                        //Attempted to set PageWidth to an invalid value (e.g. >1000000)
+                        MainRtb.Document.PageWidth = PAGE_WIDTH_MAX;
+                    } catch (Exception ue) {
+                        //Unknown error
+                        log.addLog("ERROR: Failed to process page width: " + ue.ToString());
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: Attempted to access appSettings before initialisation ");
+            }
+        }
+
+        /// <summary>
         /// Converts hex colour value strings to ARGB numbers
         /// </summary>
         /// <param name="colorHexIncludingHash">hex "#AARRGGBB" string value to convert to ARGB byte array</param>
@@ -1870,6 +1959,22 @@ namespace KuroNote
             argbValues[2] = (byte)Convert.ToInt64(colorHexIncludingHash.Substring(5, 2), 16);
             argbValues[3] = (byte)Convert.ToInt64(colorHexIncludingHash.Substring(7, 2), 16);
             return argbValues;
+        }
+
+        /// <summary>
+        /// When the mouse wheel moves while the cursor is in MainRtb
+        /// </summary>
+        private void MainRtb_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            //Check for CTRL modifier
+            //The full keybinding to do stuff is CTRL+MWheelUp/Down
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
+                if (e.Delta < 0) {
+                    doFontDown();
+                } else {
+                    doFontUp();
+                }
+            }
         }
 
         /// <summary>
@@ -1923,6 +2028,7 @@ namespace KuroNote
         private void MainRtb_TextChanged(object sender, RoutedEventArgs e)
         {
             toggleEdited(true);
+            processPageWidth();
             WordCountTb.Text = generateWordCount();
         }
 
@@ -1961,6 +2067,8 @@ namespace KuroNote
 
         //Format
         public static RoutedCommand Font = new RoutedCommand();
+        public static RoutedCommand FontUp = new RoutedCommand();
+        public static RoutedCommand FontDown = new RoutedCommand();
 
         //Tools
         public static RoutedCommand AESEnc = new RoutedCommand();

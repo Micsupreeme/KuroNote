@@ -27,6 +27,8 @@
         
         <!--Format-->
         <CommandBinding Command="local:CustomCommands.Font" Executed="Font_Executed" />
+        <CommandBinding Command="local:CustomCommands.FontUp" Executed="FontUp_Executed" />
+        <CommandBinding Command="local:CustomCommands.FontDown" Executed="FontDown_Executed" />
         
         <!--Tools-->
         <CommandBinding Command="local:CustomCommands.AESEnc" Executed="AESEnc_Executed" />
@@ -51,7 +53,7 @@
         <KeyBinding Modifiers="Alt" Key="F4" Command="local:CustomCommands.Exit"/>
         <KeyBinding Modifiers="Ctrl" Key="F" Command="local:CustomCommands.Find"/>
         <KeyBinding Modifiers="Ctrl" Key="H" Command="local:CustomCommands.Replace"/>
-        <KeyBinding Key="F1" Command="local:CustomCommands.About"/>
+        <KeyBinding Key="F1"  Command="local:CustomCommands.About"/>
     </Window.InputBindings>
     <DockPanel LastChildFill="True">
         <Menu Name="MainMenu" DockPanel.Dock="Top">
@@ -155,6 +157,17 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Name="FormatMi" Header="{Binding [FormatMi], Mode=OneTime}">
+                <MenuItem Name="FontUpMi" Header="{Binding [FontUpMi], Mode=OneTime}" ToolTip="{Binding [FontUpMiTT], Mode=OneTime}" Command="local:CustomCommands.FontUp" InputGestureText="Ctrl+MWheelUp">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_exposure_plus_1_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="FontDownMi" Header="{Binding [FontDownMi], Mode=OneTime}" ToolTip="{Binding [FontDownMiTT], Mode=OneTime}" Command="local:CustomCommands.FontDown" InputGestureText="Ctrl+MWheelDown">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_exposure_neg_1_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
                 <MenuItem Name="FontMi" Header="{Binding [FontMi], Mode=OneTime}" ToolTip="{Binding [FontMiTT], Mode=OneTime}" Command="local:CustomCommands.Font">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_text_format_black_18dp.png"/>
@@ -240,7 +253,7 @@
                 <TextBlock Name="WordCountTb" Text="0 Words"/>
             </StatusBarItem>
         </StatusBar>
-        <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
+        <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="MainRtb_PreviewMouseWheel" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
             <FlowDocument/>
         </RichTextBox>
     </DockPanel>

@@ -29,6 +29,7 @@ namespace KuroNote
         public bool useAscii = false;
         public bool rememberWindowSize = false;
         public bool fullFilePath = false;
+        public bool wordWrap = true;
         public double windowHeight = 500;
         public double windowWidth = 750;
         public List<int> achList = new List<int>() { };
@@ -65,6 +66,7 @@ namespace KuroNote
                     this.useAscii = knsFile.useAscii;
                     this.rememberWindowSize = knsFile.rememberWindowSize;
                     this.fullFilePath = knsFile.fullFilePath;
+                    this.wordWrap = knsFile.wordWrap;
                     this.windowHeight = knsFile.windowHeight;
                     this.windowWidth = knsFile.windowWidth;
                     this.achList = knsFile.achList;
