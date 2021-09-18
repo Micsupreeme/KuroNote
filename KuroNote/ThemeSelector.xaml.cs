@@ -39,14 +39,22 @@ namespace KuroNote
             this.Title = WINDOW_NAME + " - " + appName;
 
             previouslySelectedThemeId = settings.themeId;
+            saveCurrentRtbFontSize();
             loadPresetAndCustomThemes();
+        }
+
+        /// <summary>
+        /// Save current font size in case we need to remember it to apply "override theme font size" option
+        /// </summary>
+        private void saveCurrentRtbFontSize() {
+            settings.fontSize = (int)main.MainRtb.FontSize;
+            settings.UpdateSettings();
         }
 
         /// <summary>
         /// Populate the dropdown menu with all available themes
         /// </summary>
-        private void loadPresetAndCustomThemes()
-        {
+        private void loadPresetAndCustomThemes() {
             cmbTheme.Items.Clear();
 
             try {
@@ -98,8 +106,7 @@ namespace KuroNote
         /// <summary>
         /// Temporarily apply the theme and display the corresponding theme description when the theme selection changes
         /// </summary>
-        private void cmbTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void cmbTheme_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
 
             if (selectedThemeTag < 1000) { //currently, only preset themes can have descriptions
@@ -113,8 +120,7 @@ namespace KuroNote
         /// <summary>
         /// Update the theme preview to include/omit the theme font when the checkbox state is changed
         /// </summary>
-        private void chkIncludeFont_CheckChanged(object sender, RoutedEventArgs e)
-        {
+        private void chkIncludeFont_CheckChanged(object sender, RoutedEventArgs e) {
             try {
                 int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
                 bool isChecked = (bool)chkIncludeFont.IsChecked;
@@ -144,8 +150,7 @@ namespace KuroNote
         /// <summary>
         /// Open/close this window
         /// </summary>
-        public void toggleVisibility(bool vis)
-        {
+        public void toggleVisibility(bool vis) {
             if (vis) {
                 log.addLog("Open ThemeSelector");
                 this.Visibility = Visibility.Visible;
@@ -155,8 +160,7 @@ namespace KuroNote
             }
         }
 
-        private void btnOk_Click(object sender, RoutedEventArgs e)
-        {
+        private void btnOk_Click(object sender, RoutedEventArgs e) {
             int newThemeId = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
             bool themeIncludesFont = (bool)chkIncludeFont.IsChecked;
 
@@ -166,14 +170,12 @@ namespace KuroNote
             toggleVisibility(false);
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
             main.setTheme(previouslySelectedThemeId, settings.themeWithFont);
             toggleVisibility(false);
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             main.setTheme(previouslySelectedThemeId, settings.themeWithFont);
             log.addLog("Close ThemeSelector");
         }

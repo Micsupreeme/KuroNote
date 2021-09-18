@@ -58,6 +58,18 @@ namespace KuroNote
             useasciiTs.IsChecked = settings.useAscii;
             wordwrapTs.IsChecked = settings.wordWrap;
             fullfilepathTs.IsChecked = settings.fullFilePath;
+
+            switch(settings.fontSizeMode) {
+                case 0:
+                    fontsizemode0Rbtn.IsChecked = true;
+                    break;
+                case 1:
+                    fontsizemode1Rbtn.IsChecked = true;
+                    break;
+                case 2:
+                    fontsizemode2Rbtn.IsChecked = true;
+                    break;
+            }
         }
 
         /// <summary>
@@ -72,6 +84,15 @@ namespace KuroNote
             settings.useAscii = (bool)useasciiTs.IsChecked;
             settings.wordWrap = (bool)wordwrapTs.IsChecked;
             settings.fullFilePath = (bool)fullfilepathTs.IsChecked;
+
+            if (fontsizemode0Rbtn.IsChecked == true) {
+                settings.fontSizeMode = 0;
+            } else if (fontsizemode1Rbtn.IsChecked == true) {
+                settings.fontSizeMode = 1;
+            } else {
+                settings.fontSizeMode = 2;
+            }
+
             settings.UpdateSettings();
         }
 

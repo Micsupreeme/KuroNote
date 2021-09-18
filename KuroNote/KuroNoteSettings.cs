@@ -29,6 +29,7 @@ namespace KuroNote
         public bool useAscii = false;
         public bool rememberWindowSize = false;
         public bool fullFilePath = false;
+        public int fontSizeMode = 1;
         public bool wordWrap = true;
         public double windowHeight = 500;
         public double windowWidth = 750;
@@ -65,6 +66,7 @@ namespace KuroNote
                     this.floating = knsFile.floating;
                     this.useAscii = knsFile.useAscii;
                     this.rememberWindowSize = knsFile.rememberWindowSize;
+                    this.fontSizeMode = knsFile.fontSizeMode;
                     this.fullFilePath = knsFile.fullFilePath;
                     this.wordWrap = knsFile.wordWrap;
                     this.windowHeight = knsFile.windowHeight;

@@ -22,8 +22,6 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: about and dependencies - and unlock achievement ID 1
-    /// TODO: Font Up/Down behaviour setting:
-    /// Temporary font size - Permenant font size - Overrides theme font size
     /// 
     /// TODO Later: Hashing tool
     /// TODO Later: Fullscreen
@@ -1490,6 +1488,11 @@ namespace KuroNote
                         appSettings.windowWidth = this.Width;
                         appSettings.UpdateSettings();
                     }
+                    //Remember exact font size if font up/down behaviour > 0
+                    if (appSettings.fontSizeMode > 0) {
+                        appSettings.fontSize = (int)MainRtb.FontSize;
+                        appSettings.UpdateSettings();
+                    }
                     log.addLog("Exiting");
                     return true;
                 }
@@ -1732,9 +1735,13 @@ namespace KuroNote
                 MainStatus.Background = themeCollection[_themeId].statusBrush;
 
                 if (_includeFont) {
-                    setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
-                } else
-                {
+                    //If override theme font size option enabled
+                    if (appSettings.fontSizeMode == 2) {
+                        setFont(themeCollection[_themeId].fontFamily, (short)appSettings.fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
+                    } else {
+                        setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
+                    }
+                } else {
                     setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                 }
             } else {
@@ -1789,7 +1796,12 @@ namespace KuroNote
                     MainStatus.Background = new SolidColorBrush(Color.FromArgb(statusBrushArgb[0], statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
 
                     if (_includeFont) {
-                        setFont(selectedCustomTheme.fontFamily, selectedCustomTheme.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
+                        //If override theme font size option enabled
+                        if (appSettings.fontSizeMode == 2) {
+                            setFont(selectedCustomTheme.fontFamily, (short)appSettings.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
+                        } else {
+                            setFont(selectedCustomTheme.fontFamily, selectedCustomTheme.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
+                        }
                     } else {
                         setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                     }
