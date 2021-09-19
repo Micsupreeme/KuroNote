@@ -13,6 +13,9 @@ namespace KuroNote
         //Constants
         private const string WINDOW_NAME = "Font";
         private static readonly short[] FONT_SIZES = { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
+        private const int MAX_PREVIEW_FONT_SIZE = 80;
+        private const string NO_PREVIEW_TEXT = "Cannot preview at specified font size";
+        private const int NO_PREVIEW_FONT_SIZE = 17;
 
         //Gamification constants
         private const int AP_CHANGE_FONT = 15;
@@ -46,11 +49,23 @@ namespace KuroNote
             if (customThemeManager != null & customThemeObject != null) {
                 log.addLog("FontDialog called from CustomThemeManager");
             }
+            saveCurrentRtbFontSize();
             loadFontFamilies();
             loadFontStyles();
             loadFontSizes();
             log.addLog("Font lists loaded");
             updateFont();
+        }
+
+        /// <summary>
+        /// Remember exact font size if "remember font up/down" option is enabled
+        /// And it's not a theme font
+        /// </summary>
+        private void saveCurrentRtbFontSize() {
+            if (settings.rememberFontUpDn && !settings.themeWithFont) {
+                settings.fontSize = (int)main.MainRtb.FontSize;
+                settings.UpdateSettings();
+            }
         }
 
         /// <summary>
@@ -187,6 +202,12 @@ namespace KuroNote
 
                 lisFontSizes.Items.Add(item);
             }
+            //Font Up/Down was used to select a non-standard font size
+            //Store it for use in the preview
+            if (txtFontSize.Text.Equals(string.Empty)) {
+                log.addLog("Selected Size: " + settings.fontSize);
+                txtFontSize.Text = settings.fontSize + "";
+            }
         }
 
         /// <summary>
@@ -230,14 +251,17 @@ namespace KuroNote
             }
 
             //Apply the values to the preview
-            lblFontPreview.FontWeight = selectedFontWeight;
-            lblFontPreview.FontStyle = selectedFontStyle;
+            txtFontPreview.FontWeight = selectedFontWeight;
+            txtFontPreview.FontStyle = selectedFontStyle;
             if (!selectedFontFamily.Equals(String.Empty)) {
-                lblFontPreview.FontFamily = new FontFamily(selectedFontFamily);
+                txtFontPreview.FontFamily = new FontFamily(selectedFontFamily);
             }
-            if (selectedFontSize > 0) {
-                lblFontPreview.FontSize = selectedFontSize;
-                lblFontPreview.Content = appName;
+            if (selectedFontSize > 0 && selectedFontSize <= MAX_PREVIEW_FONT_SIZE) {
+                txtFontPreview.FontSize = selectedFontSize;
+                txtFontPreview.Text = appName;
+            } else {
+                txtFontPreview.FontSize = NO_PREVIEW_FONT_SIZE;
+                txtFontPreview.Text = NO_PREVIEW_TEXT;
             }
         }
 

@@ -44,11 +44,13 @@ namespace KuroNote
         }
 
         /// <summary>
-        /// Save current font size in case we need to remember it to apply "override theme font size" option
+        /// Remember exact font size if "remember font up/down" option is enabled
         /// </summary>
         private void saveCurrentRtbFontSize() {
-            settings.fontSize = (int)main.MainRtb.FontSize;
-            settings.UpdateSettings();
+            if (settings.rememberFontUpDn) {
+                settings.fontSize = (int)main.MainRtb.FontSize;
+                settings.UpdateSettings();
+            }
         }
 
         /// <summary>

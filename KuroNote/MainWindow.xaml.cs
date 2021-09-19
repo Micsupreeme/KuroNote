@@ -27,6 +27,8 @@ namespace KuroNote
     /// TODO Later: Fullscreen
     /// TODO Later: Recently opened
     /// TODO Later: Add more error messages to language dictionary
+    /// TODO Later: Custom (up to 10 character) font dialog preview text
+    /// TODO Later: Keyboard/keypad helpers for common languages like HTML and BBCode etc.
     /// 
     /// TODO: Add a new flag then check conf.json migration - how modifying code-behind without modifying conf.json works
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
@@ -1488,8 +1490,8 @@ namespace KuroNote
                         appSettings.windowWidth = this.Width;
                         appSettings.UpdateSettings();
                     }
-                    //Remember exact font size if font up/down behaviour > 0
-                    if (appSettings.fontSizeMode > 0) {
+                    //Remember exact font size if "remember font up down size" enabled
+                    if (appSettings.rememberFontUpDn) {
                         appSettings.fontSize = (int)MainRtb.FontSize;
                         appSettings.UpdateSettings();
                     }
@@ -1735,8 +1737,8 @@ namespace KuroNote
                 MainStatus.Background = themeCollection[_themeId].statusBrush;
 
                 if (_includeFont) {
-                    //If override theme font size option enabled
-                    if (appSettings.fontSizeMode == 2) {
+                    //If "override theme font size option" enabled
+                    if (appSettings.overrideThemeFontSize) {
                         setFont(themeCollection[_themeId].fontFamily, (short)appSettings.fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
                     } else {
                         setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
@@ -1796,8 +1798,8 @@ namespace KuroNote
                     MainStatus.Background = new SolidColorBrush(Color.FromArgb(statusBrushArgb[0], statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
 
                     if (_includeFont) {
-                        //If override theme font size option enabled
-                        if (appSettings.fontSizeMode == 2) {
+                        //If "override theme font size" option enabled
+                        if (appSettings.overrideThemeFontSize) {
                             setFont(selectedCustomTheme.fontFamily, (short)appSettings.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
                         } else {
                             setFont(selectedCustomTheme.fontFamily, selectedCustomTheme.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);

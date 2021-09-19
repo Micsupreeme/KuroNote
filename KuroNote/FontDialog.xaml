@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
-        Title="FontDialog" Height="515" Width="550" MinHeight="515" MinWidth="550"
+        Title="FontDialog" Height="560" Width="555" MinHeight="560" MinWidth="555"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
@@ -14,8 +14,7 @@
     <DockPanel LastChildFill="True">
         <StackPanel Margin="10,0,10,10" DockPanel.Dock="Bottom">
             <Label Content="Preview:" Foreground="#EEEEEE" FontSize="14"/>
-            <Label Name="lblFontPreview" Height="50" Width="500" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Foreground="#EEEEEE"/>
-
+            <TextBox Name="txtFontPreview" Margin="0,2,0,10" Width="500" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Foreground="#EEEEEE" Background="#404040" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="Arrow" BorderThickness="0"/>
             <StackPanel Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft">
                 <Button Name="btnCancel" Click="btnCancel_Click" Width="80" Margin="0,0,0,0" Padding="0,4,0,4" Content="Cancel" IsCancel="True" FontSize="14"/>
                 <Button Name="btnOk" Click="btnOk_Click" Width="80" Margin="10,0,10,0" Padding="0,4,0,4" Content="OK" IsDefault="True" FontSize="14"/>
