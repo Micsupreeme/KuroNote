@@ -16,7 +16,7 @@
             <Button Name="btnOk" Click="btnOk_Click" Width="80" Padding="0,4,0,4" Content="OK" IsDefault="True" FontSize="14"/>
         </StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,10">
-            <Canvas x:Name="achCanvas" Height="0">
+            <Canvas Name="achCanvas" Height="0">
                 
             </Canvas>
         </ScrollViewer>
