@@ -21,7 +21,7 @@
             <Label  Name="lblRankName" Content="" HorizontalContentAlignment="Center" FontSize="18" Foreground="#EEEEEE" BorderThickness="0"/>
             <ProgressBar Name="prgRankAp" Height="14" BorderThickness="2" Margin="0,5,0,0" Minimum="0" Maximum="1000" Background="#404040" Foreground="#EEEEEE"/>
             <Label Name="lblRankAp" FontStyle="Italic" Content="0/1000 AP" HorizontalContentAlignment="Center" FontSize="12" Foreground="#EEEEEE" BorderThickness="0" Margin="0,0,0,5"/>
-            <TextBox Name="txtApExplained" Text="KuroNote awards AP simply by using the application. Actions such as opening and saving files award a fixed amount of AP." FontFamily="Arial" FontSize="12" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap" Background="#404040" Foreground="#DDDDDD" TextAlignment="Center" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"/>
+            <TextBox Name="txtApExplained" Text="KuroNote awards AP simply by using the application. Actions such as opening and saving files award a fixed amount of AP." FontFamily="Arial" FontSize="12" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="Arrow" TextWrapping="Wrap" Background="#404040" Foreground="#DDDDDD" TextAlignment="Center" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"/>
             <StackPanel>
                 <Grid Margin="0,20,0,20">
                     <Grid.ColumnDefinitions>

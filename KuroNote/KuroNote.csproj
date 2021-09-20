@@ -13,9 +13,10 @@
     <PackageIcon>kuronote_logo.png</PackageIcon>
     <PackageTags>text editor, plain text, customisable, gamification</PackageTags>
     <RepositoryUrl>https://github.com/Micsupreeme/KuroNote</RepositoryUrl>
-    <RepositoryType>GitHub</RepositoryType>
+    <RepositoryType>git</RepositoryType>
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>kuronote_logo.ico</ApplicationIcon>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -66,6 +67,8 @@
     <None Remove="img\achievements\9.png" />
     <None Remove="img\achievements\921.png" />
     <None Remove="img\achievements\locked.png" />
+    <None Remove="img\bgs\about.png" />
+    <None Remove="img\bgs\kuronote-bars.png" />
     <None Remove="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg" />
     <None Remove="img\bgs\pexels-asad-photo-maldives-3320516.jpg" />
     <None Remove="img\bgs\pexels-ben-mack-5326909.jpg" />
@@ -214,10 +217,14 @@
     <None Remove="img\ranks\9b.png" />
     <None Remove="img\ranks\x.png" />
     <None Remove="img\ranks\xb.png" />
+    <None Remove="kuronote-spellcheck-custom.lex" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="img\achievements\locked.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\kuronote-bars.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_exposure_neg_1_black_18dp.png">
@@ -746,6 +753,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\xb.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="kuronote-spellcheck-custom.lex">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

@@ -27,6 +27,7 @@ namespace KuroNote
         public bool logging = false;
         public bool floating = false;
         public bool useAscii = false;
+        public bool spellCheck = true;
         public bool rememberWindowSize = false;
         public bool fullFilePath = false;
         public bool rememberFontUpDn = true;
@@ -64,9 +65,10 @@ namespace KuroNote
                     this.customThemeIndex = knsFile.customThemeIndex;
                     this.gamification = knsFile.gamification;
                     this.logging = knsFile.logging;
+                    this.rememberWindowSize = knsFile.rememberWindowSize;
                     this.floating = knsFile.floating;
                     this.useAscii = knsFile.useAscii;
-                    this.rememberWindowSize = knsFile.rememberWindowSize;
+                    this.spellCheck = knsFile.spellCheck;
                     this.rememberFontUpDn = knsFile.rememberFontUpDn;
                     this.overrideThemeFontSize = knsFile.overrideThemeFontSize;
                     this.fullFilePath = knsFile.fullFilePath;

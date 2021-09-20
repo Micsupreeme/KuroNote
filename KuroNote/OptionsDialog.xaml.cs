@@ -53,9 +53,10 @@ namespace KuroNote
         {
             gamificationTs.IsChecked = settings.gamification;
             loggingTs.IsChecked = settings.logging;
-            floatingTs.IsChecked = settings.floating;
             windowsizeTs.IsChecked = settings.rememberWindowSize;
+            floatingTs.IsChecked = settings.floating;
             useasciiTs.IsChecked = settings.useAscii;
+            spellcheckTs.IsChecked = settings.spellCheck;
             wordwrapTs.IsChecked = settings.wordWrap;
             fullfilepathTs.IsChecked = settings.fullFilePath;
             rememberfontupdnTs.IsChecked = settings.rememberFontUpDn;
@@ -69,9 +70,10 @@ namespace KuroNote
         {
             settings.gamification = (bool)gamificationTs.IsChecked;
             settings.logging = (bool)loggingTs.IsChecked;
-            settings.floating = (bool)floatingTs.IsChecked;
             settings.rememberWindowSize = (bool)windowsizeTs.IsChecked;
+            settings.floating = (bool)floatingTs.IsChecked;
             settings.useAscii = (bool)useasciiTs.IsChecked;
+            settings.spellCheck = (bool)spellcheckTs.IsChecked;
             settings.wordWrap = (bool)wordwrapTs.IsChecked;
             settings.fullFilePath = (bool)fullfilepathTs.IsChecked;
             settings.rememberFontUpDn = (bool)rememberfontupdnTs.IsChecked;
@@ -124,6 +126,24 @@ namespace KuroNote
         {
             try {
                 loggingLbl.Content = BOOL0;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
+            }
+        }
+
+        private void spellcheckTs_Checked(object sender, RoutedEventArgs e)
+        {
+            try {
+                spellcheckLbl.Content = BOOL1;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
+            }
+        }
+
+        private void spellcheckTs_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try {
+                spellcheckLbl.Content = BOOL0;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }

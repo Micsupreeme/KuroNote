@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:KuroNote"
+        xmlns:local="clr-namespace:KuroNote" xmlns:sys="clr-namespace:System;assembly=netstandard"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="750"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
@@ -254,6 +254,10 @@
             </StatusBarItem>
         </StatusBar>
         <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="MainRtb_PreviewMouseWheel" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
+            <SpellCheck.CustomDictionaries>
+                <!-- kuronote-spellcheck-custom.lex adds custom words (e.g. "KuroNote") to SpellCheck-->
+                <sys:Uri>pack://application:,,,/kuronote-spellcheck-custom.lex</sys:Uri>
+            </SpellCheck.CustomDictionaries>
             <FlowDocument/>
         </RichTextBox>
     </DockPanel>

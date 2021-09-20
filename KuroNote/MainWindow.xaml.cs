@@ -21,14 +21,14 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: about and dependencies - and unlock achievement ID 1
+    /// TODO: Check for updates dialog
     /// 
     /// TODO Later: Hashing tool
     /// TODO Later: Fullscreen
     /// TODO Later: Recently opened
     /// TODO Later: Add more error messages to language dictionary
+    /// TODO Later: Some kind of PDF tool
     /// TODO Later: Custom (up to 10 character) font dialog preview text
-    /// TODO Later: Keyboard/keypad helpers for common languages like HTML and BBCode etc.
     /// 
     /// TODO: Add a new flag then check conf.json migration - how modifying code-behind without modifying conf.json works
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
@@ -454,6 +454,13 @@ namespace KuroNote
         /// </summary>
         public void processImmediateSettings()
         {
+            //Spell check
+            if (appSettings.spellCheck) {
+                MainRtb.SpellCheck.IsEnabled = true;
+            } else {
+                MainRtb.SpellCheck.IsEnabled = false;
+            }
+
             //Float above other windows
             if (appSettings.floating) {
                 this.Topmost = true;
@@ -1877,6 +1884,8 @@ namespace KuroNote
         private void About_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: About");
+            AboutDialog aboutDialog = new AboutDialog(this, log);
+            aboutDialog.toggleVisibility(true);
         }
 
         /// <summary>
