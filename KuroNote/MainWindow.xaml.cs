@@ -21,16 +21,13 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Check for updates dialog
+    /// TODO: Hashing tool
+    /// TODO: Fullscreen
+    /// TODO: Recently opened
+    /// TODO: Add more error messages to language dictionary
+    /// TODO: Some kind of PDF tool
+    /// TODO: Custom (up to 10 character) font dialog preview text
     /// 
-    /// TODO Later: Hashing tool
-    /// TODO Later: Fullscreen
-    /// TODO Later: Recently opened
-    /// TODO Later: Add more error messages to language dictionary
-    /// TODO Later: Some kind of PDF tool
-    /// TODO Later: Custom (up to 10 character) font dialog preview text
-    /// 
-    /// TODO: Add a new flag then check conf.json migration - how modifying code-behind without modifying conf.json works
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
     /// </summary>
     public partial class MainWindow : Window
@@ -191,6 +188,8 @@ namespace KuroNote
                 EnUIDict["ShowLogMiTT"] = "Opens the log for the current session.";
             EnUIDict["ShowLogFilesMi"] = "Show Log Files...";
                 EnUIDict["ShowLogFilesMiTT"] = "Opens the directory where " + appName + " log files are stored.";
+            EnUIDict["UpdatesMi"] = "Check for Updates...";
+                EnUIDict["UpdatesMiTT"] = "Checks if this " + appName + " installation is up to date.";
             EnUIDict["AboutMi"] = "About " + appName;
                 EnUIDict["AboutMiTT"] = "Displays information about " + appName + ".";
 
@@ -1879,6 +1878,16 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Menu > Options > Check for Updates...
+        /// </summary>
+        private void Updates_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: Updates");
+            UpdatesDialog updatesDialog = new UpdatesDialog(this, log);
+            updatesDialog.toggleVisibility(true);
+        }
+
+        /// <summary>
         /// Menu > Options > About KuroNote...
         /// </summary>
         private void About_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -2104,6 +2113,7 @@ namespace KuroNote
         public static RoutedCommand CustomThemes = new RoutedCommand();
         public static RoutedCommand ShowLog = new RoutedCommand();
         public static RoutedCommand ShowLogFiles = new RoutedCommand();
+        public static RoutedCommand Updates = new RoutedCommand();
         public static RoutedCommand About = new RoutedCommand();
     }
 }

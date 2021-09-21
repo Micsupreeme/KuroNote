@@ -52,22 +52,21 @@ namespace KuroNote
         private void populateFields() {
             //Write application details to UI
             appNameTb.Text = appName;
-            appVersionTb.Text = "Version " + APPLICATION_VERSION.Substring(0, (APPLICATION_VERSION.Length - 2));
+            appVersionTb.Text = "Version " + APPLICATION_VERSION;
             appCopyrightTb.Text = "Copyright \u00A9 ";
             appPublisherTb.Text = "Micsupreeme";
             appCopyrightYearTb.Text = " 2021";
             appDescriptionTxt.Text =
                 "A text editor that allows you to set any picture you like as a background!\n\n" +
 
-                "All kinds of plain text enthusiasts will appreciate " + appName +"'s focus " +
-                "on customisability and intuitiveness. " + appName + " is a lightweight and Notepad-like " +
-                "text editor with personality, designed for the quick creation of beautiful notes. " +
-                "Custom theme profiles and optional gamification elements like ranks and " +
-                "achievements make note-writing more enjoyable.\n\n" +
+                "With a focus on customisability and intuitiveness, " + appName + " is a lightweight and " +
+                "Notepad-like text editor with personality. It's designed for the quick creation of " +
+                "beautiful notes. Custom theme profiles and optional gamification elements like ranks " +
+                "and achievements make note-writing more enjoyable.\n\n" +
 
                 "You can expect all the essential features like: save as; print; find; " +
-                "replace; spell check; and word count. In addition, " + appName + " offers AES encryption " +
-                "that enables you to password-protect your notes.\n\n"+
+                "replace; spell check; and word count. Additionally, " + appName + " offers AES encryption " +
+                "that enables you to optionally password-protect your notes.\n\n"+
 
                 "Double-click here for an achievement!";
             appIconsTb.Text = "Generic icons by ";
@@ -102,6 +101,12 @@ namespace KuroNote
             } catch (Exception e) {
                 log.addLog("ERROR: Failed to start " + fileName + " " + e.ToString());
             }
+        }
+
+        private void appVersionTb_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            UpdatesDialog updatesDialog = new UpdatesDialog(main, log);
+            updatesDialog.toggleVisibility(true);
         }
 
         private void appPublisherTb_MouseUp(object sender, MouseButtonEventArgs e)

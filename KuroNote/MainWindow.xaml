@@ -41,6 +41,7 @@
         <CommandBinding Command="local:CustomCommands.CustomThemes" Executed="CustomThemes_Executed" />
         <CommandBinding Command="local:CustomCommands.ShowLog" Executed="ShowLog_Executed" />
         <CommandBinding Command="local:CustomCommands.ShowLogFiles" Executed="ShowLogFiles_Executed" />
+        <CommandBinding Command="local:CustomCommands.Updates" Executed="Updates_Executed" />
         <CommandBinding Command="local:CustomCommands.About" Executed="About_Executed" />
     </Window.CommandBindings>
     <Window.InputBindings>
@@ -230,6 +231,11 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
+                <MenuItem Name="UpdatesMi" Header="{Binding [UpdatesMi], Mode=OneTime}" ToolTip="{Binding [UpdatesMiTT], Mode=OneTime}" Command="local:CustomCommands.Updates">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/img/icons/outline_radar_black_18dp.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" ToolTip="{Binding [AboutMiTT], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/kuronote_logo.png"/>
@@ -246,11 +252,11 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem Name="SaveStatusItem" Margin="5, 2" MouseUp="SaveStatusItem_MouseUp">
-                <TextBlock Name="SaveStatusTb" Text="Safe to Exit"/>
+                <TextBlock Name="SaveStatusTb" Text="Safe to Exit" Cursor="Hand"/>
             </StatusBarItem>
             <Separator/>
             <StatusBarItem Name="WordCountItem" Margin="5, 2" MouseUp="WordCountItem_MouseUp">
-                <TextBlock Name="WordCountTb" Text="0 Words"/>
+                <TextBlock Name="WordCountTb" Text="0 Words" Cursor="Hand"/>
             </StatusBarItem>
         </StatusBar>
         <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="MainRtb_PreviewMouseWheel" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">

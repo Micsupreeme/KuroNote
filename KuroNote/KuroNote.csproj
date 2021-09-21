@@ -8,7 +8,7 @@
     <RootNamespace>KuroNote</RootNamespace>
     <Version>2.0.0</Version>
     <Authors>Michael Whatley</Authors>
-    <Copyright>Copyright © 2021 KuroNote</Copyright>
+    <Copyright>Copyright © 2021 Micsupreeme</Copyright>
     <Company>Michael Whatley</Company>
     <PackageIcon>kuronote_logo.png</PackageIcon>
     <PackageTags>text editor, plain text, customisable, gamification</PackageTags>
@@ -17,6 +17,17 @@
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>kuronote_logo.ico</ApplicationIcon>
     <NeutralLanguage>en</NeutralLanguage>
+    <PackageProjectUrl>https://github.com/Micsupreeme/KuroNote</PackageProjectUrl>
+    <Description>A text editor that allows you to set any picture you like as a background.
+
+ 
+
+With a focus on customisability and intuitiveness, KuroNote is a lightweight and Notepad-like text editor with personality. It's designed for the quick creation of beautiful notes. Custom theme profiles and optional gamification elements like ranks and achievements make note-writing more enjoyable.
+
+
+
+You can expect all the essential features like: save as; print; find; replace; spell check; and word count. Additionally, KuroNote offers AES encryption that enables you to optionally password-protect your notes.</Description>
+    <PackageLicenseFile></PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -107,6 +118,8 @@
     <None Remove="img\icons\outline_arrow_upward_black_18dp.png" />
     <None Remove="img\icons\outline_bug_report_black_18dp.png" />
     <None Remove="img\icons\outline_build_black_18dp.png" />
+    <None Remove="img\icons\outline_check_circle_black_18dp.png" />
+    <None Remove="img\icons\outline_check_circle_white_48dp.png" />
     <None Remove="img\icons\outline_color_lens_black_18dp.png" />
     <None Remove="img\icons\outline_color_lens_eee_48dp.png" />
     <None Remove="img\icons\outline_content_copy_black_18dp.png" />
@@ -117,6 +130,8 @@
     <None Remove="img\icons\outline_description_black_18dp.png" />
     <None Remove="img\icons\outline_done_outline_black_18dp.png" />
     <None Remove="img\icons\outline_enhanced_encryption_black_18dp.png" />
+    <None Remove="img\icons\outline_error_outline_black_18dp.png" />
+    <None Remove="img\icons\outline_error_outline_white_48dp.png" />
     <None Remove="img\icons\outline_exit_to_app_black_18dp.png" />
     <None Remove="img\icons\outline_exposure_neg_1_black_18dp.png" />
     <None Remove="img\icons\outline_exposure_neg_2_black_18dp.png" />
@@ -148,6 +163,7 @@
     <None Remove="img\icons\outline_person_outline_black_18dp.png" />
     <None Remove="img\icons\outline_power_settings_new_black_18dp.png" />
     <None Remove="img\icons\outline_print_black_18dp.png" />
+    <None Remove="img\icons\outline_radar_black_18dp.png" />
     <None Remove="img\icons\outline_redo_black_18dp.png" />
     <None Remove="img\icons\outline_save_as_black_18dp.png" />
     <None Remove="img\icons\outline_save_black_18dp.png" />
@@ -227,6 +243,18 @@
     <Resource Include="img\bgs\kuronote-bars.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\icons\outline_check_circle_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_check_circle_white_48dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_error_outline_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_error_outline_white_48dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\outline_exposure_neg_1_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -237,6 +265,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_exposure_plus_2_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_radar_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\6b.png">
@@ -758,6 +789,10 @@
     <Resource Include="kuronote-spellcheck-custom.lex">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\Debug\netcoreapp3.1\licences\" />
   </ItemGroup>
 
 </Project>
