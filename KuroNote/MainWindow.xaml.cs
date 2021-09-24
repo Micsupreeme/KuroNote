@@ -92,6 +92,9 @@ namespace KuroNote
         public MainWindow()
         {
             InitializeComponent();
+            if(!isSetup()) {
+                MessageBox.Show("Please run \"KuroNote Setup\" to complete installation.", "KuroNote is Not Fully Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
             InitialiseSettings();
             InitialiseLog();
             InitialiseThemeCollection();
@@ -113,6 +116,19 @@ namespace KuroNote
             processCmdLineArgs();
             toggleEdited(false);
             log.addLog(Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " + "Ready! Awaiting instructions", true);
+        }
+
+        /// <summary>
+        /// Checks whether or not the setup file exists
+        /// </summary>
+        /// <returns>True if the setup file exists, false otherwise</returns>
+        private bool isSetup()
+        {
+            if(File.Exists(appPath + "conf/CD101.kuro")) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         /// <summary>
