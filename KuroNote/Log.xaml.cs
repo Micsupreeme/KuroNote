@@ -52,7 +52,7 @@ namespace KuroNote
             SessionIdLbl.Content = "Session " + sessionID + " log:";
             addASCIIArt();
             addLog(
-                "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " (Dev)" + Environment.NewLine +
+                "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " " + Environment.NewLine +
                 DateTime.Now + ":" + DateTime.Now.Millisecond + ": SESSION " + sessionID + " BEGINS"
             , true);
 

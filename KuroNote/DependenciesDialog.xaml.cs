@@ -78,7 +78,7 @@ namespace KuroNote
         /// </summary>
         private void netcoreLicenceTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            startProcess("licences\\dotnetcore LICENCE.txt");
+            startProcess(appPath + "licences\\dotnetcore LICENCE.txt");
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace KuroNote
         /// </summary>
         private void wpfLicenceTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            startProcess("licences\\dotnetwpf LICENCE.txt");
+            startProcess(appPath + "licences\\dotnetwpf LICENCE.txt");
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace KuroNote
         /// </summary>
         private void colorPickerWpfLicenceTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            startProcess("licences\\colorpickerwpf LICENCE.txt");
+            startProcess(appPath + "licences\\colorpickerwpf LICENCE.txt");
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace KuroNote
         /// </summary>
         private void newtonsoftLicenceTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            startProcess("licences\\newtonsoftjson LICENCE.txt");
+            startProcess(appPath + "licences\\newtonsoftjson LICENCE.txt");
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace KuroNote
         /// </summary>
         private void wpfSparkLicenceTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            startProcess("licences\\wpfspark LICENCE.txt");
+            startProcess(appPath + "licences\\wpfspark LICENCE.txt");
         }
 
         /// <summary>

@@ -59,7 +59,7 @@ namespace KuroNote
             appDescriptionTxt.Text =
                 "A text editor that allows you to set any picture you like as a background!\n\n" +
 
-                "With a focus on customisability and intuitiveness, " + appName + " is a lightweight and " +
+                "With a focus on customisability and intuitiveness, " + appName + " is a " +
                 "Notepad-like text editor with personality. It's designed for the quick creation of " +
                 "beautiful notes. Custom theme profiles and optional gamification elements like ranks " +
                 "and achievements make note-writing more enjoyable.\n\n" +

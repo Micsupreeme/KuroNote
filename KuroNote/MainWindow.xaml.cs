@@ -21,6 +21,8 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
+    /// TODO: Use icon-sized KuroNote logo in MenuBar - Windows 7 visual bug displays them at full size
+    /// 
     /// TODO: Hashing tool
     /// TODO: Fullscreen
     /// TODO: Recently opened
@@ -379,6 +381,7 @@ namespace KuroNote
             log = new Log(this, appSettings.logging);
             if (appSettings.logging) {
                 log.beginLog();
+                log.addLog("Executing from: " + appPath);
             } else {
                 ShowLogMi.IsEnabled = false; //No point in showing the log if we aren't logging
             }
