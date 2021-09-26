@@ -52,7 +52,7 @@ namespace KuroNote
         public void RetrieveSettings()
         {
             try {
-                using (StreamReader sr = new StreamReader(appPath + "conf/conf.json")) {
+                using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\conf.json")) {
                     string json = sr.ReadToEnd();
                     KuroNoteSettings knsFile = JsonConvert.DeserializeObject<KuroNoteSettings>(json);
 
@@ -99,7 +99,7 @@ namespace KuroNote
         public void UpdateSettings()
         {
             try {
-                using (StreamWriter sw = new StreamWriter(appPath + "conf/conf.json")) {
+                using (StreamWriter sw = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\conf.json")) {
                     string json = JsonConvert.SerializeObject(this);
 
                     sw.Write(json);

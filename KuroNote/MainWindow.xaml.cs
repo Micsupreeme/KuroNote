@@ -21,8 +21,6 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Use icon-sized KuroNote logo in MenuBar - Windows 7 visual bug displays them at full size
-    /// 
     /// TODO: Hashing tool
     /// TODO: Fullscreen
     /// TODO: Recently opened

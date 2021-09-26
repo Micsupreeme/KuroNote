@@ -109,7 +109,9 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\filled_star_eee_48dp.png" />
     <None Remove="img\icons\kuronote_logo.ico" />
     <None Remove="img\icons\kuronote_logo.png" />
+    <None Remove="img\icons\kuronote_logo_36.png" />
     <None Remove="img\icons\kuronote_logo_admin.png" />
+    <None Remove="img\icons\kuronote_logo_admin_36.png" />
     <None Remove="img\icons\outline_account_circle_black_18dp.png" />
     <None Remove="img\icons\outline_add_black_18dp.png" />
     <None Remove="img\icons\outline_all_inclusive_black_18dp.png" />
@@ -241,6 +243,12 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\kuronote-bars.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_logo_36.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_logo_admin_36.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_check_circle_black_18dp.png">
