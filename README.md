@@ -1,3 +1,5 @@
+<img alt="KuroNote Logo" src="logo_large_wordmark.png" width="500px"/>
+
 # Summary
 **A text editor that allows you to set any picture you like as a background!**
 
