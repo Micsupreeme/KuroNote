@@ -59,8 +59,8 @@ namespace KuroNote
             spellcheckTs.IsChecked = settings.spellCheck;
             wordwrapTs.IsChecked = settings.wordWrap;
             fullfilepathTs.IsChecked = settings.fullFilePath;
+            stretchimagesTs.IsChecked = settings.stretchImages;
             rememberfontupdnTs.IsChecked = settings.rememberFontUpDn;
-            overridethemefontsizeTs.IsChecked = settings.overrideThemeFontSize;
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace KuroNote
             settings.spellCheck = (bool)spellcheckTs.IsChecked;
             settings.wordWrap = (bool)wordwrapTs.IsChecked;
             settings.fullFilePath = (bool)fullfilepathTs.IsChecked;
+            settings.stretchImages = (bool)stretchimagesTs.IsChecked;
             settings.rememberFontUpDn = (bool)rememberfontupdnTs.IsChecked;
-            settings.overrideThemeFontSize = (bool)overridethemefontsizeTs.IsChecked;
             settings.UpdateSettings();
         }
 
@@ -203,6 +203,24 @@ namespace KuroNote
             }
         }
 
+        private void stretchimagesTs_Checked(object sender, RoutedEventArgs e)
+        {
+            try {
+                stretchimagesLbl.Content = BOOL1;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
+            }
+        }
+
+        private void stretchimagesTs_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try {
+                stretchimagesLbl.Content = BOOL0;
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
+            }
+        }
+
         private void rememberfontupdnTs_Checked(object sender, RoutedEventArgs e)
         {
             try {
@@ -216,24 +234,6 @@ namespace KuroNote
         {
             try {
                 rememberfontupdnLbl.Content = BOOL0;
-            } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
-            }
-        }
-
-        private void overridethemefontsizeTs_Checked(object sender, RoutedEventArgs e)
-        {
-            try {
-                overridethemefontsizeLbl.Content = BOOL1;
-            } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
-            }
-        }
-
-        private void overridethemefontsizeTs_Unchecked(object sender, RoutedEventArgs e)
-        {
-            try {
-                overridethemefontsizeLbl.Content = BOOL0;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }

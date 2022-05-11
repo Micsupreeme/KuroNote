@@ -30,8 +30,8 @@ namespace KuroNote
         public bool spellCheck = true;
         public bool rememberWindowSize = false;
         public bool fullFilePath = false;
+        public bool stretchImages = false;
         public bool rememberFontUpDn = true;
-        public bool overrideThemeFontSize = false;
         public bool wordWrap = true;
         public double windowHeight = 500;
         public double windowWidth = 750;
@@ -70,8 +70,8 @@ namespace KuroNote
                     this.useAscii = knsFile.useAscii;
                     this.spellCheck = knsFile.spellCheck;
                     this.rememberFontUpDn = knsFile.rememberFontUpDn;
-                    this.overrideThemeFontSize = knsFile.overrideThemeFontSize;
                     this.fullFilePath = knsFile.fullFilePath;
+                    this.stretchImages = knsFile.stretchImages;
                     this.wordWrap = knsFile.wordWrap;
                     this.windowHeight = knsFile.windowHeight;
                     this.windowWidth = knsFile.windowWidth;
@@ -113,7 +113,7 @@ namespace KuroNote
         /// <summary>
         /// If gamification is active: adds the specified amount of AP and can handle levelling up (one level at a time only)
         /// </summary>
-        /// <param name="ap">The amount of AP to add (NOTE: must not be large enough trigger multiple level-ups at once)</param>
+        /// <param name="ap">The amount of AP to add (NOTE: must not be large enough to trigger multiple level-ups at once)</param>
         /// <param name="apMax">The AP limit of the current level</param>
         public void incrementAp(int ap, int apMax)
         {

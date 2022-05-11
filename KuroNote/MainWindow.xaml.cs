@@ -709,6 +709,13 @@ namespace KuroNote
         /// </summary>
         private void InitialiseThemeCollection()
         {
+            Stretch stretchMode;
+            if (appSettings.stretchImages) {
+                stretchMode = Stretch.Fill;
+            } else {
+                stretchMode = Stretch.UniformToFill;
+            }
+
             //Declare array of themes
             themeCollection = new KuroNoteTheme[]
             {
@@ -717,7 +724,8 @@ namespace KuroNote
                     0, "Spectrum", "Image by Gradienta on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985193.jpg")),
-                                     Opacity = 0.5 },
+                                     Opacity = 0.5,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(250, 250, 250)),
                     new SolidColorBrush(Color.FromRgb(250, 250, 250)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -728,7 +736,8 @@ namespace KuroNote
                     1, "Spectrum II", "Image by Gradienta on Pexels", 100,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985045.jpg")),
-                                     Opacity = 0.44 },
+                                     Opacity = 0.44,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(254, 255, 232)),
                     new SolidColorBrush(Color.FromRgb(204, 255, 255)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -739,7 +748,8 @@ namespace KuroNote
                     2, "Spectrum III", "Image by Sharon McCutcheon on Pexels", 1000,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-3847178.jpg")),
-                                     Opacity = 0.36 },
+                                     Opacity = 0.36,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(255, 253, 233)),
                     new SolidColorBrush(Color.FromRgb(243, 210, 234)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -750,7 +760,8 @@ namespace KuroNote
                     3, "Eternal", "Image by Skyler Ewing on Pexels", 921,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-skyler-ewing-5748311.jpg")),
-                                     Opacity = 0.42 },
+                                     Opacity = 0.42,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(244, 239, 235)),
                     new SolidColorBrush(Color.FromRgb(244, 239, 235)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -761,7 +772,8 @@ namespace KuroNote
                     4, "Boundless Sky", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-258149.jpg")),
-                                     Opacity = 0.28 },
+                                     Opacity = 0.28,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(184, 215, 237)),
                     new SolidColorBrush(Color.FromRgb(229, 229, 230)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -772,7 +784,8 @@ namespace KuroNote
                     5, "Overly Orangey", "Image by Karolina Grabowska on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4022107.jpg")),
-                                     Opacity = 0.27 },
+                                     Opacity = 0.27,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(249, 218, 186)),
                     new SolidColorBrush(Color.FromRgb(249, 218, 186)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -783,7 +796,8 @@ namespace KuroNote
                     6, "Origami", "Image by David Yu on Pexels", 1111,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-yu-1631516.jpg")),
-                                     Opacity = 0.41 },
+                                     Opacity = 0.41,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(223, 211, 201)),
                     new SolidColorBrush(Color.FromRgb(231, 217, 209)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -794,7 +808,8 @@ namespace KuroNote
                     7, "Sunset Ripples", "Image by Ben Mack on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-ben-mack-5326909.jpg")),
-                                     Opacity = 0.33 },
+                                     Opacity = 0.33,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(242, 234, 234)),
                     new SolidColorBrush(Color.FromRgb(242, 234, 234)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -805,7 +820,8 @@ namespace KuroNote
                     8, "Spotless Snow", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-60561.jpg")),
-                                     Opacity = 0.36 },
+                                     Opacity = 0.36,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(240, 240, 240)),
                     new SolidColorBrush(Color.FromRgb(240, 240, 240)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -816,7 +832,8 @@ namespace KuroNote
                     9, "Sakura", "Image by Antonio Janeski on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-antonio-janeski-cherry blossoms-4052701.jpg")),
-                                     Opacity = 0.29 },
+                                     Opacity = 0.29,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(231, 216, 240)),
                     new SolidColorBrush(Color.FromRgb(231, 216, 240)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -827,7 +844,8 @@ namespace KuroNote
                     10, "Earth", "Image by Olha Ruskykh on Pexels", 422,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-olha-ruskykh-7166020.jpg")),
-                                     Opacity = 0.28 },
+                                     Opacity = 0.28,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(243, 242, 237)),
                     new SolidColorBrush(Color.FromRgb(246, 244, 240)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -838,7 +856,8 @@ namespace KuroNote
                     11, "Leafy Green", "Image by Karolina Grabowska on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
-                                     Opacity = 0.34 },
+                                     Opacity = 0.34,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(208, 203, 169)),
                     new SolidColorBrush(Color.FromRgb(208, 203, 169)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -849,7 +868,8 @@ namespace KuroNote
                     12, "Paradise Found", "Image by Asad Photo Maldives on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-asad-photo-maldives-3320516.jpg")),
-                                     Opacity = 0.29 },
+                                     Opacity = 0.29,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(201, 228, 255)),
                     new SolidColorBrush(Color.FromRgb(254, 254, 254)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -860,7 +880,8 @@ namespace KuroNote
                     13, "Layers of Time", "Image by Fillipe Gomes on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fillipe-gomes-5611219.jpg")),
-                                     Opacity = 0.33 },
+                                     Opacity = 0.33,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(255, 244, 231)),
                     new SolidColorBrush(Color.FromRgb(255, 244, 231)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -871,7 +892,8 @@ namespace KuroNote
                     14, "Moon", "Image by David Selbert on Pexels", 720,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-selbert-6468238.jpg")),
-                                     Opacity = 0.41 },
+                                     Opacity = 0.41,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(167, 199, 211)),
                     new SolidColorBrush(Color.FromRgb(160, 170, 176)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -882,7 +904,8 @@ namespace KuroNote
                     15, "Bold Gold", "Image by NaMaKuKi on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 215, 0)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-namakuki-751374.jpg")),
-                                     Opacity = 0.53 },
+                                     Opacity = 0.53,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(255, 226, 51)),
                     new SolidColorBrush(Color.FromRgb(255, 226, 51)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -893,7 +916,8 @@ namespace KuroNote
                     16, "Creation Magic", "Image by Tamanna Rumee on Pexels", 2,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-tamanna-rumee-7986299.jpg")),
-                                     Opacity = 0.46 },
+                                     Opacity = 0.46,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(207, 235, 249)),
                     new SolidColorBrush(Color.FromRgb(252, 227, 139)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -904,7 +928,8 @@ namespace KuroNote
                     17, "Sparkly Pink", "Image by Sharon McCutcheon on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 236, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-5922574.jpg")),
-                                     Opacity = 0.30 },
+                                     Opacity = 0.30,
+                                     Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(255, 216, 255)),
                     new SolidColorBrush(Color.FromRgb(254, 218, 243)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
@@ -1513,6 +1538,7 @@ namespace KuroNote
                         appSettings.windowWidth = this.Width;
                         appSettings.UpdateSettings();
                     }
+
                     //Remember exact font size if "remember font up down size" enabled
                     if (appSettings.rememberFontUpDn) {
                         appSettings.fontSize = (int)MainRtb.FontSize;
@@ -1760,13 +1786,16 @@ namespace KuroNote
                 MainStatus.Background = themeCollection[_themeId].statusBrush;
 
                 if (_includeFont) {
-                    //If "override theme font size option" enabled
-                    if (appSettings.overrideThemeFontSize) {
+                    //Use the font associated with the preset theme
+                    if (appSettings.rememberFontUpDn) {
+                        //Use the remembered custom font size
                         setFont(themeCollection[_themeId].fontFamily, (short)appSettings.fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
                     } else {
+                        //Use the default theme font size
                         setFont(themeCollection[_themeId].fontFamily, themeCollection[_themeId].fontSize, themeCollection[_themeId].fontWeight, themeCollection[_themeId].fontStyle);
                     }
                 } else {
+                    //Use appsettings font
                     setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                 }
             } else {
@@ -1791,6 +1820,14 @@ namespace KuroNote
                 }
 
                 if (selectedCustomTheme != null) {
+
+                    Stretch stretchMode;
+                    if (appSettings.stretchImages) {
+                        stretchMode = Stretch.Fill;
+                    } else {
+                        stretchMode = Stretch.UniformToFill;
+                    }
+
                     //in JSON format, colour values are stored as hex, convert them to ARGB so we can create new SolidColorBrush instances
                     byte[] bgBrushArgb = getARGBFromHex(selectedCustomTheme.bgBrush.ToString());
                     byte[] solidBrushArgb = getARGBFromHex(selectedCustomTheme.solidBrush.ToString());
@@ -1806,7 +1843,8 @@ namespace KuroNote
                             MainRtb.Background = new ImageBrush
                             {
                                 ImageSource = new BitmapImage(new Uri(customThemePath + selectedCustomTheme.themeId + INTERNAL_IMAGE_EXT, UriKind.Absolute)),
-                                Opacity = selectedCustomTheme.imgBrushOpacity
+                                Opacity = selectedCustomTheme.imgBrushOpacity,
+                                Stretch = stretchMode
                             };
                         } catch (Exception e) {
                             log.addLog("Custom theme has an image but the internal image file could not be accessed, it might be not set");
@@ -1820,14 +1858,18 @@ namespace KuroNote
                     MainMenu.Background = new SolidColorBrush(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
                     MainStatus.Background = new SolidColorBrush(Color.FromArgb(statusBrushArgb[0], statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
 
+
                     if (_includeFont) {
-                        //If "override theme font size" option enabled
-                        if (appSettings.overrideThemeFontSize) {
+                        //Use the font associated with the custom theme
+                        if (appSettings.rememberFontUpDn) {
+                            //Use the remembered custom font size
                             setFont(selectedCustomTheme.fontFamily, (short)appSettings.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
                         } else {
+                            //Use the default theme font size
                             setFont(selectedCustomTheme.fontFamily, selectedCustomTheme.fontSize, selectedCustomTheme.fontWeight, selectedCustomTheme.fontStyle);
                         }
                     } else {
+                        //Use appsettings font
                         setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                     }
                 }

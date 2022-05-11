@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         xmlns:spark="clr-namespace:WPFSpark;assembly=WPFSpark"
         mc:Ignorable="d"
-        Title="OptionsDialog" Height="420" Width="410" MinHeight="420" MinWidth="410" MaxHeight="420" MaxWidth="410"
+        Title="OptionsDialog" Height="420" Width="425" MinHeight="420" MinWidth="425" MaxHeight="420" MaxWidth="425"
         Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
@@ -74,11 +74,21 @@
                     </StackPanel>
                     <StackPanel Grid.Column="0" Grid.Row="2">
                         <StackPanel Orientation="Horizontal" >
-                            <Label Content="Display full file paths" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                            <Label Content="Show full file paths" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <spark:ToggleSwitch Name="fullfilepathTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="fullfilepathTs_Checked"  Unchecked="fullfilepathTs_Unchecked"/>
                             <Label Name="fullfilepathLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="2">
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Content="*" FontSize="18" FontFamily="Verdana"  Margin="0,0,-5,0" Foreground="#FF0000"/>
+                            <Label Content="Stretch image backgrounds" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <spark:ToggleSwitch Name="stretchimagesTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="stretchimagesTs_Checked" Unchecked="stretchimagesTs_Unchecked"/>
+                            <Label Name="stretchimagesLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -95,30 +105,30 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Column="0" Grid.Row="0">
-                        <StackPanel Orientation="Horizontal" >
-                            <Label Content="Remember Font Up/Down" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <spark:ToggleSwitch Name="rememberfontupdnTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="rememberfontupdnTs_Checked" Unchecked="rememberfontupdnTs_Unchecked"/>
-                            <Label Name="rememberfontupdnLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Grid.Row="0">
-                        <StackPanel Orientation="Horizontal" >
-                            <Label Content="Override theme font size" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <spark:ToggleSwitch Name="overridethemefontsizeTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="overridethemefontsizeTs_Checked" Unchecked="overridethemefontsizeTs_Unchecked"/>
-                            <Label Name="overridethemefontsizeLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Grid.Column="0" Grid.Row="1">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Spell Check" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <spark:ToggleSwitch Name="spellcheckTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="spellcheckTs_Checked" Unchecked="spellcheckTs_Unchecked"/>
                             <Label Name="spellcheckLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Content="Remember Font Size" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <spark:ToggleSwitch Name="rememberfontupdnTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="rememberfontupdnTs_Checked" Unchecked="rememberfontupdnTs_Unchecked"/>
+                            <Label Name="rememberfontupdnLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="0" Grid.Row="1">
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Content="Word Wrap" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <spark:ToggleSwitch Name="wordwrapTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="wordwrapTs_Checked"  Unchecked="wordwrapTs_Unchecked"/>
+                            <Label Name="wordwrapLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.Row="1">
@@ -128,15 +138,6 @@
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <spark:ToggleSwitch Name="useasciiTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="useasciiTs_Checked"  Unchecked="useasciiTs_Unchecked"/>
                             <Label Name="useasciiLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Grid.Column="0" Grid.Row="2">
-                        <StackPanel Orientation="Horizontal" >
-                            <Label Content="Word Wrap" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <spark:ToggleSwitch Name="wordwrapTs" Margin="3,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="wordwrapTs_Checked"  Unchecked="wordwrapTs_Unchecked"/>
-                            <Label Name="wordwrapLbl" Content="Off" FontSize="14" Margin="10,0,0,0" Foreground="#EEEEEE"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>

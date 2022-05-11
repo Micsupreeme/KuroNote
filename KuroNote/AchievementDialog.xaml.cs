@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace KuroNote
 {
@@ -19,8 +11,8 @@ namespace KuroNote
     {
         //Constants
         private const string WINDOW_NAME = "Achievement Unlocked";
-        private const int REWARD_WINDOW_HEIGHT = 360;
-        private const int NO_REWARD_WINDOW_HEIGHT = 265;
+        private const int REWARD_WINDOW_HEIGHT = 368;
+        private const int NO_REWARD_WINDOW_HEIGHT = 272;
 
         //Globals
         private string appName;
