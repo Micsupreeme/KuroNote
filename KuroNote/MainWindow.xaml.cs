@@ -22,7 +22,6 @@ namespace KuroNote
     /// Interaction logic for MainWindow.xaml
     /// 
     /// TODO: Hashing tool
-    /// TODO: Fullscreen
     /// TODO: Recently opened
     /// TODO: Add more error messages to language dictionary
     /// TODO: Some kind of PDF tool
@@ -93,7 +92,7 @@ namespace KuroNote
         {
             InitializeComponent();
             if(!isSetup()) {
-                MessageBox.Show("Please run \"KuroNote Setup\" to complete installation.", "KuroNote is Not Fully Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //MessageBox.Show("Please run \"KuroNote Setup\" to complete installation.", "KuroNote is Not Fully Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             InitialiseSettings();
             InitialiseLog();
@@ -116,6 +115,9 @@ namespace KuroNote
             processCmdLineArgs();
             toggleEdited(false);
             log.addLog(Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " + "Ready! Awaiting instructions", true);
+
+            //this.WindowStyle = WindowStyle.None;
+            //this.WindowState = WindowState.Maximized;
         }
 
         /// <summary>
@@ -124,11 +126,7 @@ namespace KuroNote
         /// <returns>True if the setup file exists, false otherwise</returns>
         private bool isSetup()
         {
-            if(File.Exists(appPath + "conf/CD101.kuro")) {
-                return true;
-            } else {
-                return false;
-            }
+            return File.Exists(appPath + "conf/CD101.kuro");
         }
 
         /// <summary>
@@ -140,44 +138,44 @@ namespace KuroNote
             //File
             EnUIDict["FileMi"] = "File";
             EnUIDict["NewMi"] = "New";
-                EnUIDict["NewMiTT"] = "Closes this file and creates a new file.";
+                EnUIDict["NewMiTT"] = "Closes this file and creates a new file";
             EnUIDict["NewWinMi"] = "New Window";
             EnUIDict["NewRegularWinMi"] = "New Window";
-                EnUIDict["NewRegularWinMiTT"] = "Opens a new " + appName + " window.";
+                EnUIDict["NewRegularWinMiTT"] = "Opens a new " + appName + " window";
             EnUIDict["NewAdminWinMi"] = "New Administrator Window";
-                EnUIDict["NewAdminWinMiTT"] = "Opens a new " + appName + " window with administrator rights.";
+                EnUIDict["NewAdminWinMiTT"] = "Opens a new " + appName + " window with administrator rights";
             EnUIDict["OpenMi"] = "Open...";
                 EnUIDict["OpenMiTT"] = "Opens an existing file.";
             EnUIDict["SaveMi"] = "Save";
-                EnUIDict["SaveMiTT"] = "Saves over this file if it already exists, otherwise saves this file as a specified file.";
+                EnUIDict["SaveMiTT"] = "Saves over this file if it already exists, otherwise saves this file as a specified file";
             EnUIDict["SaveAsMi"] = "Save As...";
-                EnUIDict["SaveAsMiTT"] = "Saves this file as a specified file.";
+                EnUIDict["SaveAsMiTT"] = "Saves this file as a specified file";
             EnUIDict["PrintMi"] = "Print...";
-                EnUIDict["PrintMiTT"] = "Prints this file.";
+                EnUIDict["PrintMiTT"] = "Prints this file";
             EnUIDict["ExitMi"] = "Exit";
-                EnUIDict["ExitMiTT"] = "Closes " + appName + ".";
+                EnUIDict["ExitMiTT"] = "Closes " + appName;
             //Edit
             EnUIDict["EditMi"] = "Edit";
             EnUIDict["CutMi"] = "Cut";
-                EnUIDict["CutMiTT"] = "Moves any selected text to the clipboard.";
+                EnUIDict["CutMiTT"] = "Moves any selected text to the clipboard";
             EnUIDict["CopyMi"] = "Copy";
-                EnUIDict["CopyMiTT"] = "Copies any selected text to the clipboard.";
+                EnUIDict["CopyMiTT"] = "Copies any selected text to the clipboard";
             EnUIDict["PasteMi"] = "Paste";
-                EnUIDict["PasteMiTT"] = "Pastes text from the clipboard over any selected text.";
+                EnUIDict["PasteMiTT"] = "Pastes text from the clipboard over any selected text";
             EnUIDict["UndoMi"] = "Undo";
-                EnUIDict["UndoMiTT"] = "Undoes the last change made to this file.";
+                EnUIDict["UndoMiTT"] = "Undoes the last change made to this file";
             EnUIDict["RedoMi"] = "Redo";
-                EnUIDict["RedoMiTT"] = "Redoes the last undone change made to this file.";
+                EnUIDict["RedoMiTT"] = "Redoes the last undone change made to this file";
             EnUIDict["FindMi"] = "Find...";
-                EnUIDict["FindMiTT"] = "Searches this file for a specified phrase.";
+                EnUIDict["FindMiTT"] = "Searches this file for a specified phrase";
             EnUIDict["ReplaceMi"] = "Replace...";
-                EnUIDict["ReplaceMiTT"] = "Searches this file for a specified phrase and replaces it with another specified phrase.";
+                EnUIDict["ReplaceMiTT"] = "Searches this file for a specified phrase and replaces it with another specified phrase";
             EnUIDict["SelectAllMi"] = "Select All";
-                EnUIDict["SelectAllMiTT"] = "Selects all text within this file.";
+                EnUIDict["SelectAllMiTT"] = "Selects all text within this file";
             //Format
             EnUIDict["FormatMi"] = "Format";
             EnUIDict["FontMi"] = "Font...";
-                EnUIDict["FontMiTT"] = "Changes the font to a specified font.";
+                EnUIDict["FontMiTT"] = "Changes the font to a specified font";
             EnUIDict["FontUpMi"] = "Font Up";
                 EnUIDict["FontUpMiTT"] = "Increases the font size by 1";
             EnUIDict["FontDownMi"] = "Font Down";
@@ -186,28 +184,29 @@ namespace KuroNote
             EnUIDict["ToolsMi"] = "Tools";
             EnUIDict["AESMi"] = "AES Encryption";
             EnUIDict["AESEncMi"] = "AES Encrypt...";
-                EnUIDict["AESEncMiTT"] = "Creates a copy of this file that is encrypted with a specified password by the Advanced Encryption Standard.";
+                EnUIDict["AESEncMiTT"] = "Creates a copy of this file that is encrypted with a specified password by the Advanced Encryption Standard";
             EnUIDict["AESDecMi"] = "AES Decrypt...";
-                EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard.";
+                EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard";
+            //Fullscreen
+                EnUIDict["FullscreenMiTT"] = "Toggles Fullscreen Mode ON/OFF";
             //Options
             EnUIDict["ProfileMi"] = "My Profile...";
-                EnUIDict["ProfileMiTT"] = "Displays your " + appName + " level and achievements.";
-            EnUIDict["OptionsMi"] = string.Empty;
+                EnUIDict["ProfileMiTT"] = "Displays your " + appName + " level and achievements";
             EnUIDict["OptionsDialogMi"] = "Options...";
-                EnUIDict["OptionsDialogMiTT"] = "Displays various options that you can change to optimise your experience using " + appName + ".";
+                EnUIDict["OptionsDialogMiTT"] = "Displays various options that you can change to optimise your experience using " + appName;
             EnUIDict["ThemeMi"] = "Select Theme...";
-                EnUIDict["ThemeMiTT"] = "Changes the theme to a specified theme.";
+                EnUIDict["ThemeMiTT"] = "Changes the theme to a specified theme";
             EnUIDict["CustomThemesMi"] = "Custom Themes...";
-                EnUIDict["CustomThemesMiTT"] = "Opens the custom themes manager.";
+                EnUIDict["CustomThemesMiTT"] = "Opens the custom themes manager";
             EnUIDict["LoggingMi"] = "Logging";
             EnUIDict["ShowLogMi"] = "Show Log...";
-                EnUIDict["ShowLogMiTT"] = "Opens the log for the current session.";
+                EnUIDict["ShowLogMiTT"] = "Opens the log for the current session";
             EnUIDict["ShowLogFilesMi"] = "Show Log Files...";
-                EnUIDict["ShowLogFilesMiTT"] = "Opens the directory where " + appName + " log files are stored.";
+                EnUIDict["ShowLogFilesMiTT"] = "Opens the directory where " + appName + " log files are stored";
             EnUIDict["UpdatesMi"] = "Check for Updates...";
-                EnUIDict["UpdatesMiTT"] = "Checks if this " + appName + " installation is up to date.";
+                EnUIDict["UpdatesMiTT"] = "Checks if this " + appName + " installation is up to date";
             EnUIDict["AboutMi"] = "About " + appName;
-                EnUIDict["AboutMiTT"] = "Displays information about " + appName + ".";
+                EnUIDict["AboutMiTT"] = "Displays information about " + appName;
 
             /*
                 JpUIDict = new Dictionary<string, object>();
@@ -1695,7 +1694,8 @@ namespace KuroNote
         /// </summary>
         private void doFontUp()
         {
-            log.addLog("Request: FontUp");
+            short currentFontSize = (short)MainRtb.FontSize;
+            log.addLog("Request: FontUp [" + currentFontSize + " -> " + (currentFontSize + 1) + "]");
             try {
                 MainRtb.FontSize += 1;
             } catch(Exception) {
@@ -1716,7 +1716,8 @@ namespace KuroNote
         /// </summary>
         private void doFontDown()
         {
-            log.addLog("Request: FontDown");
+            short currentFontSize = (short)MainRtb.FontSize;
+            log.addLog("Request: FontDown [" + currentFontSize + " -> " + (currentFontSize - 1) + "]");
             try {
                 MainRtb.FontSize -= 1;
             } catch (Exception) {
@@ -1783,6 +1784,7 @@ namespace KuroNote
                     MainRtb.Background = themeCollection[_themeId].solidBrush;
                 }
                 MainMenu.Background = themeCollection[_themeId].menuBrush;
+                RightMenu.Background = themeCollection[_themeId].menuBrush;
                 MainStatus.Background = themeCollection[_themeId].statusBrush;
 
                 if (_includeFont) {
@@ -1856,6 +1858,7 @@ namespace KuroNote
                         MainRtb.Background = new SolidColorBrush(Color.FromArgb(solidBrushArgb[0], solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
                     }
                     MainMenu.Background = new SolidColorBrush(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
+                    RightMenu.Background = new SolidColorBrush(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
                     MainStatus.Background = new SolidColorBrush(Color.FromArgb(statusBrushArgb[0], statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
 
 
@@ -1873,6 +1876,40 @@ namespace KuroNote
                         setFont(appSettings.fontFamily, (short)appSettings.fontSize, appSettings.fontWeight, appSettings.fontStyle);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Menu > Fullscreen
+        /// </summary>
+        private void Fullscreen_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: Fullscreen");
+            toggleFullscreen();
+        }
+
+        /// <summary>
+        /// Detects whether or not the application is currently fullscreen
+        /// If not, enters fullscreen mode
+        /// else exits fullscreen mode
+        /// </summary>
+        private void toggleFullscreen()
+        {
+            if(this.WindowStyle == WindowStyle.SingleBorderWindow)
+            {
+                //Enter Fullscreen Mode
+                this.WindowStyle = WindowStyle.None;
+                this.WindowState = WindowState.Maximized;
+                //change fullscreen icon
+                string exitFullscreenIconUri = "pack://application:,,,/img/icons/outline_fullscreen_exit_black_18dp.png";
+                imgFullscreenIcon.Source = new BitmapImage(new Uri(exitFullscreenIconUri));
+            } else {
+                //Exit Fullscreen Mode
+                this.WindowStyle = WindowStyle.SingleBorderWindow;
+                this.WindowState = WindowState.Normal;
+                //change fullscreen icon
+                string enterFullscreenIconUri = "pack://application:,,,/img/icons/outline_fullscreen_black_18dp.png";
+                imgFullscreenIcon.Source = new BitmapImage(new Uri(enterFullscreenIconUri));
             }
         }
 
@@ -2164,6 +2201,9 @@ namespace KuroNote
         //Tools
         public static RoutedCommand AESEnc = new RoutedCommand();
         public static RoutedCommand AESDec = new RoutedCommand();
+
+        //Fullscreen
+        public static RoutedCommand Fullscreen = new RoutedCommand();
 
         //Options
         public static RoutedCommand Profile = new RoutedCommand();

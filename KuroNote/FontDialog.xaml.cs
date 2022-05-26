@@ -178,6 +178,7 @@ namespace KuroNote
         private void loadFontSizes()
         {
             lisFontSizes.Items.Clear();
+
             foreach (short size in FONT_SIZES) {
                 ListBoxItem item = new ListBoxItem();
                 item.Content = size;
@@ -185,16 +186,16 @@ namespace KuroNote
                 if (customThemeManager != null & customThemeObject != null) {
                     //Select the font size that is currently in custom theme object
                     if (size == customThemeObject.fontSize) {
-                        log.addLog("Selected Size: " + item.Content);
-                        txtFontSize.Text = (short)item.Content + "";
+                        //log.addLog("Selected Size: " + item.Content);
+                        //txtFontSize.Text = (short)item.Content + "";
                         item.IsSelected = true;
                         selectedFontSize = size;
                     }
                 } else {
                     //Select the font size that is currently in settings
                     if (size == settings.fontSize) {
-                        log.addLog("Selected Size: " + item.Content);
-                        txtFontSize.Text = (short)item.Content + "";
+                        //log.addLog("Selected Size: " + item.Content);
+                        //txtFontSize.Text = (short)item.Content + "";
                         item.IsSelected = true;
                         selectedFontSize = size;
                     }
@@ -202,12 +203,11 @@ namespace KuroNote
 
                 lisFontSizes.Items.Add(item);
             }
-            //Font Up/Down was used to select a non-standard font size
-            //Store it for use in the preview
-            if (txtFontSize.Text.Equals(string.Empty)) {
-                log.addLog("Selected Size: " + settings.fontSize);
-                txtFontSize.Text = settings.fontSize + "";
-            }
+
+            //txtFontSize now displays the actual font size being used
+            //even when it's a non-standard size
+            log.addLog("Selected Size: " + (short)main.MainRtb.FontSize);
+            txtFontSize.Text = (short)main.MainRtb.FontSize + "";
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace KuroNote
                     selectedFontStyle = FontStyles.Normal;
                     break;
             }
-
+            
             try {
                 if (!txtFontSize.Text.Equals(String.Empty)) {
                     selectedFontSize = short.Parse(txtFontSize.Text);
@@ -309,6 +309,14 @@ namespace KuroNote
         /// </summary>
         private void lis_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //txtFontSize is updated programatically instead of bound to lisFontSizes
+            //because it has to display both preset font values and non-standard values
+            try {
+                txtFontSize.Text = lisFontSizes.SelectedValue.ToString();
+            } catch (NullReferenceException) {
+                log.addLog("WARN: lis_SelectionChanged Event fired before object initialisation");
+            }
+
             updateFont();
         }
 

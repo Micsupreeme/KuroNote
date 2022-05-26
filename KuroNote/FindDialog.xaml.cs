@@ -42,6 +42,7 @@ namespace KuroNote
             this.Title = windowName + " - " + appName;
 
             toggleReplaceUI(replaceMode);
+            txtFindWhat.Focus();
         }
 
         /// <summary>
@@ -142,7 +143,7 @@ namespace KuroNote
                 selectionEnd = selectionStart.GetPositionAtOffset(findPhrase.Length);
                 main.MainRtb.Selection.Select(selectionStart, selectionEnd);
 
-                //GetPositionAtOffset includes invisible non-text characters that can make the selection start too early
+                //GetPositionAtOffset includes invisible non-text characters (line returns) that can make the selection start too early
                 //Fix the pointers here
                 int correctionOffset = 0;
                 if (caseSensitive) {

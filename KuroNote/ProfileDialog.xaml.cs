@@ -77,7 +77,13 @@ namespace KuroNote
             //Achievements
             lblAchievementsCount.Content = settings.achList.Count + "/" + achievementCollection.Length;
             if(settings.achLast != -1) {
-                lblMostRecentName.Content = getAchievement(settings.achLast).achievementName;
+                //There is a last achievement value
+                try {
+                    lblMostRecentName.Content = getAchievement(settings.achLast).achievementName;
+                } catch(NullReferenceException) {
+                    //Couldn't load the last achievement
+                    lblMostRecentName.Content = String.Empty;
+                }
             }
         }
 
