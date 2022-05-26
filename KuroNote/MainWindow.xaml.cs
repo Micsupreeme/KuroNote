@@ -26,6 +26,7 @@ namespace KuroNote
     /// TODO: Add more error messages to language dictionary
     /// TODO: Some kind of PDF tool
     /// TODO: Custom (up to 10 character) font dialog preview text
+    /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
     /// 
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
     /// </summary>

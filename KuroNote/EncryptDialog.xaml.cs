@@ -42,7 +42,9 @@ namespace KuroNote
             appName = main.appName;
             this.Title = WINDOW_NAME + " - " + appName;
 
-            _salt = Encoding.ASCII.GetBytes("hi this is kuronote salt");
+            //_salt = Encoding.ASCII.GetBytes("hi this is kuronote salt");
+            _salt = Encoding.ASCII.GetBytes("F&*()SFhdsu~f^ohdfS*&(EfghsYUgsfhsjg;klfdl;ghdngjb\\kjnl3w>:}n_Ta");
+            KeyPw.Focus();
         }
 
         private void beginAESEnc()
