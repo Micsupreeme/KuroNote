@@ -52,7 +52,7 @@ namespace KuroNote
                                             "KuroNote (*.kuro)|*.kuro|" +
                                             "Batch File (*.bat)|*.bat|" +
                                             "CSS File (*.css)|*.css|" +
-                                            "CSV File (*.csv)|*.csv" +
+                                            "CSV File (*.csv)|*.csv|" +
                                             "HTML File (*.html)|*.html|" +
                                             "JavaScript File (*.js)|*.js|" +
                                             "JSON File (*.json)|*.json|" +
