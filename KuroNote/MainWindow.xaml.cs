@@ -21,29 +21,45 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Hashing tool
-    /// TODO: Recently opened
+    /// TODO Hi: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
+    /// TODO Hi: achievement "Tinkerer" - change settings 5 times (gears theme?)
+    /// TODO Hi: achievement "Immersed" - enter fullscreen mode 25 times (underwater theme?)
+    /// TODO Hi: move orphaned images purge, it doesn't need to run on every startup
     /// TODO: Add more error messages to language dictionary
-    /// TODO: Some kind of PDF tool
-    /// TODO: Custom (up to 10 character) font dialog preview text
-    /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
-    /// 
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
+    /// TODO Lo: Hashing tool
+    /// TODO Lo: Some kind of PDF tool
+    /// TODO Lo: Custom (up to 10 character) font dialog preview text
     /// </summary>
     public partial class MainWindow : Window
     {
         //Constants
-        private const string OPEN_FILE_FILTER =  "Common Plain Text Files (*.txt, *.md, *.json, *.bat, *.html, *.css, *.kuro)|*.txt; *.md; *.json; *.bat; *.html; *.css; *.kuro|" +
+        private const string OPEN_FILE_FILTER = "Common Plain Text Files (*.txt, *.kuro, *.bat, *.css, *.csv, *.html, *.js, *.json, *.md, *.py, *.sql, *.xml)|*.txt; *.kuro; *.bat; *.css; *.csv; *.html; *.js; *.json; *.md; *.py; *.sql; *.xml|" +
                                             "Text Files (*.txt)|*.txt|" +
                                             "KuroNotes (*.kuro)|*.kuro|" +
+                                            "Batch Files (*.bat)|*.bat|" +
+                                            "CSS Files (*.css)|*.css|" +
+                                            "CSV Files (*.csv)|*.csv|" +
+                                            "HTML Files (*.html)|*.html|" +
+                                            "JavaScript Files (*.js)|*.js|" +
+                                            "JSON Files (*.json)|*.json|" +
+                                            "Markdown Files (*.md)|*.md|" +
+                                            "Python Files (*.py)|*.py|" +
+                                            "SQL Files (*.sql)|*.sql|" +
+                                            "XML Files (*.xml)|*.xml|" +
                                             "All Files (*.*)|*.*";
         private const string SAVE_FILE_FILTER = "Text File (*.txt)|*.txt|" +
                                             "KuroNote (*.kuro)|*.kuro|" +
-                                            "Markdown File (*.md)|*.md|" +
-                                            "JSON File (*.json)|*.json|" +
                                             "Batch File (*.bat)|*.bat|" +
-                                            "HTML File (*.html)|*.html|" +
                                             "CSS File (*.css)|*.css|" +
+                                            "CSV File (*.csv)|*.csv" +
+                                            "HTML File (*.html)|*.html|" +
+                                            "JavaScript File (*.js)|*.js|" +
+                                            "JSON File (*.json)|*.json|" +
+                                            "Markdown File (*.md)|*.md|" +
+                                            "Python File (*.py)|*.py|" +
+                                            "SQL File (*.sql)|*.sql|" +
+                                            "XML File (*.xml)|*.xml|" +
                                             "All Files (*.*)|*.*";
         private const long FILE_MAX_SIZE = 1048576;                 //Maximum supported file size in bytes (1MB)
         private const string FILE_SEARCH_EXE = "*.exe";
@@ -70,6 +86,7 @@ namespace KuroNote
         public string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
         private KuroNoteSettings appSettings;
+        private KuroNoteRecentFiles appRecents;
         private Log log;
         private string fileName = string.Empty;                     //Name of the loaded file - null if no file loaded
 
@@ -93,7 +110,7 @@ namespace KuroNote
         {
             InitializeComponent();
             if(!isSetup()) {
-                //MessageBox.Show("Please run \"KuroNote Setup\" to complete installation.", "KuroNote is Not Fully Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please run \"KuroNote Setup\" to complete installation.", "KuroNote is Not Fully Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             InitialiseSettings();
             InitialiseLog();
@@ -109,6 +126,7 @@ namespace KuroNote
             InitialiseErrorDictionary();
             InitialiseFont();
             InitialiseTheme();
+            InitialiseRecentFiles();
             processImmediateSettings();
             processStartupSettings();
             purgeOrphanedThemeImages();
@@ -116,9 +134,6 @@ namespace KuroNote
             processCmdLineArgs();
             toggleEdited(false);
             log.addLog(Environment.NewLine + DateTime.Now.ToString() + ":" + DateTime.Now.Millisecond + ": " + "Ready! Awaiting instructions", true);
-
-            //this.WindowStyle = WindowStyle.None;
-            //this.WindowState = WindowState.Maximized;
         }
 
         /// <summary>
@@ -147,6 +162,10 @@ namespace KuroNote
                 EnUIDict["NewAdminWinMiTT"] = "Opens a new " + appName + " window with administrator rights";
             EnUIDict["OpenMi"] = "Open...";
                 EnUIDict["OpenMiTT"] = "Opens an existing file.";
+            EnUIDict["OpenRecentMi"] = "Open Recent";
+            EnUIDict["PlaceholderRecentMi"] = "No Recent Files";
+            EnUIDict["ClearRecentMi"] = "Clear Recent Files";
+                EnUIDict["ClearRecentMiTT"] = "Clears all Recent Files";
             EnUIDict["SaveMi"] = "Save";
                 EnUIDict["SaveMiTT"] = "Saves over this file if it already exists, otherwise saves this file as a specified file";
             EnUIDict["SaveAsMi"] = "Save As...";
@@ -189,7 +208,8 @@ namespace KuroNote
             EnUIDict["AESDecMi"] = "AES Decrypt...";
                 EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard";
             //Fullscreen
-                EnUIDict["FullscreenMiTT"] = "Toggles Fullscreen Mode ON/OFF";
+                EnUIDict["FullscreenMiTT0"] = "Enters Fullscreen Mode";
+                EnUIDict["FullscreenMiTT1"] = "Exits Fullscreen Mode";
             //Options
             EnUIDict["ProfileMi"] = "My Profile...";
                 EnUIDict["ProfileMiTT"] = "Displays your " + appName + " level and achievements";
@@ -216,6 +236,7 @@ namespace KuroNote
                     //etc.
                     this.DataContext = JpUIDict;
             */
+            FullscreenMi.ToolTip = EnUIDict["FullscreenMiTT0"];
             this.DataContext = EnUIDict;
         }
 
@@ -1061,6 +1082,15 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Sets up "Open Recent File" functionality
+        /// </summary>
+        private void InitialiseRecentFiles()
+        {
+            appRecents = new KuroNoteRecentFiles(log);
+            appRecents.retrieveRecentFiles();
+        }
+
+        /// <summary>
         /// Sets the status text in the bottom-left corner to the specified text
         /// </summary>
         /// <param name="_text">The status text to display</param>
@@ -1193,6 +1223,7 @@ namespace KuroNote
                         updateAppTitle();
                         toggleEdited(false);
                         setStatus("Opened", true);
+                        appRecents.addRecentFile(fileName);
 
                         if (appSettings.gamification) {
                             incrementAp(AP_OPEN);
@@ -1247,6 +1278,7 @@ namespace KuroNote
                     updateAppTitle();
                     toggleEdited(false);
                     setStatus("Opened", true);
+                    appRecents.addRecentFile(fileName);
 
                     if (appSettings.gamification) {
                         incrementAp(AP_OPEN);
@@ -1378,11 +1410,168 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Gets the colour-coded icon file path associated with the specified extension string
+        /// </summary>
+        /// <param name="extensionString">The file extension string to get the icon file for (e.g. ".txt")</param>
+        /// <returns>The file path of the colour-coded icon associated with the specified extension string</returns>
+        private string getFileIconUriForExt(string extensionString)
+        {
+            string iconsUriPrefix = "pack://application:,,,/img/icons/";
+            string iconFileName = "recent_file_white_18dp.png"; //default icon for no extension or unrecognised extension
+
+            switch (extensionString) {
+                case ".txt":
+                    iconFileName = "recent_file_sky_18dp.png";
+                    break;
+                case ".kuro":
+                    iconFileName = "recent_file_inverted_18dp.png";
+                    break;
+                case ".bat":
+                    iconFileName = "recent_file_red_18dp.png";
+                    break;
+                case ".css":
+                    iconFileName = "recent_file_pink_18dp.png";
+                    break;
+                case ".csv":
+                    iconFileName = "recent_file_blue_18dp.png";
+                    break;
+                case ".html":
+                    iconFileName = "recent_file_orange_18dp.png";
+                    break;
+                case ".js":
+                    iconFileName = "recent_file_purple_18dp.png";
+                    break;
+                case ".json":
+                    iconFileName = "recent_file_gold_18dp.png";
+                    break;
+                case ".md":
+                    iconFileName = "recent_file_green_18dp.png";
+                    break;
+                case ".py":
+                    iconFileName = "recent_file_lime_18dp.png";
+                    break;
+                case ".sql":
+                    iconFileName = "recent_file_yellow_18dp.png";
+                    break;
+                case ".xml":
+                    iconFileName = "recent_file_brown_18dp.png";
+                    break;
+            }
+            return iconsUriPrefix + iconFileName;
+        }
+
+        /// <summary>
+        /// Updates Menu > File > Open Recent
+        /// with a list of interactive Recent File menu items
+        /// according to the appRecents object
+        /// </summary>
+        private void updateRecentFilesUI()
+        {
+            List<MenuItem> recentFileMis = new List<MenuItem>();
+
+            //Create the MenuItems
+            foreach (var recentFile in appRecents.recentFiles)
+            {
+                //Set MenuItem icon image
+                Image imgRecentFileMi = new Image();
+                imgRecentFileMi.Source = new BitmapImage(new Uri(getFileIconUriForExt(Path.GetExtension(recentFile))));
+
+                //Create MenuItem
+                MenuItem recentFileMi = new MenuItem()
+                {
+                    Header = recentFile,
+                    ToolTip = "Opens " + recentFile,
+                    Icon = imgRecentFileMi
+                };
+                recentFileMi.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(recentFileMi_Click));
+                recentFileMis.Add(recentFileMi);
+            }
+
+            //Clear existing MenuItems
+            OpenRecentMi.Items.Clear();
+
+            //Insert the MenuItems
+            for (int i = (recentFileMis.Count - 1); i >= 0; i--) {
+                OpenRecentMi.Items.Add(recentFileMis[i]);
+            }
+
+            //If there are Recent Files, add the "Clear Recent Files" MenuItem,
+            //else add the placeholder
+            if (appRecents.recentFiles.Count > 0) {
+                addClearRecentMiUI();             
+            } else {
+                addPlaceholderRecentMiUI();
+            }
+        }
+
+        /// <summary>
+        /// Adds the "No Recent Files" menu item to the
+        /// Open Recent submenu
+        /// </summary>
+        private void addPlaceholderRecentMiUI()
+        {
+            MenuItem placeholderRecentMi = new MenuItem()
+            {
+                Header = EnUIDict["PlaceholderRecentMi"],
+                IsEnabled = false
+            };
+            OpenRecentMi.Items.Add(placeholderRecentMi);
+        }
+
+        /// <summary>
+        /// Adds the "Clear Recent Files" interactive menu item to the bottom of the
+        /// Open Recent submenu
+        /// </summary>
+        private void addClearRecentMiUI()
+        {
+            MenuItem clearRecentMi = new MenuItem()
+            {
+                Header = EnUIDict["ClearRecentMi"],
+                ToolTip = EnUIDict["ClearRecentMiTT"],
+                Icon = new Image()
+                {
+                    Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/clear_recent_outline_black_18dp.png"))
+                }
+            };
+            clearRecentMi.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(ClearRecentMi_Click));
+
+            OpenRecentMi.Items.Add(new Separator());
+            OpenRecentMi.Items.Add(clearRecentMi);
+        }
+
+        /// <summary>
+        /// When one of the dynamic Recent File menu items is clicked
+        /// </summary>
+        private void recentFileMi_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem thisRecentFileMi = (MenuItem)e.Source;
+            doOpen(thisRecentFileMi.Header.ToString());
+        }
+
+        /// <summary>
+        /// Menu > File > Open Recent > Clear Recent Files
+        /// </summary>
+        private void ClearRecentMi_Click(object sender, RoutedEventArgs e)
+        {
+            appRecents.clearRecentFiles();
+        }
+
+        /// <summary>
         /// Menu > File > Open... (or CTRL+O)
         /// </summary>
         private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             doOpen();
+        }
+
+        /// <summary>
+        /// When the user mouses over Menu > File
+        /// This will always execute before a Recent File is opened
+        /// </summary>
+        private void FileMi_MouseEnter(object sender, MouseEventArgs e)
+        {
+            appRecents.retrieveRecentFiles();
+            updateRecentFilesUI();
         }
 
         /// <summary>
@@ -1904,6 +2093,8 @@ namespace KuroNote
                 //change fullscreen icon
                 string exitFullscreenIconUri = "pack://application:,,,/img/icons/outline_fullscreen_exit_black_18dp.png";
                 imgFullscreenIcon.Source = new BitmapImage(new Uri(exitFullscreenIconUri));
+                //change fullscreen tooltip
+                FullscreenMi.ToolTip = EnUIDict["FullscreenMiTT1"];
             } else {
                 //Exit Fullscreen Mode
                 this.WindowStyle = WindowStyle.SingleBorderWindow;
@@ -1911,6 +2102,8 @@ namespace KuroNote
                 //change fullscreen icon
                 string enterFullscreenIconUri = "pack://application:,,,/img/icons/outline_fullscreen_black_18dp.png";
                 imgFullscreenIcon.Source = new BitmapImage(new Uri(enterFullscreenIconUri));
+                //change fullscreen tooltip
+                FullscreenMi.ToolTip = EnUIDict["FullscreenMiTT0"];
             }
         }
 
@@ -2143,6 +2336,7 @@ namespace KuroNote
             }
         }
 
+        /*
         /// <summary>
         /// When the RTB caret moves
         /// </summary>
@@ -2150,6 +2344,7 @@ namespace KuroNote
         {
             //
         }
+        */
 
         /// <summary>
         /// When the RTB is edited

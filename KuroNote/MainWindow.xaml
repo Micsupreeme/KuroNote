@@ -62,7 +62,7 @@
     <DockPanel LastChildFill="True">
         <DockPanel DockPanel.Dock="Top" LastChildFill="True">
             <Menu Name="RightMenu" DockPanel.Dock="Right">
-                <MenuItem Name="FullscreenMi" FlowDirection="LeftToRight" Width="24px" ToolTip="{Binding [FullscreenMiTT], Mode=OneTime}" Command="local:CustomCommands.Fullscreen">
+                <MenuItem Name="FullscreenMi" FlowDirection="LeftToRight" Width="24px" Command="local:CustomCommands.Fullscreen">
                     <MenuItem.Icon>
                         <Image Name="imgFullscreenIcon" Source="pack://application:,,,/img/icons/outline_fullscreen_black_18dp.png"/>
                     </MenuItem.Icon>
@@ -127,7 +127,7 @@
                         <DockPanel HorizontalAlignment="Stretch"></DockPanel>
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-                <MenuItem Name="FileMi" Header="{Binding [FileMi], Mode=OneTime}">
+                <MenuItem Name="FileMi" Header="{Binding [FileMi], Mode=OneTime}" MouseEnter="FileMi_MouseEnter">
                     <MenuItem Name="NewMi" Header="{Binding [NewMi], Mode=OneTime}" ToolTip="{Binding [NewMiTT], Mode=OneTime}" Command="local:CustomCommands.New" InputGestureText="Ctrl+N">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_file_new_black_18dp.png"/>
@@ -151,6 +151,12 @@
                     <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" ToolTip="{Binding [OpenMiTT], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_folder_open_black_18dp.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Name="OpenRecentMi" Header="{Binding [OpenRecentMi], Mode=OneTime}">
+                        <Separator/>
+                        <MenuItem.Icon>
+                            <Image Source="pack://application:,,,/img/icons/outline_history_black_18dp.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Name="SaveMi" Header="{Binding [SaveMi], Mode=OneTime}" ToolTip="{Binding [SaveMiTT], Mode=OneTime}" Command="local:CustomCommands.Save" InputGestureText="Ctrl+S">
@@ -272,7 +278,7 @@
                 <TextBlock Name="WordCountTb" Text="0 Words" Cursor="Hand"/>
             </StatusBarItem>
         </StatusBar>
-        <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="MainRtb_PreviewMouseWheel" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
+        <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="MainRtb_PreviewMouseWheel" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
             <SpellCheck.CustomDictionaries>
                 <!-- kuronote-spellcheck-custom.lex adds custom words (e.g. "KuroNote") to SpellCheck-->
                 <sys:Uri>pack://application:,,,/kuronote-spellcheck-custom.lex</sys:Uri>

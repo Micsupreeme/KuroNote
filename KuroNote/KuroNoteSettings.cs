@@ -88,7 +88,8 @@ namespace KuroNote
                 }
             } catch (Exception e) {          
                 Console.Error.WriteLine("Error during RetrieveSettings before log initialised:");
-                Console.Error.WriteLine(e.ToString());             
+                Console.Error.WriteLine(e.ToString());
+                Console.Error.WriteLine("Creating new conf.json!");
                 UpdateSettings(); //Creates a new conf file with default values (since the values weren't changed from the defaults)
             }
         }

@@ -106,6 +106,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\bgs\pexels-sharon-mccutcheon-5922574.jpg" />
     <None Remove="img\bgs\pexels-skyler-ewing-5748311.jpg" />
     <None Remove="img\bgs\pexels-tamanna-rumee-7986299.jpg" />
+    <None Remove="img\icons\clear_recent_outline_black_18dp.png" />
     <None Remove="img\icons\filled_star_eee_48dp.png" />
     <None Remove="img\icons\kuronote_logo.ico" />
     <None Remove="img\icons\kuronote_logo.png" />
@@ -182,6 +183,21 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_wallpaper_black_18dp.png" />
     <None Remove="img\icons\outline_zoom_in_black_18dp.png" />
     <None Remove="img\icons\outline_zoom_out_black_18dp.png" />
+    <None Remove="img\icons\recent_file_blue_18dp.png" />
+    <None Remove="img\icons\recent_file_brown_18dp.png" />
+    <None Remove="img\icons\recent_file_crimson_18dp.png" />
+    <None Remove="img\icons\recent_file_gold_18dp.png" />
+    <None Remove="img\icons\recent_file_green_18dp.png" />
+    <None Remove="img\icons\recent_file_grey_18dp.png" />
+    <None Remove="img\icons\recent_file_inverted_18dp.png" />
+    <None Remove="img\icons\recent_file_lime_18dp.png" />
+    <None Remove="img\icons\recent_file_orange_18dp.png" />
+    <None Remove="img\icons\recent_file_pink_18dp.png" />
+    <None Remove="img\icons\recent_file_purple_18dp.png" />
+    <None Remove="img\icons\recent_file_red_18dp.png" />
+    <None Remove="img\icons\recent_file_sky_18dp.png" />
+    <None Remove="img\icons\recent_file_white_18dp.png" />
+    <None Remove="img\icons\recent_file_yellow_18dp.png" />
     <None Remove="img\ranks\0.png" />
     <None Remove="img\ranks\0b.png" />
     <None Remove="img\ranks\1.png" />
@@ -245,6 +261,9 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\bgs\kuronote-bars.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\icons\clear_recent_outline_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\kuronote_logo_36.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -276,6 +295,51 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_radar_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_blue_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_brown_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_crimson_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_gold_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_green_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_grey_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_inverted_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_lime_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_orange_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_pink_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_purple_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_red_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_sky_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_white_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_yellow_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\6b.png">
