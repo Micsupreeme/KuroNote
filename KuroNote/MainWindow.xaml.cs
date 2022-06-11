@@ -20,14 +20,17 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// 
-    /// TODO Hi: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
+    /// TODO Hi: add RGB values next to hex values in custom theme manager (and warning that images will stretch when opacity changes)
     /// TODO Hi: achievement "Tinkerer" - change settings 5 times (gears theme?)
     /// TODO Hi: achievement "Immersed" - enter fullscreen mode 25 times (underwater theme?)
-    /// TODO Hi: move orphaned images purge, it doesn't need to run on every startup
+    /// TODO Hi: move orphaned images purge, it doesn't need to run on every startup (maybe when opening custom theme manager?)
+    /// TODO: Output Rich Text option (also requires ability to activate pasting Rich Text)
+    /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?) 
     /// TODO: Add more error messages to language dictionary
     /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
-    /// TODO Lo: Hashing tool
+    /// TODO: Hashing tool
+    /// TODO Lo: File filter string generator
+    /// TODO Lo: List maker (.kurolist)
     /// TODO Lo: Some kind of PDF tool
     /// TODO Lo: Custom (up to 10 character) font dialog preview text
     /// </summary>
@@ -768,7 +771,7 @@ namespace KuroNote
                 (
                     2, "Spectrum III", "Image by Sharon McCutcheon on Pexels", 1000,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-3847178.jpg")),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-3847178-1.jpg")),
                                      Opacity = 0.36,
                                      Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(255, 253, 233)),

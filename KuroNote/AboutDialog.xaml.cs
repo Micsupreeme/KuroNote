@@ -42,7 +42,8 @@ namespace KuroNote
         private void InitialiseBackground()
         {
             this.Background = new ImageBrush {
-                ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/kuronote-bars.png", UriKind.Absolute))
+                ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/kuronote-fuji.png", UriKind.Absolute)),
+                Stretch = Stretch.UniformToFill
             };
         }
 
@@ -51,11 +52,11 @@ namespace KuroNote
         /// </summary>
         private void populateFields() {
             //Write application details to UI
-            appNameTb.Text = appName;
-            appVersionTb.Text = "Version " + APPLICATION_VERSION;
+            appNameTb.Text = appName + " ";
+            appVersionTb.Text = APPLICATION_VERSION;
             appCopyrightTb.Text = "Copyright \u00A9 ";
             appPublisherTb.Text = "Micsupreeme";
-            appCopyrightYearTb.Text = " 2021";
+            appCopyrightYearTb.Text = " 2022";
             appDescriptionTxt.Text =
                 "A text editor that allows you to set any picture you like as a background!\n\n" +
 
@@ -69,6 +70,7 @@ namespace KuroNote
                 "that enables you to optionally password-protect your notes.\n\n"+
 
                 "Double-click here for an achievement!";
+            appBrandingTb.Text = "Branding design by Luke";
             appIconsTb.Text = "Generic icons by ";
             appIconsLinkTb.Text = "Material Design";
         }

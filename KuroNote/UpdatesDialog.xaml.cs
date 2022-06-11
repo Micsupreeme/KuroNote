@@ -158,7 +158,7 @@ namespace KuroNote
                 latestVersionNoTxt.Text = latestVersionString;
 
                 try {
-                    updateIconImg.Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_check_circle_white_48dp.png"));
+                    updateIconImg.Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_check_circle_eee_48dp.png"));
                 } catch (Exception) {
                     log.addLog("ERROR: Could not access \"up to date\" icon");
                 }

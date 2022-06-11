@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="Achievements" Height="400" Width="420" MinHeight="400" MinWidth="420" MaxWidth="420"
-        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
+        Icon="pack://application:,,,/img/icons/kuronote_icon.ico"
         WindowStyle="ToolWindow"
         Background="#404040"
         WindowStartupLocation="CenterScreen"

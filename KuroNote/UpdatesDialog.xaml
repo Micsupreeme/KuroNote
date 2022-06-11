@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="Updates" Height="320" Width="420" MinHeight="320" MinWidth="420" MaxHeight="320" MaxWidth="420"
-        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
+        Icon="pack://application:,,,/img/icons/kuronote_icon.ico"
         WindowStyle="ToolWindow"
         Background="#404040"
         WindowStartupLocation="CenterScreen"
@@ -36,7 +36,7 @@
                     <TextBox Name="latestVersionNoTxt" Text="Checking" HorizontalContentAlignment="Right" FontSize="18" Padding="2" FontFamily="Consolas" Background="#000000" Foreground="#00FF00" Margin="4,0,0,0" BorderThickness="0" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="Arrow"/>
                 </StackPanel>
             </Grid>
-            <Image Name="updateIconImg" Visibility="Hidden" Source="pack://application:,,,/img/icons/outline_error_outline_white_48dp.png" Height="70" Margin="10,30,10,10"/>
+            <Image Name="updateIconImg" Visibility="Hidden" Source="pack://application:,,,/img/icons/outline_error_outline_eee_48dp.png" Height="70" Margin="10,30,10,10"/>
             <TextBlock Name="updateLinkTb" Visibility="Collapsed" Text="Get the latest version of KuroNote" HorizontalAlignment="Center" FontSize="14" Margin="0,0,0,0" TextWrapping="Wrap" Foreground="#00FFFF" TextDecorations="Underline" Cursor="Hand" MouseUp="updateLinkTb_MouseUp"/>
             <TextBlock Name="updateMessageTb" Visibility="Collapsed" Text="KuroNote is up to date" HorizontalAlignment="Center" FontSize="14" Margin="0,0,0,0" TextWrapping="Wrap" Foreground="#EEEEEE"/>
         </StackPanel>

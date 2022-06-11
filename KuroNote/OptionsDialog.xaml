@@ -7,7 +7,7 @@
         xmlns:spark="clr-namespace:WPFSpark;assembly=WPFSpark"
         mc:Ignorable="d"
         Title="OptionsDialog" Height="420" Width="425" MinHeight="420" MinWidth="425" MaxHeight="420" MaxWidth="425"
-        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
+        Icon="pack://application:,,,/img/icons/kuronote_icon.ico"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterScreen"
         Background="#404040"

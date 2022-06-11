@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:KuroNote" xmlns:sys="clr-namespace:System;assembly=netstandard"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="750"
-        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
+        Icon="pack://application:,,,/img/icons/kuronote_icon.ico"
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing"
         AllowDrop="True">
@@ -113,7 +113,7 @@
                     </MenuItem>
                     <MenuItem Name="AboutMi" Header="{Binding [AboutMi], Mode=OneTime}" ToolTip="{Binding [AboutMiTT], Mode=OneTime}" Command="local:CustomCommands.About" InputGestureText="F1">
                         <MenuItem.Icon>
-                            <Image Source="pack://application:,,,/img/icons/kuronote_logo_36.png"/>
+                            <Image Source="pack://application:,,,/img/icons/kuronote_48_icon_36.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem.Icon>
@@ -136,16 +136,16 @@
                     <MenuItem Name="NewWinMi" Header="{Binding [NewWinMi], Mode=OneTime}">
                         <MenuItem Name="NewRegularWinMi" Header="{Binding [NewRegularWinMi], Mode=OneTime}" ToolTip="{Binding [NewRegularWinMiTT], Mode=OneTime}" Command="local:CustomCommands.NewRegWin" InputGestureText="Alt+N">
                             <MenuItem.Icon>
-                                <Image Source="pack://application:,,,/img/icons/kuronote_logo_36.png"/>
+                                <Image Source="pack://application:,,,/img/icons/kuronote_48_icon_36.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Name="NewAdminWinMi" Header="{Binding [NewAdminWinMi], Mode=OneTime}" ToolTip="{Binding [NewAdminWinMiTT], Mode=OneTime}" Command="local:CustomCommands.NewAdminWin">
                             <MenuItem.Icon>
-                                <Image Source="pack://application:,,,/img/icons/kuronote_logo_admin_36.png"/>
+                                <Image Source="pack://application:,,,/img/icons/kuronote_48_admin_icon_36.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem.Icon>
-                            <Image Source="pack://application:,,,/img/icons/kuronote_logo_36.png"/>
+                            <Image Source="pack://application:,,,/img/icons/kuronote_48_icon_36.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Name="OpenMi" Header="{Binding [OpenMi], Mode=OneTime}" ToolTip="{Binding [OpenMiTT], Mode=OneTime}" Command="local:CustomCommands.Open" InputGestureText="Ctrl+O" FontWeight="DemiBold">

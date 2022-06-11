@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:KuroNote"
         mc:Ignorable="d"
         Title="Dependencies" Height="420" Width="540" MinHeight="420" MinWidth="540" MaxHeight="630" MaxWidth="810"
-        Icon="pack://application:,,,/img/icons/kuronote_logo.ico"
+        Icon="pack://application:,,,/img/icons/kuronote_icon.ico"
         WindowStyle="ToolWindow"
         Background="#404040"
         WindowStartupLocation="CenterScreen"

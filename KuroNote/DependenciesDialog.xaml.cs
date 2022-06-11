@@ -38,7 +38,8 @@ namespace KuroNote
         {
             this.Background = new ImageBrush
             {
-                ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/kuronote-bars.png", UriKind.Absolute))
+                ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/kuronote-fuji.png", UriKind.Absolute)),
+                Stretch = Stretch.UniformToFill
             };
         }
 

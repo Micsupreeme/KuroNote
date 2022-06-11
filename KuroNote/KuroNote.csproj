@@ -8,14 +8,14 @@
     <RootNamespace>KuroNote</RootNamespace>
     <Version>2.0.0</Version>
     <Authors>Michael Whatley</Authors>
-    <Copyright>Copyright © 2021 Micsupreeme</Copyright>
+    <Copyright>Copyright © 2022 Micsupreeme</Copyright>
     <Company>Michael Whatley</Company>
-    <PackageIcon>kuronote_logo.png</PackageIcon>
+    <PackageIcon>kuronote_48_icon_250.png</PackageIcon>
     <PackageTags>text editor, plain text, customisable, gamification</PackageTags>
     <RepositoryUrl>https://github.com/Micsupreeme/KuroNote</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <SignAssembly>false</SignAssembly>
-    <ApplicationIcon>kuronote_logo.ico</ApplicationIcon>
+    <ApplicationIcon>kuronote_icon.ico</ApplicationIcon>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageProjectUrl>https://github.com/Micsupreeme/KuroNote</PackageProjectUrl>
     <Description>A text editor that allows you to set any picture you like as a background.
@@ -39,10 +39,6 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Compile Remove="img\ico\**" />
     <EmbeddedResource Remove="img\ico\**" />
     <None Remove="img\ico\**" />
-    <None Include="img\icons\kuronote_logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <Page Remove="img\ico\**" />
   </ItemGroup>
 
@@ -80,6 +76,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\achievements\locked.png" />
     <None Remove="img\bgs\about.png" />
     <None Remove="img\bgs\kuronote-bars.png" />
+    <None Remove="img\bgs\kuronote-fuji.png" />
     <None Remove="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg" />
     <None Remove="img\bgs\pexels-asad-photo-maldives-3320516.jpg" />
     <None Remove="img\bgs\pexels-ben-mack-5326909.jpg" />
@@ -102,17 +99,29 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\bgs\pexels-pixabay-258149.jpg" />
     <None Remove="img\bgs\pexels-pixabay-276205.jpg" />
     <None Remove="img\bgs\pexels-pixabay-60561.jpg" />
+    <None Remove="img\bgs\pexels-sharon-mccutcheon-3847178-1.jpg" />
     <None Remove="img\bgs\pexels-sharon-mccutcheon-3847178.jpg" />
     <None Remove="img\bgs\pexels-sharon-mccutcheon-5922574.jpg" />
     <None Remove="img\bgs\pexels-skyler-ewing-5748311.jpg" />
     <None Remove="img\bgs\pexels-tamanna-rumee-7986299.jpg" />
+    <None Remove="img\icons\alt\fade_icon.ico" />
+    <None Remove="img\icons\alt\fade_shadow_stretch_icon.ico" />
+    <None Remove="img\icons\alt\kuro_icon.ico" />
+    <None Remove="img\icons\alt\shadow_icon.ico" />
+    <None Remove="img\icons\alt\shiro_icon.ico" />
     <None Remove="img\icons\clear_recent_outline_black_18dp.png" />
     <None Remove="img\icons\filled_star_eee_48dp.png" />
-    <None Remove="img\icons\kuronote_logo.ico" />
-    <None Remove="img\icons\kuronote_logo.png" />
-    <None Remove="img\icons\kuronote_logo_36.png" />
-    <None Remove="img\icons\kuronote_logo_admin.png" />
-    <None Remove="img\icons\kuronote_logo_admin_36.png" />
+    <None Remove="img\icons\kuronote_48_admin_icon_250.png" />
+    <None Remove="img\icons\kuronote_48_admin_icon_36.png" />
+    <None Remove="img\icons\kuronote_48_admin_inv_icon_250.png" />
+    <None Remove="img\icons\kuronote_48_admin_inv_icon_36.png" />
+    <None Remove="img\icons\kuronote_48_icon_250.png" />
+    <None Remove="img\icons\kuronote_48_icon_36.png" />
+    <None Remove="img\icons\kuronote_48_icon_large.png" />
+    <None Remove="img\icons\kuronote_48_inv_icon_250.png" />
+    <None Remove="img\icons\kuronote_48_inv_icon_36.png" />
+    <None Remove="img\icons\kuronote_48_inv_icon_large.png" />
+    <None Remove="img\icons\kuronote_icon.ico" />
     <None Remove="img\icons\outline_account_circle_black_18dp.png" />
     <None Remove="img\icons\outline_add_black_18dp.png" />
     <None Remove="img\icons\outline_all_inclusive_black_18dp.png" />
@@ -122,7 +131,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_bug_report_black_18dp.png" />
     <None Remove="img\icons\outline_build_black_18dp.png" />
     <None Remove="img\icons\outline_check_circle_black_18dp.png" />
-    <None Remove="img\icons\outline_check_circle_white_48dp.png" />
+    <None Remove="img\icons\outline_check_circle_eee_48dp.png" />
     <None Remove="img\icons\outline_color_lens_black_18dp.png" />
     <None Remove="img\icons\outline_color_lens_eee_48dp.png" />
     <None Remove="img\icons\outline_content_copy_black_18dp.png" />
@@ -134,6 +143,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_done_outline_black_18dp.png" />
     <None Remove="img\icons\outline_enhanced_encryption_black_18dp.png" />
     <None Remove="img\icons\outline_error_outline_black_18dp.png" />
+    <None Remove="img\icons\outline_error_outline_eee_48dp.png" />
     <None Remove="img\icons\outline_error_outline_white_48dp.png" />
     <None Remove="img\icons\outline_exit_to_app_black_18dp.png" />
     <None Remove="img\icons\outline_exposure_neg_1_black_18dp.png" />
@@ -261,25 +271,73 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\bgs\kuronote-bars.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\bgs\kuronote-fuji.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-sharon-mccutcheon-3847178-1.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\alt\fade_icon.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\alt\fade_shadow_stretch_icon.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\alt\kuro_icon.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\alt\shadow_icon.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\alt\shiro_icon.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\clear_recent_outline_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\icons\kuronote_logo_36.png">
+    <Resource Include="img\icons\kuronote_48_admin_icon_250.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\icons\kuronote_logo_admin_36.png">
+    <Resource Include="img\icons\kuronote_48_admin_icon_36.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_admin_inv_icon_250.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_admin_inv_icon_36.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_icon_250.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_icon_36.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_icon_large.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_inv_icon_250.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_inv_icon_36.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_48_inv_icon_large.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\kuronote_icon.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_check_circle_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\icons\outline_check_circle_white_48dp.png">
+    <Resource Include="img\icons\outline_check_circle_eee_48dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_error_outline_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\icons\outline_error_outline_white_48dp.png">
+    <Resource Include="img\icons\outline_error_outline_eee_48dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_exposure_neg_1_black_18dp.png">
@@ -498,9 +556,6 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\bgs\pexels-pixabay-60561.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\bgs\pexels-sharon-mccutcheon-3847178.jpg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="img\bgs\pexels-sharon-mccutcheon-5922574.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -511,15 +566,6 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\filled_star_eee_48dp.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="img\icons\kuronote_logo.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="img\icons\kuronote_logo.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="img\icons\kuronote_logo_admin.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_account_circle_black_18dp.png">
