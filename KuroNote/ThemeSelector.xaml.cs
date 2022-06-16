@@ -79,6 +79,7 @@ namespace KuroNote
                         ComboBoxItem customThemeItem = new ComboBoxItem();
                         customThemeItem.Tag = customThemeId;
                         customThemeItem.Content = customThemeName;
+                        customThemeItem.FontWeight = FontWeights.Bold;
                         if (customThemeId == settings.themeId) {
                             log.addLog("Selected theme: " + customThemeItem.Content + " (Custom)");
                             customThemeItem.IsSelected = true;

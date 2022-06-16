@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using System.Windows;
 
 namespace KuroNote
@@ -20,6 +21,9 @@ namespace KuroNote
         KuroNoteSettings settings;
         Log log;
 
+        Timer gamificationTimer;
+        bool anythingChanged = false;
+
         public OptionsDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog)
         {
             InitializeComponent();
@@ -30,6 +34,9 @@ namespace KuroNote
             this.Title = WINDOW_NAME + " - " + appName;
             restartDisclaimerLbl.Content = RESTART_DISCLAIMER_PRE + appName + " launch";
             populateFields();
+            if(settings.gamification) {
+                initialiseOptionsGamification();
+            }
         }
 
         /// <summary>
@@ -81,12 +88,44 @@ namespace KuroNote
             settings.UpdateSettings();
         }
 
+        #region "user has changed a setting" flag
+        //The "checked" and "unchecked" events fire before the window is even initialised,
+        //which makes it look like the user has changed an option during every visit to OptionsDialog.
+        //Dirty workaround - reset the "anythingChanged" flag after 100ms
+        //(i.e. only change(s) to options registered after this incredibly short interval will count towards achievement)
+        private void initialiseOptionsGamification()
+        {
+            gamificationTimer = new Timer();
+            gamificationTimer.Elapsed += GamificationTimer_Elapsed;
+            gamificationTimer.Interval = 100;
+            gamificationTimer.Enabled = true;
+        }
+
+        private void GamificationTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            anythingChanged = false;
+            gamificationTimer.Stop();
+        }
+        #endregion
+
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             log.addLog("Update options according to OptionsDialog UI");
             saveSettingsChanges();
             main.processImmediateSettings(); //Apply settings that can take effect immediately
             toggleVisibility(false);
+
+            if (settings.gamification && anythingChanged) {
+                settings.achOptions++;
+                settings.UpdateSettings();
+
+                switch (settings.achOptions)
+                {
+                    case 5:
+                        main.unlockAchievement(19);
+                        break;
+                }
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -99,6 +138,7 @@ namespace KuroNote
         {
             try {
                 gamificationLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -108,6 +148,7 @@ namespace KuroNote
         {
             try {
                 gamificationLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -117,6 +158,7 @@ namespace KuroNote
         {
             try {
                 loggingLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -126,6 +168,7 @@ namespace KuroNote
         {
             try {
                 loggingLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -135,6 +178,7 @@ namespace KuroNote
         {
             try {
                 spellcheckLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -144,6 +188,7 @@ namespace KuroNote
         {
             try {
                 spellcheckLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -153,6 +198,7 @@ namespace KuroNote
         {
             try {
                 floatingLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -162,6 +208,7 @@ namespace KuroNote
         {
             try {
                 floatingLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -171,6 +218,7 @@ namespace KuroNote
         {
             try {
                 windowsizeLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -180,6 +228,7 @@ namespace KuroNote
         {
             try {
                 windowsizeLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -189,6 +238,7 @@ namespace KuroNote
         {
             try {
                 fullfilepathLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -198,6 +248,7 @@ namespace KuroNote
         {
             try {
                 fullfilepathLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -207,6 +258,7 @@ namespace KuroNote
         {
             try {
                 stretchimagesLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -216,6 +268,7 @@ namespace KuroNote
         {
             try {
                 stretchimagesLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -225,6 +278,7 @@ namespace KuroNote
         {
             try {
                 rememberfontupdnLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -234,6 +288,7 @@ namespace KuroNote
         {
             try {
                 rememberfontupdnLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -243,6 +298,7 @@ namespace KuroNote
         {
             try {
                 wordwrapLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -252,6 +308,7 @@ namespace KuroNote
         {
             try {
                 wordwrapLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
@@ -261,6 +318,7 @@ namespace KuroNote
         {
             try {
                 useasciiLbl.Content = BOOL1;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
@@ -270,6 +328,7 @@ namespace KuroNote
         {
             try {
                 useasciiLbl.Content = BOOL0;
+                anythingChanged = true;
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }

@@ -335,6 +335,7 @@ namespace KuroNote
             imageOpacitySlide.Value = currentTheme.imgBrushOpacity;
             solidBrushCol.SetColor(Color.FromArgb(solidBrushArgb[0], solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
             textBrushCol.SetColor(Color.FromArgb(textBrushArgb[0], textBrushArgb[1], textBrushArgb[2], textBrushArgb[3]));
+            updateRgbLabels();
 
             //toggleImageSolidUI(currentTheme.hasImage);
             imageBrowseTxt.Text = string.Empty;
@@ -376,6 +377,18 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Updates the RGB value labels
+        /// </summary>
+        private void updateRgbLabels()
+        {
+            bgBrushColLbl.Content = "(" + bgBrushCol.Color.R + ", " + bgBrushCol.Color.G + ", " + bgBrushCol.Color.B + ")";
+            menuBrushColLbl.Content = "(" + menuBrushCol.Color.R + ", " + menuBrushCol.Color.G + ", " + menuBrushCol.Color.B + ")";
+            statusBrushColLbl.Content = "(" + statusBrushCol.Color.R + ", " + statusBrushCol.Color.G + ", " + statusBrushCol.Color.B + ")";
+            solidBrushColLbl.Content = "(" + solidBrushCol.Color.R + ", " + solidBrushCol.Color.G + ", " + solidBrushCol.Color.B + ")";
+            textBrushColLbl.Content = "(" + textBrushCol.Color.R + ", " + textBrushCol.Color.G + ", " + textBrushCol.Color.B + ")";
+        }
+
+        /// <summary>
         /// Updates currentTheme's theme object with values from the UI fields
         /// </summary>
         private void updateThemeObject()
@@ -387,6 +400,7 @@ namespace KuroNote
             currentTheme.imgBrushOpacity = Math.Round(imageOpacitySlide.Value, 2);
             currentTheme.solidBrush = solidBrushCol.Color.ToString();
             currentTheme.textBrush = textBrushCol.Color.ToString();
+            updateRgbLabels();
             //font is updated by setFont()
         }
 
@@ -505,6 +519,7 @@ namespace KuroNote
                     imageOpacityLbl.Visibility = Visibility.Visible;
                     imageOpacitySlide.Visibility = Visibility.Visible;
                     solidBrushCol.Visibility = Visibility.Hidden;
+                    solidBrushColLbl.Visibility = Visibility.Hidden;
                 } else {
                     currentTheme.hasImage = false;
                     imageNoteLbl.Visibility = Visibility.Hidden;
@@ -512,6 +527,7 @@ namespace KuroNote
                     imageOpacityLbl.Visibility = Visibility.Hidden;
                     imageOpacitySlide.Visibility = Visibility.Hidden;
                     solidBrushCol.Visibility = Visibility.Visible;
+                    solidBrushColLbl.Visibility = Visibility.Visible;
                 }
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");

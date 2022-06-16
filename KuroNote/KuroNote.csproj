@@ -56,6 +56,9 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\achievements\14.png" />
     <None Remove="img\achievements\15.png" />
     <None Remove="img\achievements\16.png" />
+    <None Remove="img\achievements\17.png" />
+    <None Remove="img\achievements\18.png" />
+    <None Remove="img\achievements\19.png" />
     <None Remove="img\achievements\2.png" />
     <None Remove="img\achievements\214.png" />
     <None Remove="img\achievements\3.png" />
@@ -67,6 +70,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\achievements\5.png" />
     <None Remove="img\achievements\5000.png" />
     <None Remove="img\achievements\54.png" />
+    <None Remove="img\achievements\6060.png" />
     <None Remove="img\achievements\621.png" />
     <None Remove="img\achievements\720.png" />
     <None Remove="img\achievements\826.png" />
@@ -80,6 +84,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\bgs\pexels-antonio-janeski-cherry blossoms-4052701.jpg" />
     <None Remove="img\bgs\pexels-asad-photo-maldives-3320516.jpg" />
     <None Remove="img\bgs\pexels-ben-mack-5326909.jpg" />
+    <None Remove="img\bgs\pexels-damir-mijailovic-3695238.jpg" />
     <None Remove="img\bgs\pexels-david-selbert-6468238.jpg" />
     <None Remove="img\bgs\pexels-david-yu-1631516.jpg" />
     <None Remove="img\bgs\pexels-david-yu-2684383.jpg" />
@@ -88,16 +93,23 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\bgs\pexels-fwstudio-168447.jpg" />
     <None Remove="img\bgs\pexels-gradienta-6985045.jpg" />
     <None Remove="img\bgs\pexels-gradienta-6985193.jpg" />
+    <None Remove="img\bgs\pexels-jess-loiterton-5007946.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4022107.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4046687.jpg" />
     <None Remove="img\bgs\pexels-karolina-grabowska-4194853.jpg" />
+    <None Remove="img\bgs\pexels-karolina-grabowska-66757560.jpg" />
+    <None Remove="img\bgs\pexels-katie-rainbow-8593815.jpg" />
+    <None Remove="img\bgs\pexels-luis-quintero-2842734.jpg" />
     <None Remove="img\bgs\pexels-luis-quintero-3101527.jpg" />
+    <None Remove="img\bgs\pexels-mariakray-9643032.jpg" />
+    <None Remove="img\bgs\pexels-miodrag-kitanović-4286932.jpg" />
     <None Remove="img\bgs\pexels-monstera-5874714.jpg" />
     <None Remove="img\bgs\pexels-namakuki-751374.jpg" />
     <None Remove="img\bgs\pexels-olha-ruskykh-7166020.jpg" />
     <None Remove="img\bgs\pexels-pixabay-235985.jpg" />
     <None Remove="img\bgs\pexels-pixabay-258149.jpg" />
     <None Remove="img\bgs\pexels-pixabay-276205.jpg" />
+    <None Remove="img\bgs\pexels-pixabay-50711.jpg" />
     <None Remove="img\bgs\pexels-pixabay-60561.jpg" />
     <None Remove="img\bgs\pexels-sharon-mccutcheon-3847178-1.jpg" />
     <None Remove="img\bgs\pexels-sharon-mccutcheon-3847178.jpg" />
@@ -265,6 +277,18 @@ You can expect all the essential features like: save as; print; find; replace; s
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="img\achievements\17.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\18.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\19.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\6060.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\achievements\locked.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -272,6 +296,30 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\kuronote-fuji.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-damir-mijailovic-3695238.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-jess-loiterton-5007946.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-karolina-grabowska-66757560.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-katie-rainbow-8593815.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-luis-quintero-2842734.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-mariakray-9643032.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-miodrag-kitanović-4286932.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\bgs\pexels-pixabay-50711.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\bgs\pexels-sharon-mccutcheon-3847178-1.jpg">

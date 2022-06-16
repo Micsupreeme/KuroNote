@@ -15,6 +15,7 @@ namespace KuroNote
     {
         //Constants
         private const string WINDOW_NAME = "Achievements";
+        private const string HIDDEN_ACHIEVEMENT_TEXT = "???";
 
         //Globals
         private int ACHIEVEMENT_ROW_HEIGHT = 64;
@@ -94,8 +95,15 @@ namespace KuroNote
                     } else {
                         //This achievement is locked
                         achievementImageUri = "pack://application:,,,/img/achievements/locked.png";
-                        achNameDescTxt.Text = achievementCollection[ach].achievementDesc;
+
+                        //Show descriptions for regular achievements, but not for hidden achievements
+                        if(achievementCollection[ach].achievementHide) {
+                            achNameDescTxt.Text = HIDDEN_ACHIEVEMENT_TEXT;
+                        } else {
+                            achNameDescTxt.Text = achievementCollection[ach].achievementDesc;
+                        }
                         achIconImg.Opacity = 0.5;
+
                     }
                     achIconImg.Source = new BitmapImage(new Uri(achievementImageUri));
                 } catch (Exception) {

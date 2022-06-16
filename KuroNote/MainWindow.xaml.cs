@@ -20,14 +20,10 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// TODO Hi: add RGB values next to hex values in custom theme manager (and warning that images will stretch when opacity changes)
-    /// TODO Hi: achievement "Tinkerer" - change settings 5 times (gears theme?)
-    /// TODO Hi: achievement "Immersed" - enter fullscreen mode 25 times (underwater theme?)
-    /// TODO Hi: move orphaned images purge, it doesn't need to run on every startup (maybe when opening custom theme manager?)
     /// TODO: Output Rich Text option (also requires ability to activate pasting Rich Text)
     /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?) 
     /// TODO: Add more error messages to language dictionary
-    /// TODO: check find/replace selecting the 1st occurance of any search term twice before continuing
+    /// TODO: check (again) find/replace selecting the 1st occurance of any search term twice before continuing
     /// TODO: Hashing tool
     /// TODO Lo: File filter string generator
     /// TODO Lo: List maker (.kurolist)
@@ -82,6 +78,7 @@ namespace KuroNote
         private const int AP_OPEN = 15;
         private const int AP_LAUNCH = 15;
         private const int AP_SAVE_AS = 30;
+        private const int AP_PRINT = 40;
         private const int AP_ACHIEVEMENT = 125;
 
         //Globals
@@ -132,7 +129,6 @@ namespace KuroNote
             InitialiseRecentFiles();
             processImmediateSettings();
             processStartupSettings();
-            purgeOrphanedThemeImages();
 
             processCmdLineArgs();
             toggleEdited(false);
@@ -284,37 +280,41 @@ namespace KuroNote
         {
             EnAchDict = new KuroNoteAchievement[] {
                 //Holiday achievmenets
-                new KuroNoteAchievement(11, "New Year's Day", "Launch KuroNote on January 1st"),
-                new KuroNoteAchievement(214, "Valentine's Day", "Launch KuroNote on February 14th", themeCollection[25]), //"Hearts" theme
-                new KuroNoteAchievement(317, "Saint Patrick's Day", "Launch KuroNote on March 17th"),
-                new KuroNoteAchievement(320, "International Day of Happiness", "Launch KuroNote on March 20th", themeCollection[27]), //"Yellow" theme
-                new KuroNoteAchievement(422, "Earth Day", "Launch KuroNote on April 22nd", themeCollection[10]), //"Earth" theme
-                new KuroNoteAchievement(54, "Star Wars Day", "Launch KuroNote on May 4th"),
-                new KuroNoteAchievement(621, "World Music Day", "Launch KuroNote on June 21st"),
-                new KuroNoteAchievement(720, "National Moon Day", "Launch KuroNote on July 20th", themeCollection[14]), //"Moon" theme
-                new KuroNoteAchievement(88, "International Cat Day", "Launch KuroNote on August 8th"),
-                new KuroNoteAchievement(826, "International Dog Day", "Launch KuroNote on August 26th"),
-                new KuroNoteAchievement(921, "International Day of Peace", "Launch KuroNote on September 21st", themeCollection[3]), //"Eternal" theme
-                new KuroNoteAchievement(1031, "Halloween", "Launch KuroNote on October 31st"),
-                new KuroNoteAchievement(1111, "Origami Day", "Launch KuroNote on November 11th", themeCollection[6]), //"Origami" theme
-                new KuroNoteAchievement(1225, "Christmas Day", "Launch KuroNote on December 25th"),
+                new KuroNoteAchievement(11, "New Year's Day", "Launch KuroNote on January 1st", false),
+                new KuroNoteAchievement(214, "Valentine's Day", "Launch KuroNote on February 14th", false, themeCollection[25]), //"Hearts" theme
+                new KuroNoteAchievement(317, "Saint Patrick's Day", "Launch KuroNote on March 17th", false),
+                new KuroNoteAchievement(320, "International Day of Happiness", "Launch KuroNote on March 20th", false, themeCollection[27]), //"Yellow" theme
+                new KuroNoteAchievement(422, "Earth Day", "Launch KuroNote on April 22nd", false, themeCollection[10]), //"Earth" theme
+                new KuroNoteAchievement(54, "Star Wars Day", "Launch KuroNote on May 4th", false),
+                new KuroNoteAchievement(621, "World Music Day", "Launch KuroNote on June 21st", false),
+                new KuroNoteAchievement(720, "National Moon Day", "Launch KuroNote on July 20th", false, themeCollection[14]), //"Moon" theme
+                new KuroNoteAchievement(88, "International Cat Day", "Launch KuroNote on August 8th", false),
+                new KuroNoteAchievement(826, "International Dog Day", "Launch KuroNote on August 26th", false),
+                new KuroNoteAchievement(921, "International Day of Peace", "Launch KuroNote on September 21st", false, themeCollection[3]), //"Eternal" theme
+                new KuroNoteAchievement(1031, "Halloween", "Launch KuroNote on October 31st", false),
+                new KuroNoteAchievement(1111, "Origami Day", "Launch KuroNote on November 11th", false, themeCollection[6]), //"Origami" theme
+                new KuroNoteAchievement(1225, "Christmas Day", "Launch KuroNote on December 25th", false),
                 //Other achievements
-                new KuroNoteAchievement(1, "You actually read it", "Read KuroNote's product description"),
-                new KuroNoteAchievement(100, "Centurion", "Launch KuroNote 100 times", themeCollection[1]), //"Spectrum II" theme
-                new KuroNoteAchievement(1000, "Startup Millenium", "Launch KuroNote 1000 times", themeCollection[2]), //"Spectrum III" theme
-                new KuroNoteAchievement(5000, "1001110001000", "Launch KuroNote 5000 times"),
-                new KuroNoteAchievement(2, "Salvare", "\"Save As...\" 500 times"),
-                new KuroNoteAchievement(3, "Creator of Worlds", "\"Save As...\" 2000 times", themeCollection[16]), //"Creation Magic" theme
-                new KuroNoteAchievement(4, "Make it Yours", "Create 5 custom themes"),
-                new KuroNoteAchievement(5, "Customs Connoisseur", "Create 15 custom themes"),
-                new KuroNoteAchievement(9, "Ne0phyt3", "\"AES Encrypt...\" 10 times"),
-                new KuroNoteAchievement(10, "Crypt0r", "\"AES Encrypt...\" 50 times", themeCollection[22]), //"<C0de Red/>" theme"
-                new KuroNoteAchievement(12, "Qualified CTRL+S'er", "\"Save\" 1000 times"),
-                new KuroNoteAchievement(13, "Better Save than Sorry", "\"Save\" 10000 times"),
-                new KuroNoteAchievement(14, "Nobody has ever done that", "Set the font to \"Wingdings\""),
-                new KuroNoteAchievement(15, "Open Sesame", "\"Open...\" 2500 times"),
-                new KuroNoteAchievement(16, "CTRL+Outstanding", "\"Open...\" 7500 times"),
-                new KuroNoteAchievement(42, "The Meaning of Life", "We rolled the dice, you got 42!")
+                new KuroNoteAchievement(1, "You actually read it", "Read KuroNote's product description", false),
+                new KuroNoteAchievement(100, "Centurion", "Launch KuroNote 100 times", false, themeCollection[1]), //"Spectrum II" theme
+                new KuroNoteAchievement(1000, "Startup Millenium", "Launch KuroNote 1000 times", false, themeCollection[2]), //"Spectrum III" theme
+                new KuroNoteAchievement(5000, "1001110001000", "Launch KuroNote 5000 times", false),
+                new KuroNoteAchievement(2, "Salvare", "\"Save As...\" 500 times", false),
+                new KuroNoteAchievement(3, "Creator of Worlds", "\"Save As...\" 2000 times", false, themeCollection[16]), //"Creation Magic" theme
+                new KuroNoteAchievement(4, "Make it Yours", "Create 5 Custom Themes", false),
+                new KuroNoteAchievement(5, "Customs Connoisseur", "Create 15 Custom Themes", false),
+                new KuroNoteAchievement(6060, "Physical Manifestation", "Print something", true),
+                new KuroNoteAchievement(9, "Ne0phyt3", "\"AES Encrypt...\" 10 times", false),
+                new KuroNoteAchievement(10, "Crypt0r", "\"AES Encrypt...\" 50 times", false, themeCollection[22]), //"<C0de Red/>" theme
+                new KuroNoteAchievement(12, "Qualified CTRL+S'er", "\"Save\" 1000 times", false),
+                new KuroNoteAchievement(13, "Better Save than Sorry", "\"Save\" 10000 times", false),
+                new KuroNoteAchievement(14, "Nobody has ever done that", "Set the font to \"Wingdings\"", false),
+                new KuroNoteAchievement(15, "Open Sesame", "\"Open...\" 2500 times", false),
+                new KuroNoteAchievement(16, "CTRL+Outstanding", "\"Open...\" 7500 times", false),
+                new KuroNoteAchievement(17, "Immerse", "Enter Fullscreen 10 times", false, themeCollection[8]), //"Immerse" theme
+                new KuroNoteAchievement(18, "Deep Dive", "Enter Fullscreen 50 times", false),
+                new KuroNoteAchievement(19, "Tinkerer", "Change Options 5 times", true, themeCollection[30]), //"PCB" theme
+                new KuroNoteAchievement(42, "The Meaning of Life", "We rolled the dice, you got 42!", true)
             };
         }
 
@@ -337,7 +337,7 @@ namespace KuroNote
                 new KuroNoteRank(7, "Master Wordcrafter", 3022, "#FFAFFFAF"),
                 new KuroNoteRank(8, "ASCIIKnight", 3476, "#FFA5FFA5"),
                 new KuroNoteRank(9, "Unicoder", 3997, "#FF9BFF9B"),
-                new KuroNoteRank(10, "Unicoder++", 4317, "#FF91FF91"),
+                new KuroNoteRank(10, ".TXT Aficionado", 4317, "#FF91FF91"),
                 new KuroNoteRank(11, "Apex ASCIIKnight", 4662, "#FFFFFFC3"),
                 new KuroNoteRank(12, "Notemaster Novitiate", 5035, "#FFFFFFB9"),
                 new KuroNoteRank(13, "ANSINaut", 5438, "#FFFFFFAF"),
@@ -748,7 +748,7 @@ namespace KuroNote
                     0, "Spectrum", "Image by Gradienta on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-gradienta-6985193.jpg")),
-                                     Opacity = 0.5,
+                                     Opacity = 0.47,
                                      Stretch = stretchMode },
                     new SolidColorBrush(Color.FromRgb(250, 250, 250)),
                     new SolidColorBrush(Color.FromRgb(250, 250, 250)),
@@ -769,25 +769,25 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    2, "Spectrum III", "Image by Sharon McCutcheon on Pexels", 1000,
+                    2, "Spectrum III", "Image by Katie Rainbow on Pexels", 1000,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-3847178-1.jpg")),
-                                     Opacity = 0.36,
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-katie-rainbow-8593815.jpg")),
+                                     Opacity = 0.26,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(255, 253, 233)),
-                    new SolidColorBrush(Color.FromRgb(243, 210, 234)),
+                    new SolidColorBrush(Color.FromRgb(255, 252, 239)),
+                    new SolidColorBrush(Color.FromRgb(255, 234, 248)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Palatino Linotype", 17, FontWeights.Regular, FontStyles.Normal
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
                     3, "Eternal", "Image by Skyler Ewing on Pexels", 921,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-skyler-ewing-5748311.jpg")),
-                                     Opacity = 0.42,
+                                     Opacity = 0.3,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(244, 239, 235)),
-                    new SolidColorBrush(Color.FromRgb(244, 239, 235)),
+                    new SolidColorBrush(Color.FromRgb(247, 244, 241)),
+                    new SolidColorBrush(Color.FromRgb(247, 244, 241)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Palatino Linotype", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -806,12 +806,12 @@ namespace KuroNote
                 new KuroNoteTheme
                 (
                     5, "Overly Orangey", "Image by Karolina Grabowska on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(255, 228, 202)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4022107.jpg")),
-                                     Opacity = 0.27,
+                                     Opacity = 0.25,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(249, 218, 186)),
-                    new SolidColorBrush(Color.FromRgb(249, 218, 186)),
+                    new SolidColorBrush(Color.FromRgb(249, 201, 151)),
+                    new SolidColorBrush(Color.FromRgb(251, 203, 151)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -820,46 +820,46 @@ namespace KuroNote
                     6, "Origami", "Image by David Yu on Pexels", 1111,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-yu-1631516.jpg")),
-                                     Opacity = 0.41,
+                                     Opacity = 0.33,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(223, 211, 201)),
-                    new SolidColorBrush(Color.FromRgb(231, 217, 209)),
+                    new SolidColorBrush(Color.FromRgb(224, 211, 201)),
+                    new SolidColorBrush(Color.FromRgb(230, 218, 210)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
                     7, "Sunset Ripples", "Image by Ben Mack on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(255, 246, 237)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-ben-mack-5326909.jpg")),
+                                     Opacity = 0.2,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(251, 240, 232)),
+                    new SolidColorBrush(Color.FromRgb(242, 230, 222)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    8, "Immerse", "Image by Jess Loiterton on Pexels", 17,
+                    new SolidColorBrush(Color.FromRgb(167, 232, 254)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-jess-loiterton-5007946.jpg")),
                                      Opacity = 0.33,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(242, 234, 234)),
-                    new SolidColorBrush(Color.FromRgb(242, 234, 234)),
+                    new SolidColorBrush(Color.FromRgb(136, 194, 211)),
+                    new SolidColorBrush(Color.FromRgb(120, 183, 200)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
-                    8, "Spotless Snow", "Image by Pixabay on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-60561.jpg")),
-                                     Opacity = 0.36,
-                                     Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
-                ),
-                new KuroNoteTheme
-                (
-                    9, "Sakura", "Image by Antonio Janeski on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    9, "Blossom", "Image by Antonio Janeski on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(254, 211, 254)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-antonio-janeski-cherry blossoms-4052701.jpg")),
-                                     Opacity = 0.29,
+                                     Opacity = 0.2,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(231, 216, 240)),
-                    new SolidColorBrush(Color.FromRgb(231, 216, 240)),
+                    new SolidColorBrush(Color.FromRgb(245, 204, 247)),
+                    new SolidColorBrush(Color.FromRgb(235, 195, 237)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -868,22 +868,22 @@ namespace KuroNote
                     10, "Earth", "Image by Olha Ruskykh on Pexels", 422,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-olha-ruskykh-7166020.jpg")),
-                                     Opacity = 0.28,
+                                     Opacity = 0.2,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(243, 242, 237)),
-                    new SolidColorBrush(Color.FromRgb(246, 244, 240)),
+                    new SolidColorBrush(Color.FromRgb(247, 245, 242)),
+                    new SolidColorBrush(Color.FromRgb(251, 249, 247)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                    "Verdana", 17, FontWeights.Bold, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
                     11, "Leafy Green", "Image by Karolina Grabowska on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new SolidColorBrush(Color.FromRgb(202, 253, 123)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4046687.jpg")),
-                                     Opacity = 0.34,
+                                     Opacity = 0.25,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(208, 203, 169)),
-                    new SolidColorBrush(Color.FromRgb(208, 203, 169)),
+                    new SolidColorBrush(Color.FromRgb(179, 214, 92)),
+                    new SolidColorBrush(Color.FromRgb(174, 211, 93)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -892,9 +892,9 @@ namespace KuroNote
                     12, "Paradise Found", "Image by Asad Photo Maldives on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-asad-photo-maldives-3320516.jpg")),
-                                     Opacity = 0.29,
+                                     Opacity = 0.2,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(201, 228, 255)),
+                    new SolidColorBrush(Color.FromRgb(212, 235, 254)),
                     new SolidColorBrush(Color.FromRgb(254, 254, 254)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
@@ -904,10 +904,10 @@ namespace KuroNote
                     13, "Layers of Time", "Image by Fillipe Gomes on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-fillipe-gomes-5611219.jpg")),
-                                     Opacity = 0.33,
+                                     Opacity = 0.31,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(255, 244, 231)),
-                    new SolidColorBrush(Color.FromRgb(255, 244, 231)),
+                    new SolidColorBrush(Color.FromRgb(254, 245, 231)),
+                    new SolidColorBrush(Color.FromRgb(254, 245, 231)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -916,46 +916,46 @@ namespace KuroNote
                     14, "Moon", "Image by David Selbert on Pexels", 720,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-selbert-6468238.jpg")),
-                                     Opacity = 0.41,
+                                     Opacity = 0.32,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(167, 199, 211)),
-                    new SolidColorBrush(Color.FromRgb(160, 170, 176)),
+                    new SolidColorBrush(Color.FromRgb(178, 209, 219)),
+                    new SolidColorBrush(Color.FromRgb(167, 175, 180)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
-                    15, "Bold Gold", "Image by NaMaKuKi on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 215, 0)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-namakuki-751374.jpg")),
-                                     Opacity = 0.53,
+                    15, "Deep Red", "Image by Karolina Grabowska on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(160, 3, 3)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-66757560.jpg")),
+                                     Opacity = 0.85,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(255, 226, 51)),
-                    new SolidColorBrush(Color.FromRgb(255, 226, 51)),
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                    new SolidColorBrush(Color.FromRgb(252, 120, 120)),
+                    new SolidColorBrush(Color.FromRgb(252, 120, 120)),
+                    new SolidColorBrush(Color.FromRgb(245, 245, 245)),
+                    "Verdana", 17, FontWeights.Bold, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
                     16, "Creation Magic", "Image by Tamanna Rumee on Pexels", 2,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-tamanna-rumee-7986299.jpg")),
-                                     Opacity = 0.46,
+                                     Opacity = 0.38,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(207, 235, 249)),
-                    new SolidColorBrush(Color.FromRgb(252, 227, 139)),
+                    new SolidColorBrush(Color.FromRgb(205, 235, 248)),
+                    new SolidColorBrush(Color.FromRgb(251, 230, 158)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
-                    17, "Sparkly Pink", "Image by Sharon McCutcheon on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 236, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-sharon-mccutcheon-5922574.jpg")),
-                                     Opacity = 0.30,
+                    17, "Droplets of Hope", "Image by Karolina Grabowska on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4194853.jpg")),
+                                     Opacity = 0.33,
                                      Stretch = stretchMode },
-                    new SolidColorBrush(Color.FromRgb(255, 216, 255)),
-                    new SolidColorBrush(Color.FromRgb(254, 218, 243)),
+                    new SolidColorBrush(Color.FromRgb(242, 239, 253)),
+                    new SolidColorBrush(Color.FromRgb(237, 234, 253)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -1014,9 +1014,10 @@ namespace KuroNote
                     23, "Antiqua", "Image by Pixabay on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-235985.jpg")),
-                                     Opacity = 0.48 },
-                    new SolidColorBrush(Color.FromRgb(170, 152, 143)),
-                    new SolidColorBrush(Color.FromRgb(170, 152, 143)),
+                                     Opacity = 0.38,
+                                     Stretch = stretchMode},
+                    new SolidColorBrush(Color.FromRgb(188, 173, 166)),
+                    new SolidColorBrush(Color.FromRgb(188, 173, 166)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Book Antiqua", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -1025,31 +1026,34 @@ namespace KuroNote
                     24, "Contour", "Image by David Yu on Pexels", 0,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-david-yu-2684383.jpg")),
-                                     Opacity = 0.39 },
-                    new SolidColorBrush(Color.FromRgb(219, 223, 229)),
-                    new SolidColorBrush(Color.FromRgb(219, 223, 229)),
+                                     Opacity = 0.3,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(228, 230, 235)),
+                    new SolidColorBrush(Color.FromRgb(228, 230, 235)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Arial", 17, FontWeights.Regular, FontStyles.Normal
                 ),
                 new KuroNoteTheme
                 (
                     25, "Hearts", "Image by Monstera on Pexels", 214,
-                    new SolidColorBrush(Color.FromRgb(255, 151, 202)),
+                    new SolidColorBrush(Color.FromRgb(255, 194, 235)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-monstera-5874714.jpg")),
-                                     Opacity = 0.45 },
-                    new SolidColorBrush(Color.FromRgb(187, 163, 199)),
-                    new SolidColorBrush(Color.FromRgb(189, 165, 202)),
+                                     Opacity = 0.33,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(204, 170, 215)),
+                    new SolidColorBrush(Color.FromRgb(204, 170, 215)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Italic
                 ),
                 new KuroNoteTheme
                 (
-                    26, "Droplets of Hope", "Image by Karolina Grabowska on Pexels", 0,
-                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-karolina-grabowska-4194853.jpg")),
-                                     Opacity = 0.45 },
-                    new SolidColorBrush(Color.FromRgb(236, 233, 252)),
-                    new SolidColorBrush(Color.FromRgb(236, 233, 252)),
+                    26, "Geometric", "Image by Damir Mijailovic on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(212, 243, 241)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-damir-mijailovic-3695238.jpg")),
+                                     Opacity = 0.15,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(211, 243, 241)),
+                    new SolidColorBrush(Color.FromRgb(208, 237, 235)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 ),
@@ -1058,9 +1062,58 @@ namespace KuroNote
                     27, "Yellow", "Image by Luis Quintero on Pexels", 320,
                     new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-luis-quintero-3101527.jpg")),
-                                     Opacity = 0.48 },
-                    new SolidColorBrush(Color.FromRgb(254, 229, 131)),
-                    new SolidColorBrush(Color.FromRgb(254, 210, 130)),
+                                     Opacity = 0.38,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(255, 229, 158)),
+                    new SolidColorBrush(Color.FromRgb(255, 215, 158)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    28, "Cotton Cloudy", "Image by Luis Quintero on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 236, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-luis-quintero-2842734.jpg")),
+                                     Opacity = 0.4,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(153, 222, 238)),
+                    new SolidColorBrush(Color.FromRgb(154, 206, 225)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    29, "Holographic", "Image by Miodrag Kitanović on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-miodrag-kitanović-4286932.jpg")),
+                                     Opacity = 0.82,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(225, 251, 232)),
+                    new SolidColorBrush(Color.FromRgb(253, 225, 250)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Verdana", 17, FontWeights.Regular, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    30, "PCB", "Image by Pixabay on Pexels", 19,
+                    new SolidColorBrush(Color.FromRgb(193, 255, 182)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-50711.jpg")),
+                                     Opacity = 0.11,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(185, 245, 175)),
+                    new SolidColorBrush(Color.FromRgb(185, 245, 175)),
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    "Consolas", 17, FontWeights.Bold, FontStyles.Normal
+                ),
+                new KuroNoteTheme
+                (
+                    31, "Tight-knit", "Image by Mariakray on Pexels", 0,
+                    new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                    new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-mariakray-9643032.jpg")),
+                                     Opacity = 0.19,
+                                     Stretch = stretchMode },
+                    new SolidColorBrush(Color.FromRgb(254, 254, 253)),
+                    new SolidColorBrush(Color.FromRgb(254, 254, 253)),
                     new SolidColorBrush(Color.FromRgb(0, 0, 0)),
                     "Verdana", 17, FontWeights.Regular, FontStyles.Normal
                 )
@@ -1696,6 +1749,13 @@ namespace KuroNote
 
                 pd.PrintDocument(idocument.DocumentPaginator, "Printing FlowDocument");
                 log.addLog("Successfully printed " + fileName);
+
+                if (appSettings.gamification)
+                {
+                    incrementAp(AP_PRINT);
+                    unlockAchievement(6060);
+                    appSettings.UpdateSettings();
+                }
             }
         }
 
@@ -2098,6 +2158,22 @@ namespace KuroNote
                 imgFullscreenIcon.Source = new BitmapImage(new Uri(exitFullscreenIconUri));
                 //change fullscreen tooltip
                 FullscreenMi.ToolTip = EnUIDict["FullscreenMiTT1"];
+
+                if (appSettings.gamification) {
+                    appSettings.achFullscreens++;
+                    appSettings.UpdateSettings();
+
+                    switch (appSettings.achFullscreens)
+                    {
+                        case 10:
+                            unlockAchievement(17);
+                            break;
+                        case 50:
+                            unlockAchievement(18);
+                            break;
+                    }
+                }
+
             } else {
                 //Exit Fullscreen Mode
                 this.WindowStyle = WindowStyle.SingleBorderWindow;
@@ -2149,6 +2225,8 @@ namespace KuroNote
             log.addLog("Request: Custom Themes...");
             CustomThemeManager customThemeManager = new CustomThemeManager(this, appSettings, log);
             customThemeManager.toggleVisibility(true);
+            purgeOrphanedThemeImages(); //doesn't need to run on every startup, but cleanup the custom themes folder
+            //when the custom themes manager opens
         }
         #endregion
 

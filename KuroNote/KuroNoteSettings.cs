@@ -43,6 +43,8 @@ namespace KuroNote
         public int achSaveAs = 0;
         public int achEncrypts = 0;
         public int achCustoms = 0;
+        public int achFullscreens = 0;
+        public int achOptions = 0;
         public int profL = 0;
         public int profAp = 0;
 
@@ -83,6 +85,8 @@ namespace KuroNote
                     this.achSaveAs = knsFile.achSaveAs;
                     this.achEncrypts = knsFile.achEncrypts;
                     this.achCustoms = knsFile.achCustoms;
+                    this.achFullscreens = knsFile.achFullscreens;
+                    this.achOptions = knsFile.achOptions;
                     this.profL = knsFile.profL;
                     this.profAp = knsFile.profAp;
                 }
