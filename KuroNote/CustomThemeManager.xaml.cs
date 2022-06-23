@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,6 +29,7 @@ namespace KuroNote
         private const string BGIMAGE_FILE_FILTER =
             "JPEG (*.jpg;*.jpeg;*.jpe;*.jfif)|*.jpg;*.jpeg;*.jpe;*.jfif";
         private const long IMAGE_MAX_SIZE = 2097152; //Background images selected exceedomg this size (2MB) will trigger a file size warning
+        private const int OPACITY_SLIDE_DELAY_INTERVAL = 100;
 
         //Gamification constants
         private const int AP_CREATE_CUSTOM = 30;
@@ -40,6 +42,7 @@ namespace KuroNote
         Log log;
         bool fieldsPopulated = false;
         bool newImageSet = false;
+        Timer opacitySlideDelay; ///Delays custom theme updates while imageOpacitySlide is constantly being updated (improves performance)
 
         private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
         private KuroNoteCustomTheme currentTheme;
@@ -52,6 +55,13 @@ namespace KuroNote
             log = _log;
             appName = main.appName;
             appPath = main.appPath;
+            opacitySlideDelay = new Timer()
+            {
+                Enabled = false,
+                Interval = OPACITY_SLIDE_DELAY_INTERVAL,
+                AutoReset = false
+            };
+            opacitySlideDelay.Elapsed += opacitySlideDelay_Elapsed;
             this.Title = WINDOW_NAME + " - " + appName;
 
             loadCustomThemeList();
@@ -535,6 +545,59 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Attempts to run processOpacitySliderChanged(); when the Dispatcher allows for it
+        /// TODO: upgrade Timer to DispatcherTimer (automatically co-ordinates this stuff)
+        /// </summary>
+        private void dispatchProcessOpacitySliderChanged()
+        {
+            if (Dispatcher.CheckAccess()) {
+                opacitySlideDelay.Stop();
+                System.Threading.Thread.Sleep(100);
+            } else {
+                Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Send, (System.Threading.ThreadStart) delegate {
+                    processOpacitySliderChanged();
+                });
+            }
+        }
+
+        /// <summary>
+        /// When the image brush opacity slider value changes
+        /// Updates the custom theme file and renders a partial preview if the user has chosen auto-preview
+        /// </summary>
+        private void processOpacitySliderChanged()
+        {
+            try {
+                if (fieldsPopulated) {
+                    updateThemeObject();
+                    updateThemeFile();
+                    //Only attempt to render a preview if the user has chosen auto-preview AND there is an image set for the ImageBrush
+                    if (tbtnAutoPreview.IsChecked == true && imageBrowseTxt.Text.Length > 0) {
+                        //A full re-render preview every time the opacity value changes is too much, this is a minimal version for opacity changes only
+                        try {
+                            Stretch previewImageStretch;
+                            if (settings.stretchImages) {
+                                previewImageStretch = Stretch.Fill;
+                            } else {
+                                previewImageStretch = Stretch.UniformToFill;
+                            }
+
+                            main.MainRtb.Background = new ImageBrush {
+                                ImageSource = new BitmapImage(new Uri(customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT, UriKind.Absolute)),
+                                Opacity = currentTheme.imgBrushOpacity,
+                                Stretch = previewImageStretch
+                            };
+                        } catch (Exception ex) {
+                            log.addLog("Custom theme opacity change lightweight preview failed");
+                            log.addLog(ex.ToString());
+                        }
+                    }
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: ValueChanged Event fired before object initialisation ");
+            }
+        }
+
+        /// <summary>
         /// When the "Auto-Preview" togglebutton is checked
         /// </summary>
         private void tbtnAutoPreview_Checked(object sender, RoutedEventArgs e)
@@ -671,9 +734,8 @@ namespace KuroNote
         /// </summary>
         private void masterStack_MouseMove(object sender, MouseEventArgs e)
         {
-            if (newImageSet)
-            {
-                log.addLog("test");
+            //When the user picks a new background image, this ensures it previews ASAP
+            if (newImageSet) {
                 newImageSet = false;
                 if (tbtnAutoPreview.IsChecked == true)
                 {
@@ -683,30 +745,25 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// When the opacity timer elapses,
+        /// calls to update the theme (and partial preview if applicable)
+        /// </summary>
+        private void opacitySlideDelay_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            dispatchProcessOpacitySliderChanged();
+        }
+
+        /// <summary>
         /// When the image brush opacity slider value changes
         /// </summary>
         private void imageOpacitySlide_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             try {
+                //Every time the value changes, the timer is reset
+                //The value must be unchanged for 100ms before the timer elapses and the theme updates
                 imageOpacityLbl.Content = "Opacity: " + Math.Round(imageOpacitySlide.Value, 2);
-                if (fieldsPopulated) {
-                    updateThemeObject();
-                    updateThemeFile();
-                    //Only attempt to render a preview if the user has chosen auto-preview AND there is an image set for the ImageBrush
-                    if (tbtnAutoPreview.IsChecked == true && imageBrowseTxt.Text.Length > 0) {
-                        //A full re-render preview every time the opacity value changes is too much, this is a minimal version for opacity changes only
-                        try {
-                            main.MainRtb.Background = new ImageBrush
-                            {
-                                ImageSource = new BitmapImage(new Uri(customThemePath + currentTheme.themeId + INTERNAL_IMAGE_EXT, UriKind.Absolute)),
-                                Opacity = currentTheme.imgBrushOpacity
-                            };
-                        } catch (Exception ex) {
-                            log.addLog("Custom theme opacity change lightweight preview failed");
-                            log.addLog(ex.ToString());
-                        }
-                    }
-                }
+                opacitySlideDelay.Stop();
+                opacitySlideDelay.Start();
             } catch (NullReferenceException) {
                 Console.Error.WriteLine("WARN: ValueChanged Event fired before object initialisation ");
             }

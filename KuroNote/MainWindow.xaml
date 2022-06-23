@@ -153,7 +153,7 @@
                             <Image Source="pack://application:,,,/img/icons/outline_folder_open_black_18dp.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="OpenRecentMi" Header="{Binding [OpenRecentMi], Mode=OneTime}">
+                    <MenuItem Name="OpenRecentMi" Header="{Binding [OpenRecentMi], Mode=OneTime}" Visibility="Collapsed">
                         <Separator/>
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_history_black_18dp.png"/>
@@ -283,6 +283,25 @@
                 <!-- kuronote-spellcheck-custom.lex adds custom words (e.g. "KuroNote") to SpellCheck-->
                 <sys:Uri>pack://application:,,,/kuronote-spellcheck-custom.lex</sys:Uri>
             </SpellCheck.CustomDictionaries>
+            <RichTextBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Cut" Command="ApplicationCommands.Cut">
+                        <MenuItem.Icon>
+                            <Image Source="pack://application:,,,/img/icons/outline_content_cut_black_18dp.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Copy" Command="ApplicationCommands.Copy">
+                        <MenuItem.Icon>
+                            <Image Source="pack://application:,,,/img/icons/outline_content_copy_black_18dp.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Paste" Command="ApplicationCommands.Paste">
+                        <MenuItem.Icon>
+                            <Image Source="pack://application:,,,/img/icons/outline_content_paste_black_18dp.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </RichTextBox.ContextMenu>
             <FlowDocument/>
         </RichTextBox>
     </DockPanel>

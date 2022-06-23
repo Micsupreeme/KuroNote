@@ -25,6 +25,8 @@ namespace KuroNote
         public int customThemeIndex = 1000;
         public bool gamification = true;
         public bool logging = false;
+        public bool rtfMode = false;
+        public bool rememberRecentFiles = true;
         public bool floating = false;
         public bool useAscii = false;
         public bool spellCheck = true;
@@ -33,6 +35,7 @@ namespace KuroNote
         public bool stretchImages = false;
         public bool rememberFontUpDn = true;
         public bool wordWrap = true;
+        public bool overTyping = true;
         public double windowHeight = 500;
         public double windowWidth = 750;
         public List<int> achList = new List<int>() { };
@@ -67,6 +70,8 @@ namespace KuroNote
                     this.customThemeIndex = knsFile.customThemeIndex;
                     this.gamification = knsFile.gamification;
                     this.logging = knsFile.logging;
+                    this.rtfMode = knsFile.rtfMode;
+                    this.rememberRecentFiles = knsFile.rememberRecentFiles;
                     this.rememberWindowSize = knsFile.rememberWindowSize;
                     this.floating = knsFile.floating;
                     this.useAscii = knsFile.useAscii;
@@ -75,6 +80,7 @@ namespace KuroNote
                     this.fullFilePath = knsFile.fullFilePath;
                     this.stretchImages = knsFile.stretchImages;
                     this.wordWrap = knsFile.wordWrap;
+                    this.overTyping = knsFile.overTyping;
                     this.windowHeight = knsFile.windowHeight;
                     this.windowWidth = knsFile.windowWidth;
                     this.achList = knsFile.achList;

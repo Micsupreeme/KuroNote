@@ -20,20 +20,47 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// TODO: Output Rich Text option (also requires ability to activate pasting Rich Text)
-    /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?) 
+    /// TODO: toggle bold, under, italic, colour sections - controls only available while RTF mode enabled
+    /// TODO Bug Fix: Open "Select Theme", then open "Custom Theme Manager", change the image for a theme,
+    /// then go back and forth once to select a random theme, then select the custom theme that now has a new image.
+    /// The new image will not display becuse "Select Theme" was loaded when the custom theme had a different theme ID
+    /// (when you change an image for a custom theme, the internal theme ID changes and the old image is deleted).
+    /// The solution is some kind of custom theme list refresh within "Select Theme", such as when the drop-down is opened/moused-over?
+    /// TODO Bug Fix: Print always only uses user-defined font, even when theme font is being used
+    /// 
+    /// TODO: Expand context menu
+    /// 
+    /// TODO: Upgrade CustomThemeManager "opacitySlideDelay" to DispatcherTimer
+    /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
     /// TODO: Add more error messages to language dictionary
     /// TODO: check (again) find/replace selecting the 1st occurance of any search term twice before continuing
     /// TODO: Hashing tool
+    /// TODO: Auto-backup every 3,5,10,15 minutes? (in a seperate thread!)
     /// TODO Lo: File filter string generator
     /// TODO Lo: List maker (.kurolist)
     /// TODO Lo: Some kind of PDF tool
     /// TODO Lo: Custom (up to 10 character) font dialog preview text
+
     /// </summary>
     public partial class MainWindow : Window
     {
         //Constants
         private const string OPEN_FILE_FILTER = "Common Plain Text Files (*.txt, *.kuro, *.bat, *.css, *.csv, *.html, *.js, *.json, *.md, *.py, *.sql, *.xml)|*.txt; *.kuro; *.bat; *.css; *.csv; *.html; *.js; *.json; *.md; *.py; *.sql; *.xml|" +
+                                            "Text Files (*.txt)|*.txt|" +
+                                            "KuroNotes (*.kuro)|*.kuro|" +
+                                            "Batch Files (*.bat)|*.bat|" +
+                                            "CSS Files (*.css)|*.css|" +
+                                            "CSV Files (*.csv)|*.csv|" +
+                                            "HTML Files (*.html)|*.html|" +
+                                            "JavaScript Files (*.js)|*.js|" +
+                                            "JSON Files (*.json)|*.json|" +
+                                            "Markdown Files (*.md)|*.md|" +
+                                            "Python Files (*.py)|*.py|" +
+                                            "SQL Files (*.sql)|*.sql|" +
+                                            "XML Files (*.xml)|*.xml|" +
+                                            "All Files (*.*)|*.*";
+        private const string OPEN_FILE_FILTER_RTF = "RTF Files (*.rtf)|*.rtf|" +
+                                            "Common Plain Text Files (*.txt, *.kuro, *.bat, *.css, *.csv, *.html, *.js, *.json, *.md, *.py, *.sql, *.xml)|*.txt; *.kuro; *.bat; *.css; *.csv; *.html; *.js; *.json; *.md; *.py; *.sql; *.xml|" +
                                             "Text Files (*.txt)|*.txt|" +
                                             "KuroNotes (*.kuro)|*.kuro|" +
                                             "Batch Files (*.bat)|*.bat|" +
@@ -60,13 +87,25 @@ namespace KuroNote
                                             "SQL File (*.sql)|*.sql|" +
                                             "XML File (*.xml)|*.xml|" +
                                             "All Files (*.*)|*.*";
+        private const string SAVE_FILE_FILTER_RTF = "RTF File (*.rtf)|*.rtf|" +
+                                            "Text File (*.txt)|*.txt|" +
+                                            "KuroNote (*.kuro)|*.kuro|" +
+                                            "Batch File (*.bat)|*.bat|" +
+                                            "CSS File (*.css)|*.css|" +
+                                            "CSV File (*.csv)|*.csv|" +
+                                            "HTML File (*.html)|*.html|" +
+                                            "JavaScript File (*.js)|*.js|" +
+                                            "JSON File (*.json)|*.json|" +
+                                            "Markdown File (*.md)|*.md|" +
+                                            "Python File (*.py)|*.py|" +
+                                            "SQL File (*.sql)|*.sql|" +
+                                            "XML File (*.xml)|*.xml|" +
+                                            "All Files (*.*)|*.*";
         private const long FILE_MAX_SIZE = 1048576;                 //Maximum supported file size in bytes (1MB)
         private const string FILE_SEARCH_EXE = "*.exe";
         private const string CUSTOM_THEME_EXT = ".kurotheme";
         private const string INTERNAL_IMAGE_EXT = ".jpg";           //custom theme destination extension is always this
         private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
-        private const double DEFAULT_WINDOW_HEIGHT = 500;
-        private const double DEFAULT_WINDOW_WIDTH = 750;
         private const double PAGE_WIDTH_MAX = 1000000;
         private const double PAGE_WIDTH_RIGHT_MARGIN = 25;          //Number of width units to add (as a padding/buffer) in addition to the measured width of the content
 
@@ -126,7 +165,9 @@ namespace KuroNote
             InitialiseErrorDictionary();
             InitialiseFont();
             InitialiseTheme();
-            InitialiseRecentFiles();
+            if(appSettings.rememberRecentFiles) {
+                InitialiseRecentFiles();
+            }
             processImmediateSettings();
             processStartupSettings();
 
@@ -313,7 +354,8 @@ namespace KuroNote
                 new KuroNoteAchievement(16, "CTRL+Outstanding", "\"Open...\" 7500 times", false),
                 new KuroNoteAchievement(17, "Immerse", "Enter Fullscreen 10 times", false, themeCollection[8]), //"Immerse" theme
                 new KuroNoteAchievement(18, "Deep Dive", "Enter Fullscreen 50 times", false),
-                new KuroNoteAchievement(19, "Tinkerer", "Change Options 5 times", true, themeCollection[30]), //"PCB" theme
+                new KuroNoteAchievement(19, "James Cameron", "Enter Fullscreen 500 times", false),
+                new KuroNoteAchievement(20, "Tinkerer", "Change Options 5 times", true, themeCollection[30]), //"PCB" theme
                 new KuroNoteAchievement(42, "The Meaning of Life", "We rolled the dice, you got 42!", true)
             };
         }
@@ -520,6 +562,11 @@ namespace KuroNote
 
             //Show full file path in title
             updateAppTitle();
+
+            //Remember recent files (just disabled - don't show the menu item for the rest of this session)
+            if (!appSettings.rememberRecentFiles) {
+                OpenRecentMi.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>
@@ -1142,6 +1189,7 @@ namespace KuroNote
         /// </summary>
         private void InitialiseRecentFiles()
         {
+            OpenRecentMi.Visibility = Visibility.Visible;
             appRecents = new KuroNoteRecentFiles(log);
             appRecents.retrieveRecentFiles();
         }
@@ -1249,12 +1297,13 @@ namespace KuroNote
                     }
                 }
 
-                OpenFileDialog dlg = new OpenFileDialog
-                {
-                    Filter = OPEN_FILE_FILTER
-                };
+                OpenFileDialog dlg = new OpenFileDialog();
+                if (appSettings.rtfMode) {
+                    dlg.Filter = OPEN_FILE_FILTER_RTF;
+                } else {
+                    dlg.Filter = OPEN_FILE_FILTER;
+                }
                 if (dlg.ShowDialog() == true) {
-                    MemoryStream ms = new MemoryStream();
                     try {
                         if (fileTooBig(dlg.FileName)) {
                             log.addLog("WARNING: File size exceeds limit");
@@ -1264,16 +1313,32 @@ namespace KuroNote
                                 return false;
                             }
                         }
-                        using (FileStream file = new FileStream(dlg.FileName, FileMode.Open, FileAccess.Read)) {
-                            byte[] bytes = new byte[file.Length];
-                            file.Read(bytes, 0, (int)file.Length);
-                            ms.Write(bytes, 0, (int)file.Length);
-                        }
 
-                        TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-                        range.Text = selectedEncoding.GetString(ms.ToArray());
-                        log.addLog("Successfully opened " + dlg.FileName);
-                        ms.Close();
+                        if (appSettings.rtfMode) {
+                            //RTF-capable open method
+                            TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                            FileStream rtfStream = new FileStream(dlg.FileName, FileMode.Open);
+                            rtfRange.Load(rtfStream, DataFormats.Rtf);
+                            rtfStream.Close();
+                            log.addLog("Successfully opened (RTF) " + dlg.FileName);
+
+                        } else {
+                            //Plaintext-only open method
+                            MemoryStream ms = new MemoryStream();
+                            using (FileStream file = new FileStream(dlg.FileName, FileMode.Open, FileAccess.Read))
+                            {
+                                byte[] bytes = new byte[file.Length];
+                                file.Read(bytes, 0, (int)file.Length);
+                                ms.Write(bytes, 0, (int)file.Length);
+                            }
+
+                            //Set encoding
+                            TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                            range.Text = selectedEncoding.GetString(ms.ToArray());
+
+                            ms.Close();
+                            log.addLog("Successfully opened " + dlg.FileName);
+                        }
 
                         fileName = dlg.FileName;
                         updateAppTitle();
@@ -1319,16 +1384,31 @@ namespace KuroNote
                             return false;
                         }
                     }
-                    using (FileStream file = new FileStream(_path, FileMode.Open, FileAccess.Read)) {
-                        byte[] bytes = new byte[file.Length];
-                        file.Read(bytes, 0, (int)file.Length);
-                        ms.Write(bytes, 0, (int)file.Length);
-                    }
 
-                    TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-                    range.Text = selectedEncoding.GetString(ms.ToArray());
-                    log.addLog("Successfully opened " + _path);
-                    ms.Close();
+                    if (appSettings.rtfMode) {
+                        //RTF-capable open method
+                        TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                        FileStream rtfStream = new FileStream(_path, FileMode.Open);
+                        rtfRange.Load(rtfStream, DataFormats.Rtf);
+                        rtfStream.Close();
+                        log.addLog("Successfully opened (RTF) " + _path);
+
+                    } else {
+                        //Plaintext-only open method
+                        using (FileStream file = new FileStream(_path, FileMode.Open, FileAccess.Read))
+                        {
+                            byte[] bytes = new byte[file.Length];
+                            file.Read(bytes, 0, (int)file.Length);
+                            ms.Write(bytes, 0, (int)file.Length);
+                        }
+
+                        //Set encoding
+                        TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                        range.Text = selectedEncoding.GetString(ms.ToArray());
+
+                        ms.Close();
+                        log.addLog("Successfully opened " + _path);
+                    }
 
                     fileName = _path;
                     updateAppTitle();
@@ -1377,13 +1457,28 @@ namespace KuroNote
                     MemoryStream ms = new MemoryStream(selectedEncoding.GetBytes(range.Text));
 
                     try {
-                        using (FileStream file = new FileStream(fileName, FileMode.Create, System.IO.FileAccess.Write)) {
-                            byte[] bytes = new byte[ms.Length];
-                            ms.Read(bytes, 0, (int)ms.Length);
-                            file.Write(bytes, 0, bytes.Length);
-                            log.addLog("Successfully saved " + fileName);
-                            ms.Close();
+
+                        if (appSettings.rtfMode) {
+                            //RTF-capable save method
+                            TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                            FileStream rtfStream = new FileStream(fileName, FileMode.Create);
+                            rtfRange.Save(rtfStream, DataFormats.Rtf);
+                            rtfStream.Close();
+                            log.addLog("Successfully saved (RTF) " + fileName);
+
+                        } else {
+                            //Plaintext-only save method
+                            using (FileStream file = new FileStream(fileName, FileMode.Create, System.IO.FileAccess.Write))
+                            {
+                                byte[] bytes = new byte[ms.Length];
+                                ms.Read(bytes, 0, (int)ms.Length);
+                                file.Write(bytes, 0, bytes.Length);
+
+                                log.addLog("Successfully saved " + fileName);
+                                ms.Close();
+                            }
                         }
+
                         toggleEdited(false);
                         setStatus("Saved", true);
 
@@ -1421,20 +1516,36 @@ namespace KuroNote
             {
                 DefaultExt = ".txt",
                 AddExtension = true,
-                Filter = SAVE_FILE_FILTER
             };
+            if (appSettings.rtfMode) {
+                dlg.Filter = SAVE_FILE_FILTER_RTF;
+            } else {
+                dlg.Filter = SAVE_FILE_FILTER;
+            }
             if (dlg.ShowDialog() == true) {
                 TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
                 MemoryStream ms = new MemoryStream(selectedEncoding.GetBytes(range.Text));
 
                 try {
-                    using (FileStream file = new FileStream(dlg.FileName, FileMode.Create, System.IO.FileAccess.Write)) {
 
-                        byte[] bytes = new byte[ms.Length];
-                        ms.Read(bytes, 0, (int)ms.Length);
-                        file.Write(bytes, 0, bytes.Length);
-                        log.addLog("Successfully saved " + dlg.FileName);
-                        ms.Close();
+                    if(appSettings.rtfMode) {
+                        //RTF-capable save method
+                        TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                        FileStream rtfStream = new FileStream(dlg.FileName, FileMode.Create);
+                        rtfRange.Save(rtfStream, DataFormats.Rtf);
+                        rtfStream.Close();
+                        log.addLog("Successfully saved (as) (RTF) " + dlg.FileName);
+
+                    } else {
+                        //Plaintext-only save method
+                        using (FileStream file = new FileStream(dlg.FileName, FileMode.Create, System.IO.FileAccess.Write))
+                        {
+                            byte[] bytes = new byte[ms.Length];
+                            ms.Read(bytes, 0, (int)ms.Length);
+                            file.Write(bytes, 0, bytes.Length);
+                            log.addLog("Successfully saved (as) " + dlg.FileName);
+                            ms.Close();
+                        }
                     }
 
                     fileName = dlg.FileName;
@@ -1626,8 +1737,14 @@ namespace KuroNote
         /// </summary>
         private void FileMi_MouseEnter(object sender, MouseEventArgs e)
         {
-            appRecents.retrieveRecentFiles();
-            updateRecentFilesUI();
+            if (appSettings.rememberRecentFiles) {
+                try {
+                    appRecents.retrieveRecentFiles();
+                    updateRecentFilesUI();
+                } catch (NullReferenceException) {
+                    log.addLog("WARN: Attempted to access appRecents, which does not exist");
+                }
+            }
         }
 
         /// <summary>
@@ -1827,10 +1944,13 @@ namespace KuroNote
         {
             try {
                 log.addLog("Request: Cut");
-                TextRange cutRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
-                string textToCut = cutRange.Text;
-                cutRange.Text = String.Empty;
-                Clipboard.SetData(DataFormats.UnicodeText, textToCut);
+                if (!appSettings.rtfMode) {
+                    //Force plaintext cut
+                    TextRange cutRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
+                    string textToCut = cutRange.Text;
+                    cutRange.Text = String.Empty;
+                    Clipboard.SetData(DataFormats.UnicodeText, textToCut);
+                }
                 incrementAp(AP_CUT);
             } catch (Exception e) {
                 log.addLog("ERROR: Clipboard error during Cut");
@@ -1845,9 +1965,12 @@ namespace KuroNote
         {
             try {
                 log.addLog("Request: Copy");
-                TextRange copyRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
-                string textToCopy = copyRange.Text;
-                Clipboard.SetData(DataFormats.UnicodeText, textToCopy);
+                if (!appSettings.rtfMode) {
+                    //Force plaintext copy
+                    TextRange copyRange = new TextRange(MainRtb.Selection.Start, MainRtb.Selection.End);
+                    string textToCopy = copyRange.Text;
+                    Clipboard.SetData(DataFormats.UnicodeText, textToCopy);
+                }
                 incrementAp(AP_COPY);
             } catch (Exception e) {
                 log.addLog("ERROR: Clipboard error during Copy");
@@ -1862,39 +1985,73 @@ namespace KuroNote
         {
             try {
                 log.addLog("Request: Paste");
-                string textToPaste = Clipboard.GetText();
-                Clipboard.SetData(DataFormats.UnicodeText, textToPaste);
+                if (!appSettings.rtfMode) {
+                    //Force plaintext paste
+                    string textToPaste = Clipboard.GetText();
+                    Clipboard.SetData(DataFormats.UnicodeText, textToPaste);
+                }
                 //Default paste operation runs
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 log.addLog("ERROR: Clipboard error during Paste");
                 log.addLog(e.ToString());
             }
         }
 
         /// <summary>
-        /// Captures events before they happen
+        /// Captures events before they happen - overrides default behaviour where necessary
+        /// Note: Switch doesn't seem to be possible here - ApplicationCommands.X are not constant
+        /// and the default .toString() is useless
         /// </summary>
         private void rtbEditor_PreviewExecuted(object sender, ExecutedRoutedEventArgs e)
         {
+            //*Overridden*
             if (e.Command == ApplicationCommands.Cut) {
-                e.Handled = true; //Disable default Cut operation - use my own
+                if (!appSettings.rtfMode) {
+                    e.Handled = true; //Disable default Copy operation - use my own
+                }
                 Cut();
             } else if (e.Command == ApplicationCommands.Copy) {
-                e.Handled = true; //Disable default Copy operation - use my own
+                if (!appSettings.rtfMode) {
+                    e.Handled = true; //Disable default Copy operation - use my own
+                }
                 Copy();
             } else if (e.Command == ApplicationCommands.Paste) {
                 Paste();
                 //Allow default Paste operation afterwards
-            } else if (e.Command == ApplicationCommands.SelectAll) {
-                log.addLog("Request: Select All");
-                //Allow default Select All operation
-            } else if (e.Command == ApplicationCommands.Undo) {
-                log.addLog("Request: Undo");
-                //Allow default Undo operation
-            } else if (e.Command == ApplicationCommands.Redo) {
-                log.addLog("Request: Redo");
-                //Allow default Redo operation
+
+                //*Disallowed unless RTF Mode*
+            } else if (e.Command == EditingCommands.AlignCenter ||
+                       e.Command == EditingCommands.AlignJustify ||
+                       e.Command == EditingCommands.AlignLeft ||
+                       e.Command == EditingCommands.AlignRight ||
+                       e.Command == EditingCommands.DecreaseIndentation ||
+                       e.Command == EditingCommands.IncreaseIndentation ||
+                       e.Command == EditingCommands.ToggleBold ||
+                       e.Command == EditingCommands.ToggleItalic ||
+                       e.Command == EditingCommands.ToggleUnderline ||
+                       e.Command == EditingCommands.ToggleBullets ||
+                       e.Command == EditingCommands.ToggleNumbering ||
+                       e.Command == EditingCommands.ToggleSubscript ||
+                       e.Command == EditingCommands.ToggleSuperscript) {
+                if (!appSettings.rtfMode) {
+                    e.Handled = true; //Disable
+                }
+
+            //*"Overtyping" can be enabled/disabled by the user*
+            } else if (e.Command == EditingCommands.ToggleInsert) {
+                if (!appSettings.overTyping) {
+                    e.Handled = true; //Disable
+                }
+
+            //*Always disallowed*
+            } else if (e.Command == EditingCommands.DecreaseFontSize || //These 2 completely mess up existing font size functionality
+                       e.Command == EditingCommands.IncreaseFontSize) {
+                e.Handled = true; //Disable
             }
+
+            //*Commands not listed are always allowed*
+            //*Editing.ToggleBullets and Editing.ToggleNumbering could arguably be made available for plaintext mode*
         }
         #endregion
 
@@ -2170,6 +2327,9 @@ namespace KuroNote
                             break;
                         case 50:
                             unlockAchievement(18);
+                            break;
+                        case 500:
+                            unlockAchievement(19);
                             break;
                     }
                 }

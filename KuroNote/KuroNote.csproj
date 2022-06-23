@@ -60,6 +60,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\achievements\18.png" />
     <None Remove="img\achievements\19.png" />
     <None Remove="img\achievements\2.png" />
+    <None Remove="img\achievements\20.png" />
     <None Remove="img\achievements\214.png" />
     <None Remove="img\achievements\3.png" />
     <None Remove="img\achievements\317.png" />
@@ -281,6 +282,9 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\achievements\18.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\20.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\achievements\19.png">
