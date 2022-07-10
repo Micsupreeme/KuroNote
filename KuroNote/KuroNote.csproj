@@ -123,6 +123,8 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\alt\shadow_icon.ico" />
     <None Remove="img\icons\alt\shiro_icon.ico" />
     <None Remove="img\icons\clear_recent_outline_black_18dp.png" />
+    <None Remove="img\icons\cropped_arrow_drop_down_black_18dp.png" />
+    <None Remove="img\icons\cropped_format_color_text_black_18dp.png" />
     <None Remove="img\icons\filled_star_eee_48dp.png" />
     <None Remove="img\icons\kuronote_48_admin_icon_250.png" />
     <None Remove="img\icons\kuronote_48_admin_icon_36.png" />
@@ -140,6 +142,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_all_inclusive_black_18dp.png" />
     <None Remove="img\icons\outline_apps_black_18dp.png" />
     <None Remove="img\icons\outline_arrow_downward_black_18dp.png" />
+    <None Remove="img\icons\outline_arrow_drop_down_black_18dp.png" />
     <None Remove="img\icons\outline_arrow_upward_black_18dp.png" />
     <None Remove="img\icons\outline_bug_report_black_18dp.png" />
     <None Remove="img\icons\outline_build_black_18dp.png" />
@@ -170,6 +173,18 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_fingerprint_black_18dp.png" />
     <None Remove="img\icons\outline_folder_open_black_18dp.png" />
     <None Remove="img\icons\outline_folder_timeline_black_18dp.png" />
+    <None Remove="img\icons\outline_format_align_center_black_18dp.png" />
+    <None Remove="img\icons\outline_format_align_justify_black_18dp.png" />
+    <None Remove="img\icons\outline_format_align_left_black_18dp.png" />
+    <None Remove="img\icons\outline_format_align_right_black_18dp.png" />
+    <None Remove="img\icons\outline_format_bold_black_18dp.png" />
+    <None Remove="img\icons\outline_format_color_text_black_18dp.png" />
+    <None Remove="img\icons\outline_format_indent_decrease_black_18dp.png" />
+    <None Remove="img\icons\outline_format_indent_increase_black_18dp.png" />
+    <None Remove="img\icons\outline_format_italic_black_18dp.png" />
+    <None Remove="img\icons\outline_format_list_bulleted_black_18dp.png" />
+    <None Remove="img\icons\outline_format_list_numbered_black_18dp.png" />
+    <None Remove="img\icons\outline_format_underlined_black_18dp.png" />
     <None Remove="img\icons\outline_fullscreen_black_18dp.png" />
     <None Remove="img\icons\outline_fullscreen_exit_black_18dp.png" />
     <None Remove="img\icons\outline_help_outline_black_18dp.png" />
@@ -197,7 +212,11 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_select_all_black_18dp.png" />
     <None Remove="img\icons\outline_settings_black_18dp.png" />
     <None Remove="img\icons\outline_spellcheck_black_18dp.png" />
+    <None Remove="img\icons\outline_subscript_black_18dp.png" />
+    <None Remove="img\icons\outline_superscript_black_18dp.png" />
+    <None Remove="img\icons\outline_text_decrease_black_18dp.png" />
     <None Remove="img\icons\outline_text_format_black_18dp.png" />
+    <None Remove="img\icons\outline_text_increase_black_18dp.png" />
     <None Remove="img\icons\outline_timeline_black_18dp.png" />
     <None Remove="img\icons\outline_undo_black_18dp.png" />
     <None Remove="img\icons\outline_upgrade_black_18dp.png" />
@@ -347,6 +366,12 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\icons\clear_recent_outline_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\icons\cropped_arrow_drop_down_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\cropped_format_color_text_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\kuronote_48_admin_icon_250.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -380,6 +405,9 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\icons\kuronote_icon.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\icons\outline_arrow_drop_down_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\outline_check_circle_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -404,7 +432,55 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\icons\outline_exposure_plus_2_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\icons\outline_format_align_center_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_align_justify_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_align_left_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_align_right_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_bold_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_color_text_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_indent_decrease_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_indent_increase_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_italic_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_list_bulleted_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_list_numbered_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_format_underlined_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\outline_radar_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_subscript_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_superscript_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_text_decrease_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_text_increase_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\recent_file_blue_18dp.png">

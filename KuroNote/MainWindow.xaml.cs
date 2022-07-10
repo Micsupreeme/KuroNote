@@ -20,14 +20,14 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// TODO: toggle bold, under, italic, colour sections - controls only available while RTF mode enabled
+    /// TODO: toggle bold[/], under[/], italic[/], font family selector[ ], font size selector[ ], font colour selector[ ] - controls only available while RTF mode enabled
     /// TODO Bug Fix: Open "Select Theme", then open "Custom Theme Manager", change the image for a theme,
     /// then go back and forth once to select a random theme, then select the custom theme that now has a new image.
     /// The new image will not display becuse "Select Theme" was loaded when the custom theme had a different theme ID
     /// (when you change an image for a custom theme, the internal theme ID changes and the old image is deleted).
     /// The solution is some kind of custom theme list refresh within "Select Theme", such as when the drop-down is opened/moused-over?
-    /// TODO Bug Fix: Print always only uses user-defined font, even when theme font is being used
     /// 
+    /// TODO: (Optionally?) If RTF Mode disabled but user opens RTF file - turn on RTF Mode?
     /// TODO: Expand context menu
     /// 
     /// TODO: Upgrade CustomThemeManager "opacitySlideDelay" to DispatcherTimer
@@ -139,8 +139,8 @@ namespace KuroNote
         public Dictionary<string, string> EnUIDict;
 
         //English Error dictionary
-        public Dictionary<int, string> EnErrMsgDict;
-        public Dictionary<int, string> EnErrTitleDict;
+        public Dictionary<int, string> EnMsgDict;
+        public Dictionary<int, string> EnTitleDict;
 
         //English Achievment dictionary
         public KuroNoteAchievement[] EnAchDict;
@@ -162,13 +162,13 @@ namespace KuroNote
                 processStartupAchievements();
             }
             InitialiseUIDictionary();
-            InitialiseErrorDictionary();
+            InitialiseMessageDictionary();
             InitialiseFont();
             InitialiseTheme();
             if(appSettings.rememberRecentFiles) {
                 InitialiseRecentFiles();
             }
-            processImmediateSettings();
+            processImmediateSettings(false);
             processStartupSettings();
 
             processCmdLineArgs();
@@ -281,26 +281,39 @@ namespace KuroNote
         }
 
         /// <summary>
-        /// Defines error message strings
+        /// Defines message strings
         /// </summary>
-        private void InitialiseErrorDictionary ()
+        private void InitialiseMessageDictionary ()
         {
-            EnErrMsgDict = new Dictionary<int, string>();
-            EnErrTitleDict = new Dictionary<int, string>();
+            EnMsgDict = new Dictionary<int, string>();
+            EnTitleDict = new Dictionary<int, string>();
 
-            EnErrMsgDict[1] =  appName + " is not designed to load files larger than " + FILE_MAX_SIZE + " B. " +
+            EnMsgDict[1] =  appName + " is not designed to load files larger than " + FILE_MAX_SIZE + " B. " +
                 "Files of this size may significantly compromise performance. " +
                 "Are you sure you want to open this file which exceeds the limit?";
-            EnErrTitleDict[1] = "File size exceeds limit";
+            EnTitleDict[1] = "File size exceeds limit";
 
-            EnErrMsgDict[2] = "There are unsaved changes. Would you like to save this file before exiting?";
-            EnErrTitleDict[2] = "Save before exit?";
+            EnMsgDict[2] = "There are unsaved changes. Would you like to save this file before exiting?";
+            EnTitleDict[2] = "Save before exit?";
 
-            EnErrMsgDict[3] = "There are unsaved changes. Would you like to save this file before opening a new one?";
-            EnErrTitleDict[3] = "Save before open?";
+            EnMsgDict[3] = "There are unsaved changes. Would you like to save this file before opening a new one?";
+            EnTitleDict[3] = "Save before open?";
 
-            EnErrMsgDict[4] = "There are unsaved changes. Would you like to save this file before creating a new one?";
-            EnErrTitleDict[4] = "Save before new?";
+            EnMsgDict[4] = "There are unsaved changes. Would you like to save this file before creating a new one?";
+            EnTitleDict[4] = "Save before new?";
+
+            EnMsgDict[5] = "Unsaved changes will be lost. Before you disable RTF Mode, would you like to save this file?";
+            EnTitleDict[5] = "Save before disabling RTF Mode?";
+            EnMsgDict[6] = "Would you like to save this file as an RTF File?";
+            EnTitleDict[6] = "Save as an RTF File?";
+
+            EnMsgDict[7] = "Would you like to save this file as a plain text file before enabling RTF Mode?";
+            EnTitleDict[7] =  "Save plain text before enabling RTF Mode?";
+
+            EnMsgDict[8] = "You can now open RTF files; saving will now include text formatting data.\n\n" +
+                "NOTE: Text formatting data will now be added to plain text files (e.g. \".txt\") if they are overwritten.\n\n" +
+                "You can enable or disable RTF Mode whenever you want to - no restart required!";
+            EnTitleDict[8] = "Welcome to RTF Mode!";
         }
 
         /// <summary>
@@ -308,9 +321,9 @@ namespace KuroNote
         /// </summary>
         /// <param name="_errorCode">The unique code of the error message to retrieve</param>
         /// <returns>An array containing the error message [0], and the error message title [1]</returns>
-        private string[] getErrorMessage(int _errorCode)
+        private string[] getMessage(int _errorCode)
         {
-            string[] errorMessage = new string[] {EnErrMsgDict[_errorCode], EnErrTitleDict[_errorCode]};
+            string[] errorMessage = new string[] {EnMsgDict[_errorCode], EnTitleDict[_errorCode]};
             return errorMessage;
         }
 
@@ -534,7 +547,8 @@ namespace KuroNote
         /// <summary>
         /// Process and apply settings that can take effect immediately (i.e. without restart)
         /// </summary>
-        public void processImmediateSettings()
+        /// <param name="calledFromOptions">Whether or not this method was called from OptionsDialog</param>
+        public void processImmediateSettings(bool calledFromOptions)
         {
             //Spell check
             if (appSettings.spellCheck) {
@@ -566,6 +580,149 @@ namespace KuroNote
             //Remember recent files (just disabled - don't show the menu item for the rest of this session)
             if (!appSettings.rememberRecentFiles) {
                 OpenRecentMi.Visibility = Visibility.Collapsed;
+            }
+
+            //RTF Mode
+            if (appSettings.rtfMode) {
+                if (calledFromOptions) {
+                    //user just enabled RTF mode
+                    handlePlainToRtfModeTransition();
+                } else {
+                    //this is running on startup because RTF mode was already set to activate
+                    RtfMenu.Visibility = Visibility.Visible;
+                }
+            } else {
+                if (calledFromOptions) {
+                    //user just disabled RTF mode
+                    handleRtfToPlainModeTransition();
+                    setTheme(appSettings.themeId, appSettings.themeWithFont); //clear all RTF formatting by refreshing theme
+                } else {
+                    //this is running on startup because RTF mode was already set to be inactive
+                    RtfMenu.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// To transition from normal mode to RTF mode:
+        /// 1). must offer to save any outstanding changes as Plain
+        /// 2). must make rtfMenu visible
+        /// </summary>
+        private void handlePlainToRtfModeTransition()
+        {
+            if (editedFlag) {
+                //rtf mode enabled while there are unsaved changes
+
+                var res = MessageBox.Show(getMessage(7)[0], getMessage(7)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes) {
+                    //**save changes
+                    appSettings.rtfMode = false; //temporarily re-disable rtfMode so plain-only save can be done
+                    doSave();
+                    appSettings.rtfMode = true;
+                    doNew(true);
+                    RtfMenu.Visibility = Visibility.Visible;
+                    if (!appSettings.seenRtfWelcome) {
+                        //if first time toggling RTF Mode - show introductory message
+                        MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
+                        appSettings.seenRtfWelcome = true;
+                        appSettings.UpdateSettings();
+                    }
+                }
+                else if (res == MessageBoxResult.No) {
+                    //**don't save changes
+                    RtfMenu.Visibility = Visibility.Visible;
+                    if (!appSettings.seenRtfWelcome) {
+                        //if first time toggling RTF Mode - show introductory message
+                        MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
+                        appSettings.seenRtfWelcome = true;
+                        appSettings.UpdateSettings();
+                    }
+                } else if (res == MessageBoxResult.Cancel) {
+                    //**I change my mind - re-disable RTF Mode
+                    appSettings.rtfMode = false; //re-disable rtfMode
+                    appSettings.UpdateSettings();
+                }
+            } else {
+                RtfMenu.Visibility = Visibility.Visible;
+                if (!appSettings.seenRtfWelcome) {
+                    //if first time toggling RTF Mode - show introductory message
+                    MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
+                    appSettings.seenRtfWelcome = true;
+                    appSettings.UpdateSettings();
+                }
+            }
+        }
+
+        /// <summary>
+        /// To transition from RTF Mode to normal mode:
+        /// 1). must offer to save any outstanding changes as RTF OR Plain
+        /// 2). must re-open the previously open file (or force a "new" if there wasn't a file opened previously)
+        /// 3). must collapse rtfMenu
+        /// 4). must remove all remaining RTF formatting by reapplying the currently selected theme
+        /// </summary>
+        private void handleRtfToPlainModeTransition()
+        {
+            if (editedFlag) {
+                log.addLog("WARNING: RTF mode disabled while there are unsaved changes");
+                var resErr5 = MessageBox.Show(getMessage(5)[0], getMessage(5)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (resErr5 == MessageBoxResult.Yes) {
+                    //**save changes, reopen
+
+                    if (Path.GetExtension(fileName).Equals(".rtf")) {
+                        //the currently open file is an RTF file
+                        //obviously save changes to an RTF file AS an RTF file
+                        appSettings.rtfMode = true; //temporarily re-enable rtfMode so RTF-friendly save can be done
+                        doSave();
+                    } else {
+                        //the currently open file is not an RTF file
+                        //do you want to save changes AS an RTF file?
+                        var resErr6 = MessageBox.Show(getMessage(6)[0], getMessage(6)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (resErr6 == MessageBoxResult.Yes) {
+                            //save as an RTF file
+                            appSettings.rtfMode = true; //temporarily re-enable rtfMode so RTF-friendly save can be done
+                            doSave();
+                        } else {
+                            //save as a Plain file
+                            appSettings.rtfMode = false; //disable rtfMode to do Plain-only save
+                            doSave();
+                        }
+                    }
+                    appSettings.rtfMode = false; //disable rtfMode to do Plain-only open
+
+                    //if there's a file to reopen, open it
+                    if (fileName.Length > 0) {
+                        appSettings.rtfMode = false;
+                        doOpen(fileName);
+                    } else {
+                        doNew(true);
+                    }
+                    RtfMenu.Visibility = Visibility.Collapsed;
+                } else if (resErr5 == MessageBoxResult.No) {
+                    //**don't save changes, reopen
+
+                    //if there's a file to reopen, open it
+                    if (fileName.Length > 0) {
+                        appSettings.rtfMode = false;
+                        doOpen(fileName);
+                    } else {
+                        doNew(true);
+                    }
+                    RtfMenu.Visibility = Visibility.Collapsed;
+                } else {
+                    //I change my mind - re-enable RTF mode!
+                    appSettings.rtfMode = true; //re-enable rtfMode
+                    appSettings.UpdateSettings();
+                }
+            } else {
+                log.addLog("RTF mode disabled while safe to do so");
+                //if there's a file to reopen, open it
+                if (fileName.Length > 0) {
+                    appSettings.rtfMode = false;
+                    doOpen(fileName);
+                } else {
+                    doNew(true);
+                }
+                RtfMenu.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -1241,12 +1398,13 @@ namespace KuroNote
         /// Closes the current file and opens a new file
         /// </summary>
         /// <returns>True if the operation completed successfully, false otherwise</returns>
-        private bool doNew()
+        /// <param name="forcedNew">If true, bypasses user consent</param>
+        private bool doNew(bool forcedNew)
         {
             log.addLog("Request: New File");
-            if (editedFlag) {
+            if (editedFlag && !forcedNew) {
                 log.addLog("WARNING: New before saving");
-                var res = MessageBox.Show(getErrorMessage(4)[0], getErrorMessage(4)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                var res = MessageBox.Show(getMessage(4)[0], getMessage(4)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                 if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                     log.addLog("New cancelled");
                     if (res == MessageBoxResult.Yes) {
@@ -1271,7 +1429,7 @@ namespace KuroNote
         /// </summary>
         private void New_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            doNew();
+            doNew(false);
         }
 
         /// <summary>
@@ -1287,7 +1445,7 @@ namespace KuroNote
 
                 if (editedFlag) {
                     log.addLog("WARNING: Open before saving");
-                    var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                    var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                         log.addLog("Open cancelled");
                         if (res == MessageBoxResult.Yes) {
@@ -1307,7 +1465,7 @@ namespace KuroNote
                     try {
                         if (fileTooBig(dlg.FileName)) {
                             log.addLog("WARNING: File size exceeds limit");
-                            var res = MessageBox.Show(getErrorMessage(1)[0], getErrorMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            var res = MessageBox.Show(getMessage(1)[0], getMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
                             if (res == MessageBoxResult.No) {
                                 log.addLog("Open cancelled due to file size");
                                 return false;
@@ -1378,7 +1536,7 @@ namespace KuroNote
                 try {
                     if (fileTooBig(_path)) {
                         log.addLog("WARNING: File size exceeds limit");
-                        var res = MessageBox.Show(getErrorMessage(1)[0], getErrorMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var res = MessageBox.Show(getMessage(1)[0], getMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         if (res == MessageBoxResult.No) {
                             log.addLog("Open cancelled due to file size");
                             return false;
@@ -1832,7 +1990,7 @@ namespace KuroNote
 
         #region Print
         /// <summary>
-        /// https://stackoverflow.com/users/1137199/dotnet's Simple Print Proccedure
+        /// https://stackoverflow.com/users/1137199/dotnet's Simple Print Procedure
         /// If the font is small enough, the text will automatically use a multi-column layout
         /// </summary>
         private void doPrint()
@@ -1855,20 +2013,46 @@ namespace KuroNote
                 CloneDoc.PageWidth = pd.PrintableAreaWidth;
                 CloneDoc.PagePadding = new Thickness(10);
 
-                //Use the currently selected font
-                log.addLog("Using selected font");
-                CloneDoc.FontFamily = new FontFamily(appSettings.fontFamily);
-                CloneDoc.FontSize = appSettings.fontSize;
-                CloneDoc.FontWeight = appSettings.fontWeight;
-                CloneDoc.FontStyle = appSettings.fontStyle;
+                //Use the currently selected font - depending on user selections, it will either be:
+                //1. A preset theme font with a custom size (remember font size)
+                //2. A preset theme font with a fixed preset size
+                //3. A user-defined font and font size (defined outside of the context of any theme)
+
+                //NOTE: These font settings should be automatically overridden by any existing formatting information in the document
+                //i.e. RTF Mode
+                if (appSettings.themeWithFont) {
+                    //Use the font associated with the preset theme
+                    if (appSettings.rememberFontUpDn) {
+                        //Use the remembered custom font size
+                        log.addLog("Using selected theme font (custom size)");
+                        CloneDoc.FontFamily = new FontFamily(themeCollection[appSettings.themeId].fontFamily);
+                        CloneDoc.FontSize = (short)appSettings.fontSize;
+                        CloneDoc.FontWeight = themeCollection[appSettings.themeId].fontWeight;
+                        CloneDoc.FontStyle = themeCollection[appSettings.themeId].fontStyle;
+
+                    } else {
+                        //Use the default theme font size
+                        log.addLog("Using selected theme font (preset size)");
+                        CloneDoc.FontFamily = new FontFamily(themeCollection[appSettings.themeId].fontFamily);
+                        CloneDoc.FontSize = themeCollection[appSettings.themeId].fontSize;
+                        CloneDoc.FontWeight = themeCollection[appSettings.themeId].fontWeight;
+                        CloneDoc.FontStyle = themeCollection[appSettings.themeId].fontStyle;
+                    }
+                } else {
+                    //Use appsettings font
+                    log.addLog("Using user-defined font");
+                    CloneDoc.FontFamily = new FontFamily(appSettings.fontFamily);
+                    CloneDoc.FontSize = (short)appSettings.fontSize;
+                    CloneDoc.FontWeight = appSettings.fontWeight;
+                    CloneDoc.FontStyle = appSettings.fontStyle;
+                }
 
                 IDocumentPaginatorSource idocument = CloneDoc as IDocumentPaginatorSource;
 
                 pd.PrintDocument(idocument.DocumentPaginator, "Printing FlowDocument");
                 log.addLog("Successfully printed " + fileName);
 
-                if (appSettings.gamification)
-                {
+                if (appSettings.gamification) {
                     incrementAp(AP_PRINT);
                     unlockAchievement(6060);
                     appSettings.UpdateSettings();
@@ -1893,7 +2077,7 @@ namespace KuroNote
         {
             if (editedFlag) {
                 log.addLog("WARNING: Exit before saving");
-                var res = MessageBox.Show(getErrorMessage(2)[0], getErrorMessage(2)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                var res = MessageBox.Show(getMessage(2)[0], getMessage(2)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                 if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                     log.addLog("Exit cancelled");
                     if (res == MessageBoxResult.Yes) {
@@ -2017,8 +2201,14 @@ namespace KuroNote
                 }
                 Copy();
             } else if (e.Command == ApplicationCommands.Paste) {
-                Paste();
-                //Allow default Paste operation afterwards
+                //Cancel Paste operation if the clipboard contains non-text data
+                if (Clipboard.ContainsFileDropList() == true || Clipboard.ContainsImage() == true || Clipboard.ContainsAudio() == true) {
+                    e.Handled = true;
+                    log.addLog("Clipboard contains non-text data - paste cancelled");
+                } else {
+                    Paste();
+                    //Allow default Paste operation afterwards
+                }
 
                 //*Disallowed unless RTF Mode*
             } else if (e.Command == EditingCommands.AlignCenter ||
@@ -2033,7 +2223,9 @@ namespace KuroNote
                        e.Command == EditingCommands.ToggleBullets ||
                        e.Command == EditingCommands.ToggleNumbering ||
                        e.Command == EditingCommands.ToggleSubscript ||
-                       e.Command == EditingCommands.ToggleSuperscript) {
+                       e.Command == EditingCommands.ToggleSuperscript ||
+                       e.Command == EditingCommands.DecreaseFontSize ||
+                       e.Command == EditingCommands.IncreaseFontSize) {
                 if (!appSettings.rtfMode) {
                     e.Handled = true; //Disable
                 }
@@ -2043,12 +2235,12 @@ namespace KuroNote
                 if (!appSettings.overTyping) {
                     e.Handled = true; //Disable
                 }
-
+ 
             //*Always disallowed*
-            } else if (e.Command == EditingCommands.DecreaseFontSize || //These 2 completely mess up existing font size functionality
+            } /*else if (e.Command == EditingCommands.DecreaseFontSize || //These 2 completely mess up existing font size functionality
                        e.Command == EditingCommands.IncreaseFontSize) {
                 e.Handled = true; //Disable
-            }
+            }*/
 
             //*Commands not listed are always allowed*
             //*Editing.ToggleBullets and Editing.ToggleNumbering could arguably be made available for plaintext mode*
@@ -2104,12 +2296,25 @@ namespace KuroNote
         /// </summary>
         private void doFontUp()
         {
-            short currentFontSize = (short)MainRtb.FontSize;
-            log.addLog("Request: FontUp [" + currentFontSize + " -> " + (currentFontSize + 1) + "]");
-            try {
-                MainRtb.FontSize += 1;
-            } catch(Exception) {
-                log.addLog("ERROR: Cannot increase font size from " + MainRtb.FontSize);
+            if (appSettings.rtfMode) {
+                log.addLog("Request: FontUp (RTF)");
+                TextPointer currentCaretPos = MainRtb.Document.ContentStart;
+                try {
+                    currentCaretPos = MainRtb.CaretPosition;
+                } catch(Exception) {
+                    //cannot get caret, use previously assigned default ContentStart position
+                }
+                MainRtb.SelectAll();
+                EditingCommands.IncreaseFontSize.Execute(null, MainRtb);
+                MainRtb.Selection.Select(currentCaretPos, currentCaretPos);
+            } else {
+                short currentFontSize = (short)MainRtb.FontSize;
+                log.addLog("Request: FontUp [" + currentFontSize + " -> " + (currentFontSize + 1) + "]");
+                try {
+                    MainRtb.FontSize += 1;
+                } catch (Exception){
+                    log.addLog("ERROR: Cannot increase font size from " + MainRtb.FontSize);
+                }
             }
         }
 
@@ -2126,12 +2331,25 @@ namespace KuroNote
         /// </summary>
         private void doFontDown()
         {
-            short currentFontSize = (short)MainRtb.FontSize;
-            log.addLog("Request: FontDown [" + currentFontSize + " -> " + (currentFontSize - 1) + "]");
-            try {
-                MainRtb.FontSize -= 1;
-            } catch (Exception) {
-                log.addLog("ERROR: Cannot decrease font size from " + MainRtb.FontSize);
+            if (appSettings.rtfMode) {
+                log.addLog("Request: FontDown (RTF)");
+                TextPointer currentCaretPos = MainRtb.Document.ContentStart;
+                try {
+                    currentCaretPos = MainRtb.CaretPosition;
+                } catch (Exception) {
+                    //cannot get caret, use previously assigned default ContentStart position
+                }
+                MainRtb.SelectAll();
+                EditingCommands.DecreaseFontSize.Execute(null, MainRtb);
+                MainRtb.Selection.Select(currentCaretPos, currentCaretPos);
+            } else {
+                short currentFontSize = (short)MainRtb.FontSize;
+                log.addLog("Request: FontDown [" + currentFontSize + " -> " + (currentFontSize - 1) + "]");
+                try {
+                    MainRtb.FontSize -= 1;
+                } catch (Exception) {
+                    log.addLog("ERROR: Cannot increase font size from " + MainRtb.FontSize);
+                }
             }
         }
 
@@ -2194,6 +2412,7 @@ namespace KuroNote
                     MainRtb.Background = themeCollection[_themeId].solidBrush;
                 }
                 MainMenu.Background = themeCollection[_themeId].menuBrush;
+                RtfMenu.Background = themeCollection[_themeId].menuBrush;
                 RightMenu.Background = themeCollection[_themeId].menuBrush;
                 MainStatus.Background = themeCollection[_themeId].statusBrush;
 
@@ -2268,6 +2487,7 @@ namespace KuroNote
                         MainRtb.Background = new SolidColorBrush(Color.FromArgb(solidBrushArgb[0], solidBrushArgb[1], solidBrushArgb[2], solidBrushArgb[3]));
                     }
                     MainMenu.Background = new SolidColorBrush(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
+                    RtfMenu.Background = new SolidColorBrush(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
                     RightMenu.Background = new SolidColorBrush(Color.FromArgb(menuBrushArgb[0], menuBrushArgb[1], menuBrushArgb[2], menuBrushArgb[3]));
                     MainStatus.Background = new SolidColorBrush(Color.FromArgb(statusBrushArgb[0], statusBrushArgb[1], statusBrushArgb[2], statusBrushArgb[3]));
 
@@ -2345,6 +2565,159 @@ namespace KuroNote
                 FullscreenMi.ToolTip = EnUIDict["FullscreenMiTT0"];
             }
         }
+
+        #region RtfMenu
+        /// <summary>
+        /// RtfMenu > Bold (RibbonToggleButton)
+        /// </summary>
+        private void RtfBold_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfBold");
+            EditingCommands.ToggleBold.Execute(null, MainRtb);
+        }
+
+        /// <summary>
+        /// RtfMenu > Italic (RibbonToggleButton)
+        /// </summary>
+        private void RtfItalic_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfItalic");
+            EditingCommands.ToggleItalic.Execute(null, MainRtb);
+        }
+
+        /// <summary>
+        /// Lessons learned thanks to https://stackoverflow.com/users/6630084/victor
+        /// FlowDocuments don't permenantly save TextDecorations in Inlines - this is evident when examining FlowDocuments after being saved, closed and reopened.
+        /// TextDecorations are instead often stored in the parents of Inlines (i.e. Spans/Paragraphs).
+        /// 
+        /// This method retrieves the TextDecorationCollection for the current Inline.
+        /// If empty, it returns the value for its parent, failing that, its grandparent.
+        /// If there are no TextDecorations, it will return an empty TDC.
+        /// </summary>
+        /// <param name="rtb">MainRtb</param>
+        /// <returns></returns>
+        private TextDecorationCollection getTextDecorationCollection(RichTextBox rtb)
+        {
+            TextDecorationCollection decors = rtb.Selection.GetPropertyValue(Inline.TextDecorationsProperty) as TextDecorationCollection;
+            if (decors == null || decors.Count == 0)
+            {
+                if (rtb.Selection.Start.Parent is Run run)
+                {
+                    if (run.Parent is Span span)
+                    {
+                        decors = span.TextDecorations;
+                    }
+                    else if (run.Parent is Paragraph para)
+                    {
+                        decors = para.TextDecorations;
+                    }
+                }
+            }
+
+            if (decors is TextDecorationCollection tdc) {
+                return tdc;
+            } else {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// RtfMenu > Underline (RibbonToggleButton)
+        /// 
+        /// KNOWN MINOR BUG: After saving, closing and reopening an RTF file with underlines,
+        /// the first ToggleUnderline operation to a previously underlined inline will appear to do nothing
+        /// because the ToggleUnderline method always goes "Apply, Remove, Apply, Remove" and there
+        /// doesn't appear to be a way to force an apply/remove on the first toggle.
+        /// This is at least better than the alternative of correct first time response but applying it
+        /// to the wrong element entirely (i.e. entire span/paragraph while attempting to edit a small inline).
+        /// </summary>
+        private void RtfUnderline_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfUnderline");
+            EditingCommands.ToggleUnderline.Execute(null, MainRtb);
+
+            //After operation, it is now underlined or not? - fixes synchronisation issues caused by minor bug
+            if (getTextDecorationCollection(MainRtb).Count > 0) {
+                rtfUnderlineRibbon.IsChecked = true;
+            } else {
+                rtfUnderlineRibbon.IsChecked = false;
+            }
+        }
+
+        /// <summary>
+        /// RtfMenu > Font Up
+        /// </summary>
+        private void RtfFontUp_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfFontUp");
+            EditingCommands.IncreaseFontSize.Execute(null, MainRtb);
+        }
+
+        /// <summary>
+        /// RtfMenu > Font Down
+        /// </summary>
+        private void RtfFontDown_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfFontDown");
+            EditingCommands.DecreaseFontSize.Execute(null, MainRtb);
+        }
+
+        /// <summary>
+        /// RtfMenu > Apply Colour
+        /// </summary>
+        private void RtfApplyColour_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfApplyColour");
+        }
+
+        /// <summary>
+        /// RtfMenu > Choose Colour
+        /// </summary>
+        private void RtfChooseColour_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfChooseColour");
+        }
+
+        /// <summary>
+        /// RtfMenu > Left Align (RibbonToggleButton)
+        /// </summary>
+        private void RtfLeftAlign_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfLeftAlign");
+            EditingCommands.AlignLeft.Execute(null, MainRtb);
+            updateAlignmentRibbons(false);
+        }
+
+        /// <summary>
+        /// RtfMenu > Center Align (RibbonToggleButton)
+        /// </summary>
+        private void RtfCenterAlign_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfCenterAlign");
+            EditingCommands.AlignCenter.Execute(null, MainRtb);
+            updateAlignmentRibbons(false);
+        }
+
+        /// <summary>
+        /// RtfMenu > Right Align (RibbonToggleButton)
+        /// </summary>
+        private void RtfRightAlign_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfRightAlign");
+            EditingCommands.AlignRight.Execute(null, MainRtb);
+            updateAlignmentRibbons(false);
+        }
+
+        /// <summary>
+        /// RtfMenu > Justify Align (RibbonToggleButton)
+        /// </summary>
+        private void RtfJustifyAlign_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: RtfJustifyAlign");
+            EditingCommands.AlignJustify.Execute(null, MainRtb);
+            updateAlignmentRibbons(false);
+        }
+        #endregion
 
         /// <summary>
         /// Menu > Options > Options...
@@ -2559,7 +2932,7 @@ namespace KuroNote
                 if (files.Length == 1) {                        //If there is only 1 file...
                     if (editedFlag) {
                         log.addLog("WARNING: Open before saving");
-                        var res = MessageBox.Show(getErrorMessage(3)[0], getErrorMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                        var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                         if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
                             log.addLog("Open cancelled");
                             if (res == MessageBoxResult.Yes) {
@@ -2577,15 +2950,103 @@ namespace KuroNote
             }
         }
 
-        /*
+        /// <summary>
+        /// Updates the UI to ensure that only the ribbontogglebutton
+        /// corresponding to the current alignment is checked
+        /// </summary>
+        private void updateAlignmentRibbons(bool uncheckAll)
+        {
+            if (uncheckAll) {
+                rtfLeftAlignRibbon.IsChecked = false;
+                rtfCenterAlignRibbon.IsChecked = false;
+                rtfRightAlignRibbon.IsChecked = false;
+                rtfJustifyAlignRibbon.IsChecked = false;
+            } else {
+                if (MainRtb.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Left)) {
+                    rtfLeftAlignRibbon.IsChecked = true;
+                    rtfCenterAlignRibbon.IsChecked = false;
+                    rtfRightAlignRibbon.IsChecked = false;
+                    rtfJustifyAlignRibbon.IsChecked = false;
+                } else if (MainRtb.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Center)) {
+                    rtfLeftAlignRibbon.IsChecked = false;
+                    rtfCenterAlignRibbon.IsChecked = true;
+                    rtfRightAlignRibbon.IsChecked = false;
+                    rtfJustifyAlignRibbon.IsChecked = false;
+                } else if (MainRtb.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Right)) {
+                    rtfLeftAlignRibbon.IsChecked = false;
+                    rtfCenterAlignRibbon.IsChecked = false;
+                    rtfRightAlignRibbon.IsChecked = true;
+                    rtfJustifyAlignRibbon.IsChecked = false;
+                } else {
+                    rtfLeftAlignRibbon.IsChecked = false;
+                    rtfCenterAlignRibbon.IsChecked = false;
+                    rtfRightAlignRibbon.IsChecked = false;
+                    rtfJustifyAlignRibbon.IsChecked = true;
+                }
+            }
+        }
+        
         /// <summary>
         /// When the RTB caret moves
+        /// Update RTFMenu if RTFMode
         /// </summary>
         private void MainRtb_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            //
+            //If RTFMode and has a selection
+            if (appSettings.rtfMode && MainRtb.Selection != null) {
+
+                //Bold
+                var fontWeightProperty = MainRtb.Selection.GetPropertyValue(FontWeightProperty);
+                if (fontWeightProperty == DependencyProperty.UnsetValue) {
+                    //multiple font weights in selection
+                    rtfBoldRibbon.IsChecked = false;
+                } else {
+                    if (fontWeightProperty.Equals(FontWeights.Bold)) {
+                        //selection is all bold
+                        rtfBoldRibbon.IsChecked = true;
+                    } else {
+                        //selection is all not bold
+                        rtfBoldRibbon.IsChecked = false;
+                    }
+                }
+
+                //Italic
+                var fontStyleProperty = MainRtb.Selection.GetPropertyValue(FontStyleProperty);
+                if (fontStyleProperty == DependencyProperty.UnsetValue) {
+                    //multiple font styles in selection
+                    rtfItalicRibbon.IsChecked = false;
+                } else {
+                    if (fontStyleProperty.Equals(FontStyles.Italic)) {
+                        //selection is all italic
+                        rtfItalicRibbon.IsChecked = true;
+                    } else {
+                        //selection is all not italic
+                        rtfItalicRibbon.IsChecked = false;
+                    }
+                }
+
+                //Underline
+                try {
+                    if (getTextDecorationCollection(MainRtb).Count > 0) {
+                        rtfUnderlineRibbon.IsChecked = true;
+                    } else {
+                        rtfUnderlineRibbon.IsChecked = false;
+                    }
+                } catch (NullReferenceException) {
+                    log.addLog("WARN: Empty TextDecorationCollection");
+                }
+
+                //Align
+                if (MainRtb.Selection.Text.Length > 0) {
+                    //all ribbons off
+                    updateAlignmentRibbons(true);
+                } else {
+                    //current align ribbon on
+                    updateAlignmentRibbons(false);
+                }
+            }
         }
-        */
+        
 
         /// <summary>
         /// When the RTB is edited
@@ -2651,5 +3112,18 @@ namespace KuroNote
         public static RoutedCommand ShowLogFiles = new RoutedCommand();
         public static RoutedCommand Updates = new RoutedCommand();
         public static RoutedCommand About = new RoutedCommand();
+
+        //RTF
+        public static RoutedCommand RtfBold = new RoutedCommand();
+        public static RoutedCommand RtfItalic = new RoutedCommand();
+        public static RoutedCommand RtfUnderline = new RoutedCommand();
+        public static RoutedCommand RtfFontUp = new RoutedCommand();
+        public static RoutedCommand RtfFontDown = new RoutedCommand();
+        public static RoutedCommand RtfApplyColour = new RoutedCommand();
+        public static RoutedCommand RtfChooseColour = new RoutedCommand();
+        public static RoutedCommand RtfLeftAlign = new RoutedCommand();
+        public static RoutedCommand RtfCenterAlign = new RoutedCommand();
+        public static RoutedCommand RtfRightAlign = new RoutedCommand();
+        public static RoutedCommand RtfJustifyAlign = new RoutedCommand();
     }
 }

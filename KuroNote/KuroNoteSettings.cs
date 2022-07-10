@@ -50,6 +50,7 @@ namespace KuroNote
         public int achOptions = 0;
         public int profL = 0;
         public int profAp = 0;
+        public bool seenRtfWelcome = false;
 
         /// <summary>
         /// Update this object according to the settings stored in conf.json
@@ -95,6 +96,7 @@ namespace KuroNote
                     this.achOptions = knsFile.achOptions;
                     this.profL = knsFile.profL;
                     this.profAp = knsFile.profAp;
+                    this.seenRtfWelcome = knsFile.seenRtfWelcome;
                 }
             } catch (Exception e) {          
                 Console.Error.WriteLine("Error during RetrieveSettings before log initialised:");

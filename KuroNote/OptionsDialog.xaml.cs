@@ -116,7 +116,7 @@ namespace KuroNote
         {
             log.addLog("Update options according to OptionsDialog UI");
             saveSettingsChanges();
-            main.processImmediateSettings(); //Apply settings that can take effect immediately
+            main.processImmediateSettings(true); //Apply settings that can take effect immediately
             toggleVisibility(false);
 
             if (settings.gamification && anythingChanged) {

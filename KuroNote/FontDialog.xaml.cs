@@ -286,6 +286,7 @@ namespace KuroNote
                 settings.fontSize = selectedFontSize;
                 settings.fontWeight = selectedFontWeight;
                 settings.fontStyle = selectedFontStyle;
+                settings.themeWithFont = false; //user just overrided theme font
                 settings.UpdateSettings(); //Write these changes to the file
             }
         }
