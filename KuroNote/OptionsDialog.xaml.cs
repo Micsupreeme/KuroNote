@@ -64,6 +64,7 @@ namespace KuroNote
             spellcheckTs.IsChecked = settings.spellCheck;
             wordwrapTs.IsChecked = settings.wordWrap;
             overtypingTs.IsChecked = settings.overTyping;
+            autowordselectionTs.IsChecked = settings.autoWordSelection;
             fullfilepathTs.IsChecked = settings.fullFilePath;
             stretchimagesTs.IsChecked = settings.stretchImages;
             rememberfontupdnTs.IsChecked = settings.rememberFontUpDn;
@@ -84,6 +85,7 @@ namespace KuroNote
             settings.spellCheck = (bool)spellcheckTs.IsChecked;
             settings.wordWrap = (bool)wordwrapTs.IsChecked;
             settings.overTyping = (bool)overtypingTs.IsChecked;
+            settings.autoWordSelection = (bool)autowordselectionTs.IsChecked;
             settings.fullFilePath = (bool)fullfilepathTs.IsChecked;
             settings.stretchImages = (bool)stretchimagesTs.IsChecked;
             settings.rememberFontUpDn = (bool)rememberfontupdnTs.IsChecked;

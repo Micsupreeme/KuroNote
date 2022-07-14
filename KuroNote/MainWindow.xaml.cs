@@ -20,16 +20,17 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// TODO: toggle bold[/], under[/], italic[/], font family selector[ ], font size selector[ ], font colour selector[ ] - controls only available while RTF mode enabled
     /// TODO Bug Fix: Open "Select Theme", then open "Custom Theme Manager", change the image for a theme,
     /// then go back and forth once to select a random theme, then select the custom theme that now has a new image.
     /// The new image will not display becuse "Select Theme" was loaded when the custom theme had a different theme ID
     /// (when you change an image for a custom theme, the internal theme ID changes and the old image is deleted).
     /// The solution is some kind of custom theme list refresh within "Select Theme", such as when the drop-down is opened/moused-over?
+    /// TODO Bug Fix: Open an .rtf file while in plain text mode, then enable RTF Mode - the file will still appear as plain text
+    /// because the plain open method was originally used.
     /// 
     /// TODO: (Optionally?) If RTF Mode disabled but user opens RTF file - turn on RTF Mode?
-    /// TODO: Expand context menu
     /// 
+    /// TODO: Expand context menu
     /// TODO: Upgrade CustomThemeManager "opacitySlideDelay" to DispatcherTimer
     /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
     /// TODO: Add more error messages to language dictionary
@@ -105,9 +106,14 @@ namespace KuroNote
         private const string FILE_SEARCH_EXE = "*.exe";
         private const string CUSTOM_THEME_EXT = ".kurotheme";
         private const string INTERNAL_IMAGE_EXT = ".jpg";           //custom theme destination extension is always this
-        private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
         private const double PAGE_WIDTH_MAX = 1000000;
         private const double PAGE_WIDTH_RIGHT_MARGIN = 25;          //Number of width units to add (as a padding/buffer) in addition to the measured width of the content
+        private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
+
+        //RTF constants
+        private const string RTF_DEFAULT_FONT_FAMILY = "Verdana";
+        private const short RTF_DEFAULT_FONT_SIZE = 17;
+        private static readonly short[] RTF_FONT_SIZES = { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 
         //Gamification constants
         private const int MAX_RANK = 25; //Ranks beyond this are treated as this value in the backend
@@ -131,6 +137,8 @@ namespace KuroNote
 
         private bool editedFlag = false;                            //Are there any unsaved changes?
         private Encoding selectedEncoding = Encoding.UTF8;          //Encoding for opening and saving files (Encoding.ASCII blocks unicode)
+        public bool rtfFontSizeReadyFlag = false;                   //This flag prevents unwanted RTF font size changes triggered by "_SelectionChanged" by only activating when the font size dropdown opens
+        public bool rtfFontFamilyReadyFlag = false;                 //This flag prevents unwanted RTF font family changes triggered by "_SelectionChanged"...
 
         public KuroNoteTheme[] themeCollection;
         public KuroNoteRank[] rankCollection;
@@ -237,9 +245,9 @@ namespace KuroNote
             EnUIDict["FontMi"] = "Font...";
                 EnUIDict["FontMiTT"] = "Changes the font to a specified font";
             EnUIDict["FontUpMi"] = "Font Up";
-                EnUIDict["FontUpMiTT"] = "Increases the font size by 1";
+                EnUIDict["FontUpMiTT"] = "Increments the font size";
             EnUIDict["FontDownMi"] = "Font Down";
-                EnUIDict["FontDownMiTT"] = "Decreases the font size by 1";
+                EnUIDict["FontDownMiTT"] = "Decrements the font size";
             //Tools
             EnUIDict["ToolsMi"] = "Tools";
             EnUIDict["AESMi"] = "AES Encryption";
@@ -248,9 +256,10 @@ namespace KuroNote
             EnUIDict["AESDecMi"] = "AES Decrypt...";
                 EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard";
             //Fullscreen
-                EnUIDict["FullscreenMiTT0"] = "Enters Fullscreen Mode";
-                EnUIDict["FullscreenMiTT1"] = "Exits Fullscreen Mode";
+                EnUIDict["FullscreenMiTT0"] = "Enters Fullscreen";
+                EnUIDict["FullscreenMiTT1"] = "Exits Fullscreen";
             //Options
+                EnUIDict["OptionsMiTT"] = "Options and information";
             EnUIDict["ProfileMi"] = "My Profile...";
                 EnUIDict["ProfileMiTT"] = "Displays your " + appName + " level and achievements";
             EnUIDict["OptionsDialogMi"] = "Options...";
@@ -268,6 +277,20 @@ namespace KuroNote
                 EnUIDict["UpdatesMiTT"] = "Checks if this " + appName + " installation is up to date";
             EnUIDict["AboutMi"] = "About " + appName;
                 EnUIDict["AboutMiTT"] = "Displays information about " + appName;
+            //RTF Mode
+                EnUIDict["rtfBoldRibbonTT"] = "Toggles bold font weight for the selection";
+                EnUIDict["rtfItalicRibbonTT"] = "Toggles italic font style for the selection";
+                EnUIDict["rtfUnderlineRibbonTT"] = "Toggles underline text decoration for the selection";
+                EnUIDict["rtfFontFamilyCmbTT"] = "Changes the font family of the selection";
+                EnUIDict["rtfFontSizeCmbTT"] = "Changes the font size of the selection";
+                EnUIDict["rtfFontUpMiTT"] = "Increments the font size of the selection";
+                EnUIDict["rtfFontDownMiTT"] = "Decrements the font size of the selection";
+                EnUIDict["rtfApplySelectedColourMiTT"] = "Changes the font colour of the selection to the chosen colour";
+                EnUIDict["rtfChooseColourMiTT"] = "Changes the chosen font colour to be applied";
+                EnUIDict["rtfLeftAlignRibbonTT"] = "Applies left alignment to the selection";
+                EnUIDict["rtfCenterAlignRibbonTT"] = "Applies center alignment to the selection";
+                EnUIDict["rtfRightAlignRibbonTT"] = "Applies right alignment to the selection";
+                EnUIDict["rtfJustifyAlignRibbonTT"] = "Applies justified alignment to the selection";
 
             /*
                 JpUIDict = new Dictionary<string, object>();
@@ -551,18 +574,13 @@ namespace KuroNote
         public void processImmediateSettings(bool calledFromOptions)
         {
             //Spell check
-            if (appSettings.spellCheck) {
-                MainRtb.SpellCheck.IsEnabled = true;
-            } else {
-                MainRtb.SpellCheck.IsEnabled = false;
-            }
+            MainRtb.SpellCheck.IsEnabled = appSettings.spellCheck;
+
+            //Auto word selection
+            MainRtb.AutoWordSelection = appSettings.autoWordSelection;
 
             //Float above other windows
-            if (appSettings.floating) {
-                this.Topmost = true;
-            } else {
-                this.Topmost = false;
-            }
+            this.Topmost = appSettings.floating;
 
             //Use ASCII instead of UTF-8
             if (appSettings.useAscii) {
@@ -590,6 +608,8 @@ namespace KuroNote
                 } else {
                     //this is running on startup because RTF mode was already set to activate
                     RtfMenu.Visibility = Visibility.Visible;
+                    FontMi.IsEnabled = false; //RTF controls override the standard global font controls
+                    populateRtfMenu();
                 }
             } else {
                 if (calledFromOptions) {
@@ -599,6 +619,7 @@ namespace KuroNote
                 } else {
                     //this is running on startup because RTF mode was already set to be inactive
                     RtfMenu.Visibility = Visibility.Collapsed;
+                    FontMi.IsEnabled = true;
                 }
             }
         }
@@ -621,6 +642,8 @@ namespace KuroNote
                     appSettings.rtfMode = true;
                     doNew(true);
                     RtfMenu.Visibility = Visibility.Visible;
+                    FontMi.IsEnabled = false;
+                    populateRtfMenu();
                     if (!appSettings.seenRtfWelcome) {
                         //if first time toggling RTF Mode - show introductory message
                         MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
@@ -631,6 +654,8 @@ namespace KuroNote
                 else if (res == MessageBoxResult.No) {
                     //**don't save changes
                     RtfMenu.Visibility = Visibility.Visible;
+                    FontMi.IsEnabled = false;
+                    populateRtfMenu();
                     if (!appSettings.seenRtfWelcome) {
                         //if first time toggling RTF Mode - show introductory message
                         MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
@@ -644,6 +669,8 @@ namespace KuroNote
                 }
             } else {
                 RtfMenu.Visibility = Visibility.Visible;
+                FontMi.IsEnabled = false;
+                populateRtfMenu();
                 if (!appSettings.seenRtfWelcome) {
                     //if first time toggling RTF Mode - show introductory message
                     MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
@@ -697,6 +724,7 @@ namespace KuroNote
                         doNew(true);
                     }
                     RtfMenu.Visibility = Visibility.Collapsed;
+                    FontMi.IsEnabled = true;
                 } else if (resErr5 == MessageBoxResult.No) {
                     //**don't save changes, reopen
 
@@ -708,6 +736,7 @@ namespace KuroNote
                         doNew(true);
                     }
                     RtfMenu.Visibility = Visibility.Collapsed;
+                    FontMi.IsEnabled = true;
                 } else {
                     //I change my mind - re-enable RTF mode!
                     appSettings.rtfMode = true; //re-enable rtfMode
@@ -723,7 +752,34 @@ namespace KuroNote
                     doNew(true);
                 }
                 RtfMenu.Visibility = Visibility.Collapsed;
+                FontMi.IsEnabled = true;
             }
+        }
+
+        /// <summary>
+        /// Clears and populates rtfFontFamilyCmb and rtfFontSizeCmb
+        /// </summary>
+        private void populateRtfMenu()
+        {
+            //rtfFontFamilyCmb
+            foreach (FontFamily ff in Fonts.SystemFontFamilies)
+            {
+                //Populate the rtfFontFamilyCmb drop down with all the installed system fonts
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = ff.Source;
+                item.FontFamily = ff;
+                rtfFontFamilyCmb.Items.Add(item);
+            }
+            rtfFontFamilyCmb.SelectedValue = RTF_DEFAULT_FONT_FAMILY;
+
+            //rtfFontSizeCmb
+            rtfFontSizeCmb.Items.Clear();
+            foreach (short size in RTF_FONT_SIZES) {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = size;
+                rtfFontSizeCmb.Items.Add(item);
+            }
+            rtfFontSizeCmb.SelectedValue = RTF_DEFAULT_FONT_SIZE;
         }
 
         /// <summary>
@@ -2651,6 +2707,7 @@ namespace KuroNote
         {
             log.addLog("Request: RtfFontUp");
             EditingCommands.IncreaseFontSize.Execute(null, MainRtb);
+            updateRtfFontSizeCmb();
         }
 
         /// <summary>
@@ -2660,6 +2717,7 @@ namespace KuroNote
         {
             log.addLog("Request: RtfFontDown");
             EditingCommands.DecreaseFontSize.Execute(null, MainRtb);
+            updateRtfFontSizeCmb();
         }
 
         /// <summary>
@@ -2667,7 +2725,12 @@ namespace KuroNote
         /// </summary>
         private void RtfApplyColour_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            log.addLog("Request: RtfApplyColour");
+            log.addLog("Request: RtfApplyColour: " + rtfApplySelectedColourRect.Fill.ToString());
+            MainRtb.Selection.ApplyPropertyValue(ForegroundProperty, rtfApplySelectedColourRect.Fill);
+
+            //Auto-focus - the user can continue typing after changing font colour without having to re-select MainRtb
+            MainRtb.Focus();
+            MainRtb.Selection.Select(MainRtb.Selection.Start, MainRtb.Selection.End);
         }
 
         /// <summary>
@@ -2676,6 +2739,13 @@ namespace KuroNote
         private void RtfChooseColour_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             log.addLog("Request: RtfChooseColour");
+            Color outputColor;
+            bool newColorPicked = ColorPickerWPF.ColorPickerWindow.ShowDialog(out outputColor);
+            if (newColorPicked) {
+                //new color was chosen (i.e. user didn't just close the dialog)
+                rtfApplySelectedColourRect.Fill = new SolidColorBrush(outputColor);
+                log.addLog("New RTF font colour picked: " + outputColor.ToString());
+            }
         }
 
         /// <summary>
@@ -2951,6 +3021,107 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Updates the UI to ensure that rtfFontSizeCmb displays the (Math.Rounded) font size of the current selection,
+        /// regardless of whether or not that font size is in RTF_FONT_SIZES.
+        /// NOTE: When a selection has multiple font sizes, it will display nothing.
+        /// </summary>
+        private void updateRtfFontSizeCmb()
+        {
+            var fontSizeProperty = MainRtb.Selection.GetPropertyValue(FontSizeProperty);
+            if (fontSizeProperty == DependencyProperty.UnsetValue) {
+                //multiple font sizes in selection
+                try {
+                    //Try to select ComboBoxItem "", if it doesn't exist, create it first
+                    rtfFontSizeCmb.SelectedValue = String.Empty;
+                } catch (FormatException) {
+                    ComboBoxItem currentFontItem = new ComboBoxItem();
+                    currentFontItem.Content = String.Empty;
+                    rtfFontSizeCmb.Items.Insert(0, currentFontItem);
+                    rtfFontSizeCmb.SelectedValue = String.Empty;
+                }
+            } else {
+
+                //If the first ComboBoxItem is not the same as the first RTF_FONT_SIZE (or is String.Empty), delete it
+                string firstDefaultFontSize = RTF_FONT_SIZES[0].ToString();
+                ComboBoxItem firstComboBoxItem = (ComboBoxItem)rtfFontSizeCmb.Items[0];
+                if (!firstComboBoxItem.Content.ToString().Equals(firstDefaultFontSize)) {
+                    rtfFontSizeCmb.Items.RemoveAt(0);
+                    //removed temporary font size item
+                }
+
+                //If the font size matches a default font size, select it, otherwise, create a temporary ComboBoxItem and select that
+                double fontSizePropertyResolved = Math.Round((double)fontSizeProperty);
+                short fontSizePropertyShort;
+                try {
+                    fontSizePropertyShort = (short)fontSizePropertyResolved;
+
+                    if (Array.IndexOf(RTF_FONT_SIZES, fontSizePropertyShort) >= 0) {
+                        //This font size is a default font size - select existing ComboBoxItem
+                        rtfFontSizeCmb.SelectedValue = fontSizePropertyResolved;
+                        //font size was found
+                    } else {
+                        //This font size is a custom font size - use a temporary ComboBoxItem
+                        ComboBoxItem currentFontItem = new ComboBoxItem();
+                        currentFontItem.Content = fontSizePropertyResolved;
+                        rtfFontSizeCmb.Items.Insert(0, currentFontItem);
+                        rtfFontSizeCmb.SelectedIndex = 0;
+                        //custom font size item was created
+                    }
+                } catch (Exception) {
+                    //if it cannot be converted to a short, it's obviously not a default font size
+                    ComboBoxItem currentFontItem = new ComboBoxItem();
+                    currentFontItem.Content = fontSizePropertyResolved;
+                    rtfFontSizeCmb.Items.Insert(0, currentFontItem);
+                    rtfFontSizeCmb.SelectedIndex = 0;
+                    //custom font size item was created
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the UI to ensure that rtfFontFamilyCmb displays the font family of the current selection,
+        /// regardless of whether or not that font size is in Fonts.SystemFontFamilies.
+        /// NOTE: When a selection has multiple font families, it will display nothing.
+        /// </summary>
+        private void updateRtfFontFamilyCmb()
+        {
+            var fontFamilyProperty = MainRtb.Selection.GetPropertyValue(FontFamilyProperty);
+            if (fontFamilyProperty == DependencyProperty.UnsetValue) {
+                //multiple font families in selection
+                try {
+                    //Try to select ComboBoxItem "", if it doesn't exist, create it first
+                    rtfFontFamilyCmb.SelectedValue = String.Empty;
+                } catch (FormatException) {
+                    ComboBoxItem currentFontItem = new ComboBoxItem();
+                    currentFontItem.Content = String.Empty;
+                    rtfFontFamilyCmb.Items.Insert(0, currentFontItem);
+                    rtfFontFamilyCmb.SelectedValue = String.Empty;
+                }
+            } else {
+
+                //If the first ComboBoxItem is String.Empty, delete it
+                ComboBoxItem firstComboBoxItem = (ComboBoxItem)rtfFontFamilyCmb.Items[0];
+                if (firstComboBoxItem.Content.ToString().Length < 1) {
+                    rtfFontFamilyCmb.Items.RemoveAt(0);
+                    //removed temporary font size item
+                }
+
+                //If the font family matches an existing font family, select it, otherwise, create a temporary ComboBoxItem and select that
+                try {
+                    //Try to select a ComboBoxItem with a value of fontFamilyProperty, if it doesn't exist, create it first
+                    rtfFontFamilyCmb.SelectedValue = fontFamilyProperty;
+                } catch (FormatException) {
+                    //This should not happen because all fonts in the system array get added to the rtfFontFamilyCmb dropdown
+                    log.addLog("WARN: FontFamily \"" + fontFamilyProperty + "\" was not found in Fonts.SystemFontFamilies - creating temp item");
+                    ComboBoxItem currentFontItem = new ComboBoxItem();
+                    currentFontItem.Content = fontFamilyProperty;
+                    rtfFontFamilyCmb.Items.Insert(0, currentFontItem);
+                    rtfFontFamilyCmb.SelectedValue = fontFamilyProperty;
+                }
+            }
+        }
+
+        /// <summary>
         /// Updates the UI to ensure that only the ribbontogglebutton
         /// corresponding to the current alignment is checked
         /// </summary>
@@ -3036,6 +3207,12 @@ namespace KuroNote
                     log.addLog("WARN: Empty TextDecorationCollection");
                 }
 
+                //Font Size
+                updateRtfFontSizeCmb();
+
+                //Font Family
+                updateRtfFontFamilyCmb();
+
                 //Align
                 if (MainRtb.Selection.Text.Length > 0) {
                     //all ribbons off
@@ -3044,9 +3221,95 @@ namespace KuroNote
                     //current align ribbon on
                     updateAlignmentRibbons(false);
                 }
+
+                //Font Colour (foreground)
+                /* Foreground detection is not strictly necessary - rtfApplySelectedColourRect only needs to react when the user
+                 * selects a new colour to be applied (rtfChooseColour)
+                var fontColorProperty = MainRtb.Selection.GetPropertyValue(ForegroundProperty);
+                try {
+                    rtfApplySelectedColourRect.Fill = (Brush)fontColorProperty;
+                } catch (InvalidCastException) {
+                    //Multiple font colours in selection
+                    rtfApplySelectedColourRect.Fill = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                }
+                */
             }
         }
-        
+
+        /// <summary>
+        /// When the value of the RTF FontFamily ComboBox changes
+        /// </summary>
+        private void rtfFontFamilyCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try {
+                //If the user just selected a new font family, apply it to the current selection
+                if (rtfFontFamilyCmb.SelectedValue.ToString().Length > 0 && rtfFontFamilyReadyFlag == true) {
+                    MainRtb.Selection.ApplyPropertyValue(FontFamilyProperty, rtfFontFamilyCmb.SelectedValue.ToString());
+
+                    //Auto-focus - the user can continue typing after changing font family without having to re-select MainRtb
+                    MainRtb.Focus();
+                    MainRtb.Selection.Select(MainRtb.Selection.Start, MainRtb.Selection.End);
+                    rtfFontFamilyReadyFlag = false; //a font family was just applied, don't allow another until the drop down is opened again
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: SelectionChanged Event fired before object initialisation ");
+            }
+        }
+
+        /// <summary>
+        /// When the RTF Font Family ComboBox is opened
+        /// </summary>
+        private void rtfFontFamilyCmb_DropDownOpened(object sender, EventArgs e)
+        {
+            rtfFontFamilyCmb.Items.Clear();
+            //Populate the rtfFontFamilyCmb drop down with all the installed system fonts
+            foreach (FontFamily ff in Fonts.SystemFontFamilies) {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = ff.Source;
+                item.FontFamily = ff;
+                rtfFontFamilyCmb.Items.Add(item);
+            }
+            rtfFontFamilyReadyFlag = true; //the user opened the font family drop down menu, allow a font family to be applied
+        }
+
+        /// <summary>
+        /// When the value of the RTF FontSize ComboBox changes
+        /// </summary>
+        private void rtfFontSizeCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try {
+                //If the user just selected a new font size, apply it to the current selection
+                if (rtfFontSizeCmb.SelectedValue.ToString().Length > 0 && rtfFontSizeReadyFlag == true) {
+                    double parsedValue = double.Parse(rtfFontSizeCmb.SelectedValue.ToString());
+                    MainRtb.Selection.ApplyPropertyValue(FontSizeProperty, parsedValue);
+
+                    //Auto-focus - the user can continue typing after changing font size without having to re-select MainRtb
+                    MainRtb.Focus();
+                    MainRtb.Selection.Select(MainRtb.Selection.Start, MainRtb.Selection.End);
+                    rtfFontSizeReadyFlag = false; //a font size was just applied, don't allow another until the drop down is opened again
+                }
+            } catch (NullReferenceException) {
+                Console.Error.WriteLine("WARN: SelectionChanged Event fired before object initialisation ");
+            } catch (FormatException) {
+                Console.Error.WriteLine("WARN: Unable to parse rtfFontSizeCmb value");
+            }
+        }
+
+        /// <summary>
+        /// When the RTF FontSize ComboBox is opened
+        /// </summary>
+        private void rtfFontSizeCmb_DropDownOpened(object sender, EventArgs e)
+        {
+            //Ensure there are no temporary items created during selection font size detection (updateRtfFontSizeCmb)
+            //by resetting the RTF_FONT_SIZES dropdown
+            rtfFontSizeCmb.Items.Clear();
+            foreach (short size in RTF_FONT_SIZES) {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = size;
+                rtfFontSizeCmb.Items.Add(item);
+            }
+            rtfFontSizeReadyFlag = true; //the user opened the font size drop down menu, allow a font size to be applied
+        }
 
         /// <summary>
         /// When the RTB is edited

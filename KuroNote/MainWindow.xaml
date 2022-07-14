@@ -91,7 +91,7 @@
                             <Image Name="imgFullscreenIcon" Source="pack://application:,,,/img/icons/outline_fullscreen_black_18dp.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="OptionsMi" HorizontalAlignment="Right" FlowDirection="LeftToRight" Width="24px">
+                    <MenuItem Name="OptionsMi" HorizontalAlignment="Right" FlowDirection="LeftToRight" Width="24px" ToolTip="{Binding [OptionsMiTT], Mode=OneTime}">
                         <MenuItem Name="OptionsDialogMi" Header="{Binding [OptionsDialogMi], Mode=OneTime}" ToolTip="{Binding [OptionsDialogMiTT], Mode=OneTime}" Command="local:CustomCommands.Options">
                             <MenuItem.Icon>
                                 <Image Source="pack://application:,,,/img/icons/outline_settings_black_18dp.png"/>
@@ -290,37 +290,39 @@
                     <!--Spacer MenuItem seperates MainMenu from RightMenu-->
                 </Menu >
             </DockPanel>
-            <Menu Name="RtfMenu" Visibility="Visible">
-                <RibbonToggleButton Name="rtfBoldRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_bold_black_18dp.png" Command="local:CustomCommands.RtfBold"/>
-                <RibbonToggleButton Name="rtfItalicRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_italic_black_18dp.png" Command="local:CustomCommands.RtfItalic"/>
-                <RibbonToggleButton Name="rtfUnderlineRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_underlined_black_18dp.png" Command="local:CustomCommands.RtfUnderline"/>
-                <MenuItem Name="rtfFontUpMi" FlowDirection="LeftToRight" Width="24px" Command="local:CustomCommands.RtfFontUp">
+            <Menu Name="RtfMenu" Visibility="Visible" Padding="0,2.5,0,2.5">
+                <RibbonToggleButton Name="rtfBoldRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_bold_black_18dp.png" Command="local:CustomCommands.RtfBold" ToolTip="{Binding [rtfBoldRibbonTT], Mode=OneTime}"/>
+                <RibbonToggleButton Name="rtfItalicRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_italic_black_18dp.png" Command="local:CustomCommands.RtfItalic" ToolTip="{Binding [rtfItalicRibbonTT], Mode=OneTime}"/>
+                <RibbonToggleButton Name="rtfUnderlineRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_underlined_black_18dp.png" Command="local:CustomCommands.RtfUnderline" ToolTip="{Binding [rtfUnderlineRibbonTT], Mode=OneTime}"/>
+                <ComboBox Name="rtfFontFamilyCmb" IsEditable="False" Width="124px" SelectedValuePath="Content" DropDownOpened="rtfFontFamilyCmb_DropDownOpened" SelectionChanged="rtfFontFamilyCmb_SelectionChanged" ToolTip="{Binding [rtfFontFamilyCmbTT], Mode=OneTime}"/>
+                <ComboBox Name="rtfFontSizeCmb" IsEditable="False" Width="48px" SelectedValuePath="Content" DropDownOpened="rtfFontSizeCmb_DropDownOpened" SelectionChanged="rtfFontSizeCmb_SelectionChanged" ToolTip="{Binding [rtfFontSizeCmbTT], Mode=OneTime}"/>
+                <MenuItem Name="rtfFontUpMi" FlowDirection="LeftToRight" Width="24px" Command="local:CustomCommands.RtfFontUp" ToolTip="{Binding [rtfFontUpMiTT], Mode=OneTime}">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_text_increase_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="rtfFontDownMi" FlowDirection="LeftToRight" Width="24px" Command="local:CustomCommands.RtfFontDown">
+                <MenuItem Name="rtfFontDownMi" FlowDirection="LeftToRight" Width="24px" Command="local:CustomCommands.RtfFontDown" ToolTip="{Binding [rtfFontDownMiTT], Mode=OneTime}">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/outline_text_decrease_black_18dp.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="rtfApplySelectedColourMi" FlowDirection="LeftToRight" Width="24px" Command="local:CustomCommands.RtfApplyColour">
+                <MenuItem Name="rtfApplySelectedColourMi" FlowDirection="LeftToRight" Width="24px" Command="local:CustomCommands.RtfApplyColour" ToolTip="{Binding [rtfApplySelectedColourMiTT], Mode=OneTime}">
                     <MenuItem.Icon>
                         <StackPanel>
                             <Image Source="pack://application:,,,/img/icons/cropped_format_color_text_black_18dp.png"/>
-                            <Rectangle Fill="Red" Height="6" Margin="0,2,0,0"/>
+                            <Rectangle Name="rtfApplySelectedColourRect" Fill="Black" Height="6" Margin="0,2,0,0"/>
                         </StackPanel>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="rtfChooseColourMi" FlowDirection="LeftToRight" Width="14px" Margin="-3,0,0,0" Command="local:CustomCommands.RtfChooseColour">
+                <MenuItem Name="rtfChooseColourMi" FlowDirection="LeftToRight" Width="14px" Margin="-3,0,0,0" Command="local:CustomCommands.RtfChooseColour" ToolTip="{Binding [rtfChooseColourMiTT], Mode=OneTime}">
                     <MenuItem.Icon>
                         <Image Source="pack://application:,,,/img/icons/cropped_arrow_drop_down_black_18dp.png" Width="12px" Stretch="Uniform" HorizontalAlignment="Left"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <RibbonToggleButton Name="rtfLeftAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_left_black_18dp.png" Command="local:CustomCommands.RtfLeftAlign"/>
-                <RibbonToggleButton Name="rtfCenterAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_center_black_18dp.png" Command="local:CustomCommands.RtfCenterAlign"/>
-                <RibbonToggleButton Name="rtfRightAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_right_black_18dp.png" Command="local:CustomCommands.RtfRightAlign"/>
-                <RibbonToggleButton Name="rtfJustifyAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_justify_black_18dp.png" Command="local:CustomCommands.RtfJustifyAlign"/>
+                <RibbonToggleButton Name="rtfLeftAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_left_black_18dp.png" Command="local:CustomCommands.RtfLeftAlign" ToolTip="{Binding [rtfLeftAlignRibbonTT], Mode=OneTime}"/>
+                <RibbonToggleButton Name="rtfCenterAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_center_black_18dp.png" Command="local:CustomCommands.RtfCenterAlign" ToolTip="{Binding [rtfCenterAlignRibbonTT], Mode=OneTime}"/>
+                <RibbonToggleButton Name="rtfRightAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_right_black_18dp.png" Command="local:CustomCommands.RtfRightAlign" ToolTip="{Binding [rtfRightAlignRibbonTT], Mode=OneTime}"/>
+                <RibbonToggleButton Name="rtfJustifyAlignRibbon" CheckedBackground="Lime" BorderThickness="0" CornerRadius="0" FlowDirection="LeftToRight" SmallImageSource="pack://application:,,,/img/icons/outline_format_align_justify_black_18dp.png" Command="local:CustomCommands.RtfJustifyAlign" ToolTip="{Binding [rtfJustifyAlignRibbonTT], Mode=OneTime}"/>
             </Menu>
         </StackPanel>
         <StatusBar Name="MainStatus" DockPanel.Dock="Bottom">

@@ -88,7 +88,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.Row="0" Background="#303030">
                         <StackPanel Orientation="Horizontal" >
-                            <Label Content="Remember Font Size" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                            <Label Content="Remember font size" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
                         </StackPanel>
                         <spark:ToggleSwitch Name="rememberfontupdnTs" Margin="5,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="optionTs_Checked" Unchecked="optionTs_Unchecked"/>
                     </StackPanel>
@@ -109,6 +109,12 @@
                             <Label Content="Overtyping (insert key)" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
                         </StackPanel>
                         <spark:ToggleSwitch Name="overtypingTs" Margin="5,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="optionTs_Checked"  Unchecked="optionTs_Unchecked"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="2" Background="#303030">
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Content="Auto word selection" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                        </StackPanel>
+                        <spark:ToggleSwitch Name="autowordselectionTs" Margin="5,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="optionTs_Checked" Unchecked="optionTs_Unchecked"/>
                     </StackPanel>
                 </Grid>
             </TabItem>

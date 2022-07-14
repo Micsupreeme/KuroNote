@@ -36,6 +36,7 @@ namespace KuroNote
         public bool rememberFontUpDn = true;
         public bool wordWrap = true;
         public bool overTyping = true;
+        public bool autoWordSelection = false;
         public double windowHeight = 500;
         public double windowWidth = 750;
         public List<int> achList = new List<int>() { };
@@ -82,6 +83,7 @@ namespace KuroNote
                     this.stretchImages = knsFile.stretchImages;
                     this.wordWrap = knsFile.wordWrap;
                     this.overTyping = knsFile.overTyping;
+                    this.autoWordSelection = knsFile.autoWordSelection;
                     this.windowHeight = knsFile.windowHeight;
                     this.windowWidth = knsFile.windowWidth;
                     this.achList = knsFile.achList;
