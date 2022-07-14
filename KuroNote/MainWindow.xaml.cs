@@ -20,16 +20,8 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// TODO Bug Fix: Open "Select Theme", then open "Custom Theme Manager", change the image for a theme,
-    /// then go back and forth once to select a random theme, then select the custom theme that now has a new image.
-    /// The new image will not display becuse "Select Theme" was loaded when the custom theme had a different theme ID
-    /// (when you change an image for a custom theme, the internal theme ID changes and the old image is deleted).
-    /// The solution is some kind of custom theme list refresh within "Select Theme", such as when the drop-down is opened/moused-over?
-    /// TODO Bug Fix: Open an .rtf file while in plain text mode, then enable RTF Mode - the file will still appear as plain text
-    /// because the plain open method was originally used.
     /// 
-    /// TODO: (Optionally?) If RTF Mode disabled but user opens RTF file - turn on RTF Mode?
-    /// 
+    /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
     /// TODO: Upgrade CustomThemeManager "opacitySlideDelay" to DispatcherTimer
     /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
@@ -626,7 +618,8 @@ namespace KuroNote
 
         /// <summary>
         /// To transition from normal mode to RTF mode:
-        /// 1). must offer to save any outstanding changes as Plain
+        /// 1a). UNSAVED CHANGES: must offer to save any outstanding changes as Plain
+        /// 1b). NO UNSAVED CHANGES: must reload the existing document as RTF if it has .rtf extension
         /// 2). must make rtfMenu visible
         /// </summary>
         private void handlePlainToRtfModeTransition()
@@ -668,6 +661,12 @@ namespace KuroNote
                     appSettings.UpdateSettings();
                 }
             } else {
+                //If RTF document is currently opened
+                if (fileName.Length > 0 && Path.GetExtension(fileName).Equals(".rtf")) {
+                    //RTF document is currently opened in Plain Text mode - reload it as RTF
+                    doOpen(fileName);
+                }
+
                 RtfMenu.Visibility = Visibility.Visible;
                 FontMi.IsEnabled = false;
                 populateRtfMenu();

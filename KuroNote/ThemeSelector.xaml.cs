@@ -107,17 +107,33 @@ namespace KuroNote
         }
 
         /// <summary>
-        /// Temporarily apply the theme and display the corresponding theme description when the theme selection changes
+        /// When the theme selection dropdown opens
+        /// Refresh the theme list (in case a custom theme was changed while this window was opened)
+        /// </summary>
+        private void cmbTheme_DropDownOpened(object sender, EventArgs e)
+        {
+            loadPresetAndCustomThemes();
+        }
+
+        /// <summary>
+        /// When the theme selection changes
+        /// Temporarily apply the theme and display the corresponding theme description
         /// </summary>
         private void cmbTheme_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
+            try {
+                int selectedThemeTag = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId 
 
-            if (selectedThemeTag < 1000) { //currently, only preset themes can have descriptions
-                tbThemeDesc.Text = themeCollection[selectedThemeTag].themeDesc;
-            } else {
-                tbThemeDesc.Text = "Custom theme";
+                if (selectedThemeTag < 1000) {
+                    //currently, only preset themes can have descriptions
+                    tbThemeDesc.Text = themeCollection[selectedThemeTag].themeDesc;
+                } else {
+                    tbThemeDesc.Text = "Custom theme";
+                }
+                main.setTheme(selectedThemeTag, (bool)chkIncludeFont.IsChecked);
+            } catch (NullReferenceException) {
+                //cmbTheme.SelectedValue is null
+                Console.Error.WriteLine("WARN: Attempted to preview null theme");
             }
-            main.setTheme(selectedThemeTag, (bool)chkIncludeFont.IsChecked);
         }
 
         /// <summary>

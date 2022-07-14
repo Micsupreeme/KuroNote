@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>KuroNote</AssemblyName>
     <RootNamespace>KuroNote</RootNamespace>
-    <Version>2.0.0</Version>
+    <Version>2.1.0.0</Version>
     <Authors>Michael Whatley</Authors>
     <Copyright>Copyright © 2022 Micsupreeme</Copyright>
     <Company>Michael Whatley</Company>
@@ -20,13 +20,9 @@
     <PackageProjectUrl>https://github.com/Micsupreeme/KuroNote</PackageProjectUrl>
     <Description>A text editor that allows you to set any picture you like as a background.
 
- 
-
 With a focus on customisability and intuitiveness, KuroNote is a lightweight and Notepad-like text editor with personality. It's designed for the quick creation of beautiful notes. Custom theme profiles and optional gamification elements like ranks and achievements make note-writing more enjoyable.
 
-
-
-You can expect all the essential features like: save as; print; find; replace; spell check; and word count. Additionally, KuroNote offers AES encryption that enables you to optionally password-protect your notes.</Description>
+You can expect all the essential features like: save as; print; find; replace; spell check; and word count. Additionally, KuroNote offers AES encryption that enables you to password-protect your notes.</Description>
     <PackageLicenseFile></PackageLicenseFile>
   </PropertyGroup>
 

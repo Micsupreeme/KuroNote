@@ -67,7 +67,7 @@ namespace KuroNote
 
                 "You can expect all the essential features like: save as; print; find; " +
                 "replace; spell check; and word count. Additionally, " + appName + " offers AES encryption " +
-                "that enables you to optionally password-protect your notes.\n\n"+
+                "that enables you to password-protect your notes.\n\n"+
 
                 "Double-click here for an achievement!";
             appBrandingTb.Text = "Branding design by Luke";
