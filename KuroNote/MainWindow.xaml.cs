@@ -1354,7 +1354,7 @@ namespace KuroNote
                 ),
                 new KuroNoteTheme
                 (
-                    30, "PCB", "Image by Pixabay on Pexels", 19,
+                    30, "PCB", "Image by Pixabay on Pexels", 20,
                     new SolidColorBrush(Color.FromRgb(193, 255, 182)),
                     new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/img/bgs/pexels-pixabay-50711.jpg")),
                                      Opacity = 0.11,
