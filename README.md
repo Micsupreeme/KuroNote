@@ -12,7 +12,7 @@ With a focus on customisability and intuitiveness, KuroNote is a Notepad-like te
 # Download
 If you have a previous version of KuroNote installed, use Control Panel to uninstall it first. Don't worry, your user data will not be affected.
 
-Download the latest installer `KuroNote.2.1.0.0.64bit.Installer.exe` for Windows 10/11 **[here](https://github.com/Micsupreeme/KuroNote/releases/download/Major/KuroNote.2.1.0.0.64bit.Installer.exe)**, or from the [releases page](https://github.com/Micsupreeme/KuroNote/releases/latest).
+Download the latest installer `KuroNote.2.1.0.0.64bit.Installer.exe` for Windows 10/11 **[here](https://github.com/Micsupreeme/KuroNote/releases/download/Feature/KuroNote.2.1.0.0.64bit.Installer.exe)**, or from the [releases page](https://github.com/Micsupreeme/KuroNote/releases/latest).
 
 ![KuroNote Installer](https://i.imgur.com/g8rNYbZ.png)
 
