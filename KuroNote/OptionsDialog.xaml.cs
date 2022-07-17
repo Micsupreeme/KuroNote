@@ -21,6 +21,7 @@ namespace KuroNote
 
         Timer gamificationTimer;
         bool anythingChanged = false;
+        bool previousRtfModeState = false;
 
         public OptionsDialog(MainWindow _mainWin, KuroNoteSettings _currentSettings, Log _mainLog)
         {
@@ -32,7 +33,8 @@ namespace KuroNote
             this.Title = WINDOW_NAME + " - " + appName;
             restartDisclaimerLbl.Content = RESTART_DISCLAIMER_PRE + appName + " launch";
             populateFields();
-            if(settings.gamification) {
+            previousRtfModeState = settings.rtfMode;
+            if (settings.gamification) {
                 initialiseOptionsGamification();
             }
         }
@@ -116,22 +118,29 @@ namespace KuroNote
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
-            log.addLog("Update options according to OptionsDialog UI");
-            saveSettingsChanges();
-            main.processImmediateSettings(true); //Apply settings that can take effect immediately
-            toggleVisibility(false);
+            if (anythingChanged) {
+                log.addLog("Update options according to OptionsDialog UI");
+                saveSettingsChanges();
 
-            if (settings.gamification && anythingChanged) {
-                settings.achOptions++;
-                settings.UpdateSettings();
+                if (previousRtfModeState != settings.rtfMode) {
+                    //RTF Mode was actually changed
+                    main.processImmediateSettings(true, true); //Apply settings that can take effect immediately (and do RTF transition)
+                } else {
+                    main.processImmediateSettings(true, false); //Apply settings that can take effect immediately (and don't do RTF transition)
+                }
 
-                switch (settings.achOptions)
-                {
-                    case 5:
-                        main.unlockAchievement(20);
-                        break;
+                if (settings.gamification) {
+                    settings.achOptions++;
+                    settings.UpdateSettings();
+
+                    switch (settings.achOptions) {
+                        case 5:
+                            main.unlockAchievement(20);
+                            break;
+                    }
                 }
             }
+            toggleVisibility(false);
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)

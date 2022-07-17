@@ -21,6 +21,7 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
+    /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
     /// TODO: Upgrade CustomThemeManager "opacitySlideDelay" to DispatcherTimer
@@ -168,7 +169,7 @@ namespace KuroNote
             if(appSettings.rememberRecentFiles) {
                 InitialiseRecentFiles();
             }
-            processImmediateSettings(false);
+            processImmediateSettings(false, false);
             processStartupSettings();
 
             processCmdLineArgs();
@@ -278,7 +279,7 @@ namespace KuroNote
                 EnUIDict["rtfFontUpMiTT"] = "Increments the font size of the selection";
                 EnUIDict["rtfFontDownMiTT"] = "Decrements the font size of the selection";
                 EnUIDict["rtfApplySelectedColourMiTT"] = "Changes the font colour of the selection to the chosen colour";
-                EnUIDict["rtfChooseColourMiTT"] = "Changes the chosen font colour to be applied";
+                EnUIDict["rtfChooseColourMiTT"] = "Changes the chosen font colour (and applies it if there is a selection)";
                 EnUIDict["rtfLeftAlignRibbonTT"] = "Applies left alignment to the selection";
                 EnUIDict["rtfCenterAlignRibbonTT"] = "Applies center alignment to the selection";
                 EnUIDict["rtfRightAlignRibbonTT"] = "Applies right alignment to the selection";
@@ -563,7 +564,8 @@ namespace KuroNote
         /// Process and apply settings that can take effect immediately (i.e. without restart)
         /// </summary>
         /// <param name="calledFromOptions">Whether or not this method was called from OptionsDialog</param>
-        public void processImmediateSettings(bool calledFromOptions)
+        /// <param name="rtfChanged">Whether or not the RTF Mode state was just changed</param>
+        public void processImmediateSettings(bool calledFromOptions, bool rtfChanged)
         {
             //Spell check
             MainRtb.SpellCheck.IsEnabled = appSettings.spellCheck;
@@ -595,8 +597,10 @@ namespace KuroNote
             //RTF Mode
             if (appSettings.rtfMode) {
                 if (calledFromOptions) {
-                    //user just enabled RTF mode
-                    handlePlainToRtfModeTransition();
+                    if (rtfChanged) {
+                        //user just enabled RTF mode
+                        handlePlainToRtfModeTransition();
+                    }
                 } else {
                     //this is running on startup because RTF mode was already set to activate
                     RtfMenu.Visibility = Visibility.Visible;
@@ -605,9 +609,11 @@ namespace KuroNote
                 }
             } else {
                 if (calledFromOptions) {
-                    //user just disabled RTF mode
-                    handleRtfToPlainModeTransition();
-                    setTheme(appSettings.themeId, appSettings.themeWithFont); //clear all RTF formatting by refreshing theme
+                    if (rtfChanged) {
+                        //user just disabled RTF mode
+                        handleRtfToPlainModeTransition();
+                        setTheme(appSettings.themeId, appSettings.themeWithFont); //clear all RTF formatting by refreshing theme
+                    }
                 } else {
                     //this is running on startup because RTF mode was already set to be inactive
                     RtfMenu.Visibility = Visibility.Collapsed;
@@ -2744,6 +2750,11 @@ namespace KuroNote
                 //new color was chosen (i.e. user didn't just close the dialog)
                 rtfApplySelectedColourRect.Fill = new SolidColorBrush(outputColor);
                 log.addLog("New RTF font colour picked: " + outputColor.ToString());
+                if (MainRtb.Selection.Text.Length > 0) {
+                    //If the user had selected text before selecting a colour, automatically apply the colour
+                    log.addLog("Request: RtfApplyColour: " + rtfApplySelectedColourRect.Fill.ToString());
+                    MainRtb.Selection.ApplyPropertyValue(ForegroundProperty, rtfApplySelectedColourRect.Fill);
+                }
             }
         }
 
