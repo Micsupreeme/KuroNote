@@ -1,7 +1,7 @@
 <img alt="KuroNote Logo" src="https://i.imgur.com/qUvJVqj.gif" width="200px"/>
 
 # Summary
-**A text editor that allows you to set any picture you like as a background!**
+**A text editor that lets you to set any picture you like as a background!**
 
 With a focus on customisability and intuitiveness, KuroNote is a Notepad-like text editor with personality. It's designed for the quick creation of beautiful notes. Custom theme profiles and optional gamification elements like ranks and achievements make note-writing more enjoyable. You can expect all the essential features like: save as; recent files; print; find; replace; spell check; word wrap; and word count. Additionally, KuroNote offers AES encryption which enables you to password-protect your notes, and a fullscreen mode which does what you think it does.
 
@@ -16,7 +16,7 @@ Download the latest installer `KuroNote.2.1.0.1.64bit.Installer.exe` for Windows
 
 ![KuroNote Installer](https://i.imgur.com/g8rNYbZ.png)
 
-*Checksum (SHA512):  `BE5AAB7EB71BDEAE4B26938E01F449B35B6963473582A66E37CD1F36F971CB9CBA1827B9A36EA5D824A42105BE719EC5FA433B61EBE2DC0F7F9562E5375C289B`*
+*Checksum (SHA512):  `4D055C480CAC7544AB2B38F716DD9E10561D0986B3620BDF37902FF441D41841720440AE0DDC5A93163A8864D1E52F06DFC2F9C07A8F3A1AD1F2E8BCE4A6A252`*
 
 # Gallery
 Spell Check
