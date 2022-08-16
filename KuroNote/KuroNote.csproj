@@ -189,6 +189,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_info_black_18dp.png" />
     <None Remove="img\icons\outline_invert_colors_black_18dp.png" />
     <None Remove="img\icons\outline_language_black_18dp.png" />
+    <None Remove="img\icons\outline_lightbulb_black_18dp.png" />
     <None Remove="img\icons\outline_lock_black_18dp.png" />
     <None Remove="img\icons\outline_lock_open_black_18dp.png" />
     <None Remove="img\icons\outline_mail_black_18dp.png" />
@@ -464,6 +465,9 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\icons\outline_format_underlined_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\icons\outline_lightbulb_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\outline_radar_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -579,6 +583,9 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\achievements\214.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\achievements\3.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\achievements\317.png">

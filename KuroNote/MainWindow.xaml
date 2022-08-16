@@ -344,18 +344,18 @@
                 <sys:Uri>pack://application:,,,/kuronote-spellcheck-custom.lex</sys:Uri>
             </SpellCheck.CustomDictionaries>
             <RichTextBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Cut" Command="ApplicationCommands.Cut">
+                <ContextMenu Name="MainRtbContext" Opened="MainRtbContext_Opened">
+                    <MenuItem Header="Cut" ToolTip="{Binding [CutMiTT], Mode=OneTime}" Command="ApplicationCommands.Cut">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_content_cut_black_18dp.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Copy" Command="ApplicationCommands.Copy">
+                    <MenuItem Header="Copy" ToolTip="{Binding [CopyMiTT], Mode=OneTime}" Command="ApplicationCommands.Copy">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_content_copy_black_18dp.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Paste" Command="ApplicationCommands.Paste">
+                    <MenuItem Header="Paste" ToolTip="{Binding [PasteMiTT], Mode=OneTime}" Command="ApplicationCommands.Paste">
                         <MenuItem.Icon>
                             <Image Source="pack://application:,,,/img/icons/outline_content_paste_black_18dp.png"/>
                         </MenuItem.Icon>

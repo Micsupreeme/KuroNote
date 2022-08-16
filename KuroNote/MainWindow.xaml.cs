@@ -20,7 +20,7 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// 
+    ///
     /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
@@ -102,6 +102,7 @@ namespace KuroNote
         private const double PAGE_WIDTH_MAX = 1000000;
         private const double PAGE_WIDTH_RIGHT_MARGIN = 25;          //Number of width units to add (as a padding/buffer) in addition to the measured width of the content
         private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
+        private const int SPELL_CHECK_SUGGESTION_LIMIT = 3;          //Up to this number of spellcheck suggestions can be shown in the context menu at any given time
 
         //RTF constants
         private const string RTF_DEFAULT_FONT_FAMILY = "Verdana";
@@ -284,6 +285,9 @@ namespace KuroNote
                 EnUIDict["rtfCenterAlignRibbonTT"] = "Applies center alignment to the selection";
                 EnUIDict["rtfRightAlignRibbonTT"] = "Applies right alignment to the selection";
                 EnUIDict["rtfJustifyAlignRibbonTT"] = "Applies justified alignment to the selection";
+            //Spell Check
+                EnUIDict["spellcheckSuggestionTT"] = "Replaces the spelling error text with ";
+            EnUIDict["spellcheckNoSuggestionsTT"] = "Spell Check could not find any suggestions";
 
             /*
                 JpUIDict = new Dictionary<string, object>();
@@ -2004,6 +2008,129 @@ namespace KuroNote
                 log.addLog("ERROR: " + e.ToString());
                 return files;
             }
+        }
+
+        /// <summary>
+        /// Deletes existing spellcheck items (so that new ones can be added)
+        /// NOTE: this method actually just deletes all context menu items that have a tag (because spellcheck items always have tags)
+        /// this will need reworking in the unlikely event that other context menu items start having tags
+        /// (e.g. check icon/header instead? || always rebuild cut,copy,paste)
+        /// NOTE: an exception is thrown if you attempt to iterate through a collection WHILE modifying it
+        /// </summary>
+        private void purgePreviousSpellcheckItems()
+        {
+            List<MenuItem> deletionMenuItemList = new List<MenuItem>(); //list of context menu items to remove
+            List<Separator> deletionSeparatorList = new List<Separator>(); //list of context menu separators to remove
+
+            //find context menu items to remove (i.e. items with tags (spellcheck suggestion items))
+            //and add them to the deletion list
+            foreach (object contextItem in MainRtbContext.Items) {
+                if (contextItem.GetType() == typeof(MenuItem)) {
+                    //It's a menu item, add it to the appropriate deletion list if it has a tag
+                    MenuItem contextMi = (MenuItem)contextItem;
+                    if (contextMi.Tag != null) {
+                        deletionMenuItemList.Add(contextMi);
+                    }
+                } else if (contextItem.GetType() == typeof(Separator)) {
+                    //It's a separator, add it to the appropriate deletion list
+                    Separator contextSep = (Separator)contextItem;
+                    deletionSeparatorList.Add(contextSep);
+                }
+            }
+
+            //go through the deletion lists and delete the old spellcheck suggestion related items
+            foreach (MenuItem deletionItem in deletionMenuItemList) {
+                MainRtbContext.Items.Remove(deletionItem);
+            }
+            foreach (Separator deletionItem in deletionSeparatorList) {
+                MainRtbContext.Items.Remove(deletionItem);
+            }
+        }
+
+        /// <summary>
+        /// If there is a spelling error at the caret,
+        /// adds any available spellcheck suggestion context menu items to MainRtbContext
+        /// </summary>
+        private void addNewSpellcheckItems()
+        {
+            SpellingError se = MainRtb.GetSpellingError(MainRtb.CaretPosition);
+
+            //is there a spelling error?
+            if (se != null)
+            {
+                //there is a spelling error
+                MainRtbContext.Items.Add(new Separator());
+
+                short suggestionCounter = 0;
+                foreach (string suggestion in se.Suggestions) {
+                    //add suggestion context menu items up until the suggestion limit
+                    if (suggestionCounter < SPELL_CHECK_SUGGESTION_LIMIT) { //add "&& limitSuggestionsFlag" to control with settings
+                        log.addLog("Spellcheck suggestion: " + suggestion);
+                        MainRtbContext.Items.Add(generateSpellcheckMenuItem(se, suggestion));
+                        suggestionCounter++;
+                    }
+                }
+
+                if (suggestionCounter == 0) {
+                    //spelling error identified, but no suggestions available - show "no suggestions" item
+                    MainRtbContext.Items.Add(generateNoSuggestionsItem(se));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates a context menu item that simply states there are no suggestions available
+        /// </summary>
+        /// <returns>A spellcheck "no suggestions" context menu item</returns>
+        private MenuItem generateNoSuggestionsItem(SpellingError spellcheckError)
+        {
+            MenuItem suggestionItem = new MenuItem();
+            suggestionItem.Tag = spellcheckError;
+            suggestionItem.Header = EnUIDict["spellcheckNoSuggestionsTT"];
+            suggestionItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_spellcheck_black_18dp.png")) };
+            suggestionItem.IsEnabled = false;
+            return suggestionItem;
+        }
+
+        /// <summary>
+        /// Creates a spellcheck suggestion context menu item
+        /// with the specified correction phrase
+        /// </summary>
+        /// <param name="suggestion">The specified correction phrase</param>
+        /// <returns>A spellcheck suggestion context menu item</returns>
+        private MenuItem generateSpellcheckMenuItem(SpellingError spellcheckError, string spellcheckSuggestion)
+        {
+            MenuItem suggestionItem = new MenuItem();
+            suggestionItem.Tag = spellcheckError;
+            suggestionItem.Header = spellcheckSuggestion;
+            suggestionItem.ToolTip = EnUIDict["spellcheckSuggestionTT"] + "\"" + spellcheckSuggestion + "\"";
+            suggestionItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_spellcheck_black_18dp.png")) };
+            suggestionItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(spellcheckSuggestion_Click));
+            return suggestionItem;
+        }
+
+        /// <summary>
+        /// When the context menu opens (i.e. the user right-clicks in MainRtb)
+        /// </summary>
+        private void MainRtbContext_Opened(object sender, RoutedEventArgs e)
+        {
+            purgePreviousSpellcheckItems();
+            addNewSpellcheckItems();
+        }
+
+        /// <summary>
+        /// When a dynamic spellcheck suggestion context menu item is clicked
+        /// (this is where the correction occurs)
+        /// </summary>
+        private void spellcheckSuggestion_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem sourceMenuItem = (MenuItem)sender;
+            SpellingError sourceSpellcheckError = (SpellingError)sourceMenuItem.Tag;
+            string sourceSpellcheckSuggestion = sourceMenuItem.Header.ToString();
+
+            //replace the error text with the suggestion text
+            log.addLog("Implementing Spellcheck Suggestion: " + sourceSpellcheckSuggestion);
+            sourceSpellcheckError.Correct(sourceSpellcheckSuggestion);
         }
 
         /// <summary>
