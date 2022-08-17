@@ -15,12 +15,16 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Globalization;
+using System.Collections;
 
 namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     ///
+    /// TODO: Utility to wipe "C:\Users\<USERNAME>\AppData\Local\Temp\WPF" - Windows duplicates dictionary data here on every app launch (why?)
+    ///       probably just put this feature inside a "Custom Spell Check Dictionary Manager" so that deleted words are actually deleted       
+    ///       "previous versions of this dictionary are cached at <location>. To ensure that changes actually take effect, KuroNote will delete the cache"
     /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
@@ -102,7 +106,8 @@ namespace KuroNote
         private const double PAGE_WIDTH_MAX = 1000000;
         private const double PAGE_WIDTH_RIGHT_MARGIN = 25;          //Number of width units to add (as a padding/buffer) in addition to the measured width of the content
         private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
-        private const int SPELL_CHECK_SUGGESTION_LIMIT = 3;          //Up to this number of spellcheck suggestions can be shown in the context menu at any given time
+        private const int SPELL_CHECK_SUGGESTION_LIMIT = 3;         //Up to this number of spellcheck suggestions can be shown in the context menu at any given time
+        private const int SPELL_CHECK_CUSTOM_DICTIONARY_ID = 1;     //ID number for the user-controlled custom spellcheck dictionary
 
         //RTF constants
         private const string RTF_DEFAULT_FONT_FAMILY = "Verdana";
@@ -124,6 +129,7 @@ namespace KuroNote
         public string appName = "KuroNote";
         public string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private string customThemePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\CustomThemes\\";
+        private string customDictionaryPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\dictionary.lex";
         private KuroNoteSettings appSettings;
         private KuroNoteRecentFiles appRecents;
         private Log log;
@@ -165,6 +171,7 @@ namespace KuroNote
             }
             InitialiseUIDictionary();
             InitialiseMessageDictionary();
+            ToggleCustomSpellcheckDictionary(true);
             InitialiseFont();
             InitialiseTheme();
             if(appSettings.rememberRecentFiles) {
@@ -286,8 +293,12 @@ namespace KuroNote
                 EnUIDict["rtfRightAlignRibbonTT"] = "Applies right alignment to the selection";
                 EnUIDict["rtfJustifyAlignRibbonTT"] = "Applies justified alignment to the selection";
             //Spell Check
-                EnUIDict["spellcheckSuggestionTT"] = "Replaces the spelling error text with ";
-            EnUIDict["spellcheckNoSuggestionsTT"] = "Spell Check could not find any suggestions";
+                EnUIDict["spellcheckSuggestionTT"] = "Replaces the spelling error text with "; //proceeded by "<replacement word>"
+                EnUIDict["spellcheckNoSuggestionsTT"] = "Spell Check could not find any suggestions";
+            EnUIDict["spellcheckIgnoreAll"] = "Ignore All";
+                EnUIDict["spellcheckIgnoreAllTT"] = "Ignores all occurances of \"\" for this session"; //requires insert of <error phrase> at char 27
+            EnUIDict["spellcheckAddToDictionary"] = "Add to Dictionary";
+                EnUIDict["spellcheckAddToDictionaryTT"] = "Adds \"\" to your custom Spell Check dictionary"; //requires insert of <error phrase> at char 6
 
             /*
                 JpUIDict = new Dictionary<string, object>();
@@ -334,6 +345,26 @@ namespace KuroNote
                 "NOTE: Text formatting data will now be added to plain text files (e.g. \".txt\") if they are overwritten.\n\n" +
                 "You can enable or disable RTF Mode whenever you want to - no restart required!";
             EnTitleDict[8] = "Welcome to RTF Mode!";
+        }
+
+        /// <summary>
+        /// Adds or removes the appdata "dictionary.lex" custom dictionary file to/from MainRtb's spellchecker
+        /// </summary>
+        /// <param name="add">True if you want to add the dictionary, false otherwise</param>
+        private void ToggleCustomSpellcheckDictionary(bool add)
+        {
+            IList dictionaries = SpellCheck.GetCustomDictionaries(MainRtb);
+            if (add) {
+                //If it exists, add the custom dictionary
+                if (File.Exists(customDictionaryPath)) {
+                    dictionaries.Add(new Uri(customDictionaryPath));
+                }
+            } else {
+                //Remove custom dictionary
+                if (dictionaries.Count > 1) { //NOTE: there will always be the "pack://" dictionary occupying ID 0
+                    dictionaries.RemoveAt(SPELL_CHECK_CUSTOM_DICTIONARY_ID);
+                }
+            }
         }
 
         /// <summary>
@@ -2010,6 +2041,7 @@ namespace KuroNote
             }
         }
 
+        #region Spell Check
         /// <summary>
         /// Deletes existing spellcheck items (so that new ones can be added)
         /// NOTE: this method actually just deletes all context menu items that have a tag (because spellcheck items always have tags)
@@ -2065,7 +2097,7 @@ namespace KuroNote
                 foreach (string suggestion in se.Suggestions) {
                     //add suggestion context menu items up until the suggestion limit
                     if (suggestionCounter < SPELL_CHECK_SUGGESTION_LIMIT) { //add "&& limitSuggestionsFlag" to control with settings
-                        log.addLog("Spellcheck suggestion: " + suggestion);
+                        log.addLog("Spell Check suggests [" + suggestionCounter + "]: " + suggestion);
                         MainRtbContext.Items.Add(generateSpellcheckMenuItem(se, suggestion));
                         suggestionCounter++;
                     }
@@ -2075,21 +2107,11 @@ namespace KuroNote
                     //spelling error identified, but no suggestions available - show "no suggestions" item
                     MainRtbContext.Items.Add(generateNoSuggestionsItem(se));
                 }
-            }
-        }
 
-        /// <summary>
-        /// Creates a context menu item that simply states there are no suggestions available
-        /// </summary>
-        /// <returns>A spellcheck "no suggestions" context menu item</returns>
-        private MenuItem generateNoSuggestionsItem(SpellingError spellcheckError)
-        {
-            MenuItem suggestionItem = new MenuItem();
-            suggestionItem.Tag = spellcheckError;
-            suggestionItem.Header = EnUIDict["spellcheckNoSuggestionsTT"];
-            suggestionItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_spellcheck_black_18dp.png")) };
-            suggestionItem.IsEnabled = false;
-            return suggestionItem;
+                MainRtbContext.Items.Add(new Separator());
+                MainRtbContext.Items.Add(generateIgnoreAllItem(se));
+                MainRtbContext.Items.Add(generateAddToDictionaryItem(se));
+            }
         }
 
         /// <summary>
@@ -2107,6 +2129,51 @@ namespace KuroNote
             suggestionItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_spellcheck_black_18dp.png")) };
             suggestionItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(spellcheckSuggestion_Click));
             return suggestionItem;
+        }
+
+        /// <summary>
+        /// Creates a context menu item that simply states there are no suggestions available
+        /// </summary>
+        /// <returns>A spellcheck "no suggestions" context menu item</returns>
+        private MenuItem generateNoSuggestionsItem(SpellingError spellcheckError)
+        {
+            MenuItem suggestionItem = new MenuItem();
+            suggestionItem.Tag = spellcheckError;
+            suggestionItem.Header = EnUIDict["spellcheckNoSuggestionsTT"];
+            suggestionItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_spellcheck_black_18dp.png")) };
+            suggestionItem.IsEnabled = false;
+            return suggestionItem;
+        }
+
+        /// <summary>
+        /// Creates a context menu item that does a default "Ignore All"
+        /// </summary>
+        /// <returns>A spellcheck "Ignore All" context menu item</returns>
+        private MenuItem generateIgnoreAllItem(SpellingError spellcheckError)
+        {
+            MenuItem ignoreAllItem = new MenuItem();
+            ignoreAllItem.Tag = spellcheckError;
+            ignoreAllItem.Header = EnUIDict["spellcheckIgnoreAll"];
+            ignoreAllItem.ToolTip = EnUIDict["spellcheckIgnoreAllTT"].Insert(27, MainRtb.GetSpellingErrorRange(MainRtb.CaretPosition).Text);
+            ignoreAllItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_front_hand_black_18dp.png")) };
+            ignoreAllItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(spellcheckIgnoreAll_Click));
+            return ignoreAllItem;
+        }
+
+        /// <summary>
+        /// Creates a spellcheck context menu item that adds the error phrase to a custom dictionary
+        /// </summary>
+        /// <param name="suggestion">The specified correction phrase</param>
+        /// <returns>A spellcheck "Add to Dictionary" context menu item</returns>
+        private MenuItem generateAddToDictionaryItem(SpellingError spellcheckError)
+        {
+            MenuItem addToDictionaryItem = new MenuItem();
+            addToDictionaryItem.Tag = spellcheckError;
+            addToDictionaryItem.Header = EnUIDict["spellcheckAddToDictionary"];
+            addToDictionaryItem.ToolTip = EnUIDict["spellcheckAddToDictionaryTT"].Insert(6, MainRtb.GetSpellingErrorRange(MainRtb.CaretPosition).Text);
+            addToDictionaryItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_menu_book_black_18dp.png")) };
+            addToDictionaryItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(spellcheckAddToDictionary_Click));
+            return addToDictionaryItem;
         }
 
         /// <summary>
@@ -2129,9 +2196,62 @@ namespace KuroNote
             string sourceSpellcheckSuggestion = sourceMenuItem.Header.ToString();
 
             //replace the error text with the suggestion text
-            log.addLog("Implementing Spellcheck Suggestion: " + sourceSpellcheckSuggestion);
             sourceSpellcheckError.Correct(sourceSpellcheckSuggestion);
+            log.addLog("Spell Check implement suggestion: " + sourceSpellcheckSuggestion);
         }
+
+        /// <summary>
+        /// When a dynamic spellcheck "Ignore All" menu item is clicked
+        /// (does a standard "ignore all" for this session)
+        /// </summary>
+        private void spellcheckIgnoreAll_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem sourceMenuItem = (MenuItem)sender;
+            SpellingError sourceSpellcheckError = (SpellingError)sourceMenuItem.Tag;
+            string currentSpellcheckError = MainRtb.GetSpellingErrorRange(MainRtb.CaretPosition).Text;
+
+            //Do a standard "Ignore All" - ignore this particular spelling error everywhere but only for this session
+            sourceSpellcheckError.IgnoreAll();
+            log.addLog("Spell Check ignore all: " + currentSpellcheckError);
+        }
+
+        /// <summary>
+        /// When a dynamic spellcheck "Add to Dictionary" menu item is clicked
+        /// (this adds the error phrase to the dictionary,
+        /// then removes and re-adds the dictionary to MainRtb so the new additions are immediately recognised)
+        /// </summary>
+        private void spellcheckAddToDictionary_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem sourceMenuItem = (MenuItem)sender;
+            SpellingError sourceSpellcheckError = (SpellingError)sourceMenuItem.Tag;
+            string currentSpellcheckError = MainRtb.GetSpellingErrorRange(MainRtb.CaretPosition).Text;
+
+            //Adds the word to the dictionary
+            //then removes and re-adds the dictionary so that new additions are immediately recognised
+            addWordToSpellcheckDictionary(currentSpellcheckError);
+            ToggleCustomSpellcheckDictionary(false); //remove and re-add the custom dictionary (i.e. refresh it)
+            ToggleCustomSpellcheckDictionary(true);  //
+            log.addLog("Added \"" + currentSpellcheckError + "\" to the custom Spell Check dictionary");
+        }
+
+        /// <summary>
+        /// Adds a specified word to the custom Spell Check dictionary
+        /// (if the dictionary file (appdata/roaming/kuronote/dictionary.lex) does not exist, it creates a new one)
+        /// </summary>
+        /// <param name="word">The word to add to the custom Spell Check dictionary</param>
+        void addWordToSpellcheckDictionary(string word)
+        {
+            try {
+                //Append to the custom Spell Check dictionary file if it exists, otherwise create a new one
+                using (StreamWriter sw = File.AppendText(customDictionaryPath)) {
+                    sw.WriteLine(word);
+                };
+            }
+            catch (Exception e) {
+                Console.Error.WriteLine(e.ToString());
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Executes the specified file, optionally with admin permissions
