@@ -33,6 +33,7 @@
         <!--Tools-->
         <CommandBinding Command="local:CustomCommands.AESEnc" Executed="AESEnc_Executed" />
         <CommandBinding Command="local:CustomCommands.AESDec" Executed="AESDec_Executed" />
+        <CommandBinding Command="local:CustomCommands.SpellcheckDictionaryManager" Executed="SpellcheckDictionaryManager_Executed" />
         
         <!--Fullscreen-->
         <CommandBinding Command="local:CustomCommands.Fullscreen" Executed="Fullscreen_Executed"/>
@@ -285,6 +286,11 @@
                                 <Image Source="pack://application:,,,/img/icons/outline_lock_black_18dp.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Name="SpellcheckDictionaryManagerMi" Header="{Binding [SpellcheckDictionaryManagerMi], Mode=OneTime}" ToolTip="{Binding [SpellcheckDictionaryManagerMiTT], Mode=OneTime}" Command="local:CustomCommands.SpellcheckDictionaryManager">
+                            <MenuItem.Icon>
+                                <Image Source="pack://application:,,,/img/icons/outline_menu_book_black_18dp.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem IsEnabled="False"/>
                     <!--Spacer MenuItem seperates MainMenu from RightMenu-->
@@ -339,10 +345,6 @@
             </StatusBarItem>
         </StatusBar>
         <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="MainRtb_PreviewMouseWheel" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
-            <SpellCheck.CustomDictionaries>
-                <!-- kuronote-spellcheck-custom.lex adds custom words (e.g. "KuroNote") to SpellCheck-->
-                <sys:Uri>pack://application:,,,/kuronote-spellcheck-custom.lex</sys:Uri>
-            </SpellCheck.CustomDictionaries>
             <RichTextBox.ContextMenu>
                 <ContextMenu Name="MainRtbContext" Opened="MainRtbContext_Opened">
                     <MenuItem Header="Cut" ToolTip="{Binding [CutMiTT], Mode=OneTime}" Command="ApplicationCommands.Cut">

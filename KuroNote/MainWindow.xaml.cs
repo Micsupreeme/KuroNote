@@ -22,9 +22,7 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     ///
-    /// TODO: Utility to wipe "C:\Users\<USERNAME>\AppData\Local\Temp\WPF" - Windows duplicates dictionary data here on every app launch (why?)
-    ///       probably just put this feature inside a "Custom Spell Check Dictionary Manager" so that deleted words are actually deleted       
-    ///       "previous versions of this dictionary are cached at <location>. To ensure that changes actually take effect, KuroNote will delete the cache"
+    /// TODO: Refactor: console.error.writeline -> debug.writeline
     /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
@@ -171,7 +169,7 @@ namespace KuroNote
             }
             InitialiseUIDictionary();
             InitialiseMessageDictionary();
-            ToggleCustomSpellcheckDictionary(true);
+            ToggleCustomSpellcheckDictionaries(true);
             InitialiseFont();
             InitialiseTheme();
             if(appSettings.rememberRecentFiles) {
@@ -256,6 +254,8 @@ namespace KuroNote
                 EnUIDict["AESEncMiTT"] = "Creates a copy of this file that is encrypted with a specified password by the Advanced Encryption Standard";
             EnUIDict["AESDecMi"] = "AES Decrypt...";
                 EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard";
+            EnUIDict["SpellcheckDictionaryManagerMi"] = "Spell Check Dictionary Editor...";
+                EnUIDict["SpellcheckDictionaryManagerMiTT"] = "Changes the list of custom words that Spell Check recognises";
             //Fullscreen
                 EnUIDict["FullscreenMiTT0"] = "Enters Fullscreen";
                 EnUIDict["FullscreenMiTT1"] = "Exits Fullscreen";
@@ -348,22 +348,24 @@ namespace KuroNote
         }
 
         /// <summary>
-        /// Adds or removes the appdata "dictionary.lex" custom dictionary file to/from MainRtb's spellchecker
+        /// Adds or removes both custom dictionaries (the static pack:// one and the appdata one)
+        /// to/from MainRtb's spellchecker
         /// </summary>
         /// <param name="add">True if you want to add the dictionary, false otherwise</param>
-        private void ToggleCustomSpellcheckDictionary(bool add)
+        public void ToggleCustomSpellcheckDictionaries(bool add)
         {
             IList dictionaries = SpellCheck.GetCustomDictionaries(MainRtb);
+
             if (add) {
-                //If it exists, add the custom dictionary
+                //add the static custom dictionary
+                dictionaries.Add(new Uri("pack://application:,,,/kuronote-spellcheck-custom.lex"));
+                //If it exists, add the user custom dictionary
                 if (File.Exists(customDictionaryPath)) {
                     dictionaries.Add(new Uri(customDictionaryPath));
                 }
             } else {
-                //Remove custom dictionary
-                if (dictionaries.Count > 1) { //NOTE: there will always be the "pack://" dictionary occupying ID 0
-                    dictionaries.RemoveAt(SPELL_CHECK_CUSTOM_DICTIONARY_ID);
-                }
+                //Remove custom dictionaries
+                dictionaries.Clear();
             }
         }
 
@@ -2229,8 +2231,8 @@ namespace KuroNote
             //Adds the word to the dictionary
             //then removes and re-adds the dictionary so that new additions are immediately recognised
             addWordToSpellcheckDictionary(currentSpellcheckError);
-            ToggleCustomSpellcheckDictionary(false); //remove and re-add the custom dictionary (i.e. refresh it)
-            ToggleCustomSpellcheckDictionary(true);  //
+            ToggleCustomSpellcheckDictionaries(false); //remove and re-add the custom dictionary (i.e. refresh it)
+            ToggleCustomSpellcheckDictionaries(true);  //
             log.addLog("Added \"" + currentSpellcheckError + "\" to the custom Spell Check dictionary");
         }
 
@@ -2250,6 +2252,16 @@ namespace KuroNote
             catch (Exception e) {
                 Console.Error.WriteLine(e.ToString());
             }
+        }
+
+        /// <summary>
+        /// Tools > Spell Check Dictionary Editor
+        /// </summary>
+        private void SpellcheckDictionaryManager_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            log.addLog("Request: SpellcheckDictionaryDialog");
+            SpellcheckDictionaryDialog spellcheckDictionaryDialog = new SpellcheckDictionaryDialog(this, appSettings, log);
+            spellcheckDictionaryDialog.toggleVisibility(true);
         }
         #endregion
 
@@ -3619,6 +3631,7 @@ namespace KuroNote
         //Tools
         public static RoutedCommand AESEnc = new RoutedCommand();
         public static RoutedCommand AESDec = new RoutedCommand();
+        public static RoutedCommand SpellcheckDictionaryManager = new RoutedCommand();
 
         //Fullscreen
         public static RoutedCommand Fullscreen = new RoutedCommand();

@@ -29,7 +29,7 @@ namespace KuroNote
         private const string BGIMAGE_FILE_FILTER =
             "JPEG (*.jpg;*.jpeg;*.jpe;*.jfif)|*.jpg;*.jpeg;*.jpe;*.jfif";
         private const long IMAGE_MAX_SIZE = 2097152; //Background images selected exceedomg this size (2MB) will trigger a file size warning
-        private const int OPACITY_SLIDE_DELAY_INTERVAL = 100;
+        private const int OPACITY_SLIDE_DELAY_INTERVAL = 100; //ms
 
         //Gamification constants
         private const int AP_CREATE_CUSTOM = 30;
