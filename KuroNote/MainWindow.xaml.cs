@@ -21,10 +21,6 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    ///
-    /// TODO: replace numbers with "" when saving dictionary
-    /// TODO: prefix add to dictionary with a line return
-    /// 
     /// TODO: Detect encrypted files: 0 spaces and the last 2 chars are "=="?
     /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
@@ -2249,7 +2245,7 @@ namespace KuroNote
             try {
                 //Append to the custom Spell Check dictionary file if it exists, otherwise create a new one
                 using (StreamWriter sw = File.AppendText(customDictionaryPath)) {
-                    sw.WriteLine(word);
+                    sw.Write("\n" + word);
                 };
             }
             catch (Exception e) {

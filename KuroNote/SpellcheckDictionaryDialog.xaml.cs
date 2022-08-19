@@ -58,6 +58,28 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Prepares the edited dictionary text to be saved to the dictionary.lex file by
+        /// 1. Removing all spaces
+        /// 2. Removing leading and trailing whitespace characters
+        /// The processed text then replaces the raw text inside the textbox, which is then saved
+        /// </summary>
+        private void processDictionaryText()
+        {
+            string processedDictionary = txtDictionary.Text;
+
+            //Remove any spaces
+            if (Regex.IsMatch(processedDictionary, " ")) {
+                processedDictionary = Regex.Replace(processedDictionary, " ", "");
+                log.addLog("Dictionary check: removed one or more spaces");
+            }
+
+            //Remove the last character if it's a line return
+            processedDictionary = processedDictionary.Trim();
+
+            txtDictionary.Text = processedDictionary;
+        }
+
+        /// <summary>
         /// Updates the dictionary file with the contents of the dictionary textbox (saves changes)
         /// </summary>
         private void updateDictionary()
@@ -105,7 +127,7 @@ namespace KuroNote
                     Directory.Delete(localDictionaryCachePath, true); //delete the local cache directory and everything inside
                 }
             } catch (Exception ex) {
-                Debug.WriteLine("ERROR: unable to delete " + localDictionaryCachePath);
+                Debug.WriteLine("ERROR: unable to fully delete " + localDictionaryCachePath);
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -119,7 +141,7 @@ namespace KuroNote
             //Was it deleted?
             if (Directory.Exists(localDictionaryCachePath)) {
                 //No
-                log.addLog("ERROR: local dictionary cache could not be cleared");
+                log.addLog("WARN: local dictionary cache could not be fully cleared");
             } else {
                 //Yes - success
                 log.addLog("Successfully cleared local dictionary cache");
@@ -190,11 +212,7 @@ namespace KuroNote
         /// </summary>
         private void btnDictionarySave_Click(object sender, RoutedEventArgs e)
         {
-            if (Regex.IsMatch(txtDictionary.Text, " "))
-            {
-                string spacesRemovedDictionary = Regex.Replace(txtDictionary.Text, " ", "");
-                txtDictionary.Text = spacesRemovedDictionary;
-            }
+            processDictionaryText();
             updateDictionary();
             if (editedFlag) {
                 //Changes were made - refresh the dictionary for MainRtb
