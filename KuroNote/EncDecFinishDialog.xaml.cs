@@ -176,17 +176,26 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the user clicks "Save"
+        /// </summary>
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             doSaveAs();
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// When the user clicks "Discard"
+        /// </summary>
         private void btnDiscard_Click(object sender, RoutedEventArgs e)
         {
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// While the window is closing
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             log.addLog("Close EncDecFinishDialog");

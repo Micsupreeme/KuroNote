@@ -339,6 +339,9 @@ namespace KuroNote
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// While the window is closing
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             log.addLog("Close FontDialog");

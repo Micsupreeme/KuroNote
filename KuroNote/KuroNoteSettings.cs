@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace KuroNote
 {
@@ -100,10 +101,10 @@ namespace KuroNote
                     this.profAp = knsFile.profAp;
                     this.seenRtfWelcome = knsFile.seenRtfWelcome;
                 }
-            } catch (Exception e) {          
-                Console.Error.WriteLine("Error during RetrieveSettings before log initialised:");
-                Console.Error.WriteLine(e.ToString());
-                Console.Error.WriteLine("Creating new conf.json!");
+            } catch (Exception e) {
+                Debug.WriteLine("Error during RetrieveSettings before log initialised:");
+                Debug.WriteLine(e.ToString());
+                Debug.WriteLine("Creating new conf.json!");
                 UpdateSettings(); //Creates a new conf file with default values (since the values weren't changed from the defaults)
             }
         }
@@ -120,8 +121,8 @@ namespace KuroNote
                     sw.Write(json);
                 }
             } catch (Exception e) {
-                Console.Error.WriteLine("Error during UpdateSettings before log initialised:");
-                Console.Error.WriteLine(e.ToString());
+                Debug.WriteLine("Error during UpdateSettings before log initialised:");
+                Debug.WriteLine(e.ToString());
             }
         }
 

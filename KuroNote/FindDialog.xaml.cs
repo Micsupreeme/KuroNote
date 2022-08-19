@@ -289,6 +289,9 @@ namespace KuroNote
             main.MainRtb.Selection.Select(main.MainRtb.Document.ContentEnd, main.MainRtb.Document.ContentEnd);
         }
 
+        /// <summary>
+        /// While the window is closing
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             log.addLog("Close FindDialog");

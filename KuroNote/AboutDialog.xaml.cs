@@ -105,27 +105,42 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the app version link is clicked
+        /// </summary>
         private void appVersionTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
             UpdatesDialog updatesDialog = new UpdatesDialog(main, log);
             updatesDialog.toggleVisibility(true);
         }
 
+        /// <summary>
+        /// When the app publisher link is clicked
+        /// </summary>
         private void appPublisherTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
             startProcess("https://github.com/Micsupreeme");
         }
 
+        /// <summary>
+        /// When the icons credit link is clicked
+        /// </summary>
         private void appIconsLinkTb_MouseUp(object sender, MouseButtonEventArgs e)
         {
             startProcess("https://fonts.google.com/icons?selected=Material+Icons");
         }
 
+        /// <summary>
+        /// When the app description is double-clicked (anywhere inside the textbox)
+        /// </summary>
         private void appDescriptionTxt_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             main.unlockAchievement(1);
         }
 
+        /// <summary>
+        /// When the user clicks "Dependencies"
+        /// </summary>
         private void dependenciesBtn_Click(object sender, RoutedEventArgs e)
         {
             DependenciesDialog dependenciesDialog = new DependenciesDialog(main, log);

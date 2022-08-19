@@ -22,7 +22,10 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     ///
-    /// TODO: Refactor: console.error.writeline -> debug.writeline
+    /// TODO: replace numbers with "" when saving dictionary
+    /// TODO: prefix add to dictionary with a line return
+    /// 
+    /// TODO: Detect encrypted files: 0 spaces and the last 2 chars are "=="?
     /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
@@ -2250,7 +2253,7 @@ namespace KuroNote
                 };
             }
             catch (Exception e) {
-                Console.Error.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
             }
         }
 
@@ -2288,7 +2291,7 @@ namespace KuroNote
 
         #region New Window
         /// <summary>
-        /// 
+        /// File > New Window > New Window
         /// </summary>
         private void NewRegWin_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -2298,7 +2301,7 @@ namespace KuroNote
         }
 
         /// <summary>
-        /// 
+        /// File > New Window > New Administrator Window
         /// </summary>
         private void NewAdminWin_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -3217,7 +3220,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: Attempted to access appSettings before initialisation ");
+                Debug.WriteLine("WARN: Attempted to access appSettings before initialisation ");
             }
         }
 
@@ -3521,7 +3524,7 @@ namespace KuroNote
                     rtfFontFamilyReadyFlag = false; //a font family was just applied, don't allow another until the drop down is opened again
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: SelectionChanged Event fired before object initialisation ");
+                Debug.WriteLine("WARN: SelectionChanged Event fired before object initialisation ");
             }
         }
 
@@ -3558,9 +3561,9 @@ namespace KuroNote
                     rtfFontSizeReadyFlag = false; //a font size was just applied, don't allow another until the drop down is opened again
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: SelectionChanged Event fired before object initialisation ");
+                Debug.WriteLine("WARN: SelectionChanged Event fired before object initialisation ");
             } catch (FormatException) {
-                Console.Error.WriteLine("WARN: Unable to parse rtfFontSizeCmb value");
+                Debug.WriteLine("WARN: Unable to parse rtfFontSizeCmb value");
             }
         }
 

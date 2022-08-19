@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Timers;
 using System.Windows;
 
@@ -101,6 +102,10 @@ namespace KuroNote
         //which makes it look like the user has changed an option during every visit to OptionsDialog.
         //Dirty workaround - reset the "anythingChanged" flag after 100ms
         //(i.e. only change(s) to options registered after this incredibly short interval will count towards achievement)
+
+        /// <summary>
+        /// Starts the gamifiaction timer
+        /// </summary>
         private void initialiseOptionsGamification()
         {
             gamificationTimer = new Timer();
@@ -109,6 +114,9 @@ namespace KuroNote
             gamificationTimer.Enabled = true;
         }
 
+        /// <summary>
+        /// When the gamification timer elapses
+        /// </summary>
         private void GamificationTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             anythingChanged = false;
@@ -116,6 +124,9 @@ namespace KuroNote
         }
         #endregion
 
+        /// <summary>
+        /// When the user clicks "OK" or hits ENTER
+        /// </summary>
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             if (anythingChanged) {
@@ -143,30 +154,42 @@ namespace KuroNote
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// When the user clicks "Cancel" or hits ESC
+        /// </summary>
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             //Doesn't save changes
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// When any of the options ToggleSwitches is changed to a checked state
+        /// </summary>
         private void optionTs_Checked(object sender, RoutedEventArgs e)
         {
             try {
                 anythingChanged = true;
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: ToggleSwitch_Checked Event fired before object initialisation ");
             }
         }
 
+        /// <summary>
+        /// When any of the options ToggleSwitches is changed to an unchecked state
+        /// </summary>
         private void optionTs_Unchecked(object sender, RoutedEventArgs e)
         {
             try {
                 anythingChanged = true;
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: ToggleSwitch_Unchecked Event fired before object initialisation ");
             }
         }
 
+        /// <summary>
+        /// While the window is closing
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             log.addLog("Close OptionsDialog");

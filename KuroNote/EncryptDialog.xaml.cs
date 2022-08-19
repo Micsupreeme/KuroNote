@@ -47,6 +47,9 @@ namespace KuroNote
             KeyPw.Focus();
         }
 
+        /// <summary>
+        /// Initialises the background encryption worker
+        /// </summary>
         private void beginAESEnc()
         {
             btnOk.IsEnabled = false;
@@ -66,7 +69,10 @@ namespace KuroNote
             encWorker.RunWorkerAsync(args);
         }
 
-        
+        /// <summary>
+        /// Asynchronously encrypts the text specified in arguments (in beginAESEnc) using symmetrical AES encryption
+        /// and stores it in the "AESencryptedContent" global
+        /// </summary>
         void encWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker encWorker = sender as BackgroundWorker;
@@ -108,6 +114,10 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the background encryption worker finishes work
+        /// examine and call for a results dialog to report back the results
+        /// </summary>
         void encWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled) {
@@ -369,8 +379,6 @@ namespace KuroNote
             }
         }
 
-
-
         /// <summary>
         /// When either of the password fields are changed
         /// </summary>
@@ -401,6 +409,9 @@ namespace KuroNote
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// While the window closes
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             log.addLog("Close EncryptionDialog");

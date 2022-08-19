@@ -149,6 +149,10 @@ namespace KuroNote
             achievementListDialog.toggleVisibility(true);
         }
 
+        /// <summary>
+        /// When the mouse enters the area of the icon image
+        /// (change the image to the alternate version)
+        /// </summary>
         private void imgRankIcon_MouseEnter(object sender, MouseEventArgs e)
         {
             //Rank image (named according their rankId - unless rank >= 25)
@@ -172,6 +176,10 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the mouse leaves the area of the icon image
+        /// (change the image to the original version)
+        /// </summary>
         private void imgRankIcon_MouseLeave(object sender, MouseEventArgs e)
         {
             //Rank image (named according their rankId - unless rank >= 25)

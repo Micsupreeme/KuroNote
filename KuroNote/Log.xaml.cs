@@ -137,7 +137,6 @@ namespace KuroNote
             }
         }
 
-
         /// <summary>
         /// Starts a process to open the logs directory
         /// </summary>

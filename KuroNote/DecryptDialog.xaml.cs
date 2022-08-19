@@ -45,6 +45,9 @@ namespace KuroNote
             KeyPw.Focus();
         }
 
+        /// <summary>
+        /// Initialises the background decryption worker
+        /// </summary>
         private void beginAESDec()
         {
             btnOk.IsEnabled = false;
@@ -64,6 +67,10 @@ namespace KuroNote
             decWorker.RunWorkerAsync(args);
         }
 
+        /// <summary>
+        /// Asynchronously decrypts the text specified in arguments (in beginAESDec) using symmetrical AES decryption
+        /// and stores it in the "AESdecryptedContent" global
+        /// </summary>
         void decWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker encWorker = sender as BackgroundWorker;
@@ -86,7 +93,7 @@ namespace KuroNote
                     aesAlg = new RijndaelManaged();
                     aesAlg.Key = key.GetBytes(aesAlg.KeySize / 8);
                     // Get the initialization vector from the encrypted stream
-                    aesAlg.IV = ReadByteArray(msDecrypt);
+                    aesAlg.IV = getByteArrayFromStream(msDecrypt);
                     // Create a decrytor to perform the stream transform.
                     ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
                     using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
@@ -115,7 +122,12 @@ namespace KuroNote
             }
         }
 
-        private static byte[] ReadByteArray(Stream s)
+        /// <summary>
+        /// Converts a memory stream into an initialisation vector (IV)
+        /// </summary>
+        /// <param name="s">The MemoryStream to convert</param>
+        /// <returns>A byte array initialisation vector (IV)</returns>
+        private static byte[] getByteArrayFromStream(Stream s)
         {
             byte[] rawLength = new byte[sizeof(int)];
             if (s.Read(rawLength, 0, rawLength.Length) != rawLength.Length) {
@@ -130,6 +142,10 @@ namespace KuroNote
             return buffer;
         }
 
+        /// <summary>
+        /// When the background decryption worker finishes work
+        /// examine and call for a results dialog to report back the results
+        /// </summary>
         void decWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled) {
@@ -184,6 +200,9 @@ namespace KuroNote
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// While the window closes
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             log.addLog("Close DecryptionDialog");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,21 +31,13 @@ namespace KuroNote
         public SpellcheckDictionaryDialog(MainWindow _mainWin, KuroNoteSettings _settings, Log _mainLog)
         {
             InitializeComponent();
-            //InitialiseTheme();
+            //InitialiseTheme(); //set a theme for the dictionary textbox?
             main = _mainWin;
             settings = _settings;
             log = _mainLog;
             appName = main.appName;
             this.Title = WINDOW_NAME + " - " + appName;
             populateDictionary(); //load existing dictionary data so that it can be edited
-        }
-
-        /// <summary>
-        /// Sets the theme for the dictionary textbox
-        /// </summary>
-        private void InitialiseTheme()
-        {
-            
         }
 
         /// <summary>
@@ -112,8 +105,8 @@ namespace KuroNote
                     Directory.Delete(localDictionaryCachePath, true); //delete the local cache directory and everything inside
                 }
             } catch (Exception ex) {
-                Console.Error.WriteLine("ERROR: unable to delete " + localDictionaryCachePath);
-                Console.Error.WriteLine(ex.ToString());
+                Debug.WriteLine("ERROR: unable to delete " + localDictionaryCachePath);
+                Debug.WriteLine(ex.ToString());
             }
         }
 
@@ -213,7 +206,7 @@ namespace KuroNote
         }
 
         /// <summary>
-        /// When the user clicks "OK" or hits ENTER
+        /// When the user clicks "OK" or hits ENTER or hits ESC
         /// </summary>
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {

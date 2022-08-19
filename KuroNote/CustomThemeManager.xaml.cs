@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Timers;
 using System.Windows;
@@ -474,7 +475,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
             }
         }
 
@@ -493,7 +494,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
             }
         }
 
@@ -540,7 +541,7 @@ namespace KuroNote
                     solidBrushColLbl.Visibility = Visibility.Visible;
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
             }
         }
 
@@ -593,7 +594,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ValueChanged Event fired before object initialisation ");
+                Debug.WriteLine("WARN: ValueChanged Event fired before object initialisation ");
             }
         }
 
@@ -615,7 +616,7 @@ namespace KuroNote
                 }
 
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ToggleButton_Checked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: ToggleButton_Checked Event fired before object initialisation ");
             }
         }
 
@@ -627,7 +628,7 @@ namespace KuroNote
             try {
                 previewBtnImage.Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_visibility_off_black_18dp.png"));
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ToggleButton_Unchecked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: ToggleButton_Unchecked Event fired before object initialisation ");
             }
         }
 
@@ -642,7 +643,7 @@ namespace KuroNote
                     main.setTheme(currentTheme.themeId, true); //always auto-preview with font
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
+                Debug.WriteLine("WARN: Radio_Checked Event fired before object initialisation ");
             }
         }
 
@@ -661,7 +662,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+                Debug.WriteLine("WARN: OnPick Event fired before object initialisation ");
             }
         }
 
@@ -679,7 +680,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+                Debug.WriteLine("WARN: OnPick Event fired before object initialisation ");
             }
         }
 
@@ -697,7 +698,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+                Debug.WriteLine("WARN: OnPick Event fired before object initialisation ");
             }
         }
 
@@ -715,7 +716,7 @@ namespace KuroNote
                     }
                 }
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: OnPick Event fired before object initialisation ");
+                Debug.WriteLine("WARN: OnPick Event fired before object initialisation ");
             }
         }
 
@@ -765,7 +766,7 @@ namespace KuroNote
                 opacitySlideDelay.Stop();
                 opacitySlideDelay.Start();
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: ValueChanged Event fired before object initialisation ");
+                Debug.WriteLine("WARN: ValueChanged Event fired before object initialisation ");
             }
         }
 
@@ -783,7 +784,7 @@ namespace KuroNote
                 }
                 //no need to update preview, themeName is metadata only
             } catch (NullReferenceException) {
-                Console.Error.WriteLine("WARN: TextChanged Event fired before object initialisation ");
+                Debug.WriteLine("WARN: TextChanged Event fired before object initialisation ");
             }
         }
 

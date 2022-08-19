@@ -191,7 +191,7 @@ namespace KuroNote
         }
 
         /// <summary>
-        /// When the user clicks "OK" or hits ENTER
+        /// When the user clicks "OK" or hits ENTER or hits ESC
         /// </summary>
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {

@@ -33,6 +33,9 @@ namespace KuroNote
             populateFields();
         }
 
+        /// <summary>
+        /// Change the UI to display data for the achievement that has been sent
+        /// </summary>
         private void populateFields()
         {
             lblAchievementName.Content = achievement.achievementName;

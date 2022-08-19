@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -132,7 +133,7 @@ namespace KuroNote
                 main.setTheme(selectedThemeTag, (bool)chkIncludeFont.IsChecked);
             } catch (NullReferenceException) {
                 //cmbTheme.SelectedValue is null
-                Console.Error.WriteLine("WARN: Attempted to preview null theme");
+                Debug.WriteLine("WARN: Attempted to preview null theme");
             }
         }
 
@@ -149,7 +150,7 @@ namespace KuroNote
                 }
                 main.setTheme(selectedThemeTag, isChecked);
             } catch(Exception ex) {
-                Console.Error.Write(ex.ToString()); //Attempted to apply theme before the combobox is initialised
+                Debug.WriteLine(ex.ToString()); //Attempted to apply theme before the combobox is initialised
             }
         }
 
@@ -179,6 +180,9 @@ namespace KuroNote
             }
         }
 
+        /// <summary>
+        /// When the user clicks "OK" or hits ENTER
+        /// </summary>
         private void btnOk_Click(object sender, RoutedEventArgs e) {
             int newThemeId = (int)cmbTheme.SelectedValue; //tag stores the corresponding themeId
             bool themeIncludesFont = (bool)chkIncludeFont.IsChecked;
@@ -189,6 +193,9 @@ namespace KuroNote
             toggleVisibility(false);
         }
 
+        /// <summary>
+        /// When the user clicks "Cancel" or hits ESC
+        /// </summary>
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
             main.setTheme(previouslySelectedThemeId, settings.themeWithFont);
             toggleVisibility(false);
