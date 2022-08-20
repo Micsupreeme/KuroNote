@@ -21,7 +21,23 @@ namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// TODO: Detect encrypted files: 0 spaces and the last 2 chars are "=="?
+    /// 
+    /// TODO: add "open files after encryption/decryption" setting (currently you have to manually open them)
+    /// 
+    /// TODO: Refactor doOpen() to handle the 3 use cases:
+    /// - open without a file (ask about unsaved changes)
+    /// - open with a file (ask about unsaved changes) *new*
+    /// - open with a file (don't ask about unsaved changes because this has to run automatically)
+    /// all 3 use cases must also automatially determine whether or not to use the plain/rtf open method
+    /// doOpen() will need to take a new int openMode parameter
+    /// currently [MainRtb_PreviewDrop] & [recentFileMi_Click] manually implement unsaved changes checks
+    /// 
+    /// TODO: Detect encrypted files:
+    /// 1. .kuro extension
+    /// 2. 1 word
+    /// 3. characters per word == characters && characters == characters(with spaces)
+    /// 4. the last 2 characters are "=="
+    /// 
     /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
@@ -1967,7 +1983,36 @@ namespace KuroNote
         private void recentFileMi_Click(object sender, RoutedEventArgs e)
         {
             MenuItem thisRecentFileMi = (MenuItem)e.Source;
-            doOpen(thisRecentFileMi.Header.ToString());
+
+            /* TODO:
+             * doOpen() has 2 use cases:
+             * - open without a file - checks for "open before saving"
+             * - open with a file - does not check editedFlag because it runs automatically
+             * but this method adds another:
+             * - open with a file - checks for "open before saving"
+             * which is currently only defined here (needs a refactor)
+             */
+            if (editedFlag) {
+                //unsaved changes
+                log.addLog("WARNING: Open (Recent) before saving");
+                var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
+                    log.addLog("Open (Recent) cancelled");
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        //yes - open after saving
+                        doSave();
+                        doOpen(thisRecentFileMi.Header.ToString());
+                    }
+                    //cancel - do nothing
+                } else {
+                    //no - open without saving
+                    doOpen(thisRecentFileMi.Header.ToString());
+                }
+            } else {
+                //safe to exit
+                doOpen(thisRecentFileMi.Header.ToString());
+            }
         }
 
         /// <summary>
@@ -3156,32 +3201,75 @@ namespace KuroNote
         /// </summary>
         private void WordCountItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-            int characterCount = document.Text.Length - 2; //this includes the "start" and "end" characters which most consider to be "not real" characters
-            if(characterCount < 0) {
-                characterCount = 0;
+            int wordCount = getWordCount();
+            int charCountNoSpaces = getCharacterCount(false);
+            int charCountSpaces = getCharacterCount(true);
+
+            float averageCharPerWord;
+            if (wordCount == 0 || charCountNoSpaces == 0) {
+                //prevent divide-by-0
+                averageCharPerWord = 0;
+            } else {
+                averageCharPerWord = (float)charCountNoSpaces / (float)wordCount;
             }
 
-            MessageBox.Show(generateWordCount() + "\n" + characterCount + " Characters (including spaces)", "Word Count", MessageBoxButton.OK, MessageBoxImage.Information);
+            string wordString, charStringSpaces, charStringNoSpaces;
+
+            if (wordCount == 1) {
+                wordString = wordCount + " word\n";
+            } else {
+                wordString = wordCount + " words\n";
+            }
+
+            if (charCountNoSpaces == 1) {
+                charStringNoSpaces = charCountNoSpaces + " character\n";
+            } else {
+                charStringNoSpaces = charCountNoSpaces + " characters\n";
+            }
+
+            if (charCountSpaces == 1) {
+                charStringSpaces = charCountSpaces + " character (including spaces)\n";
+            } else {
+                charStringSpaces = charCountSpaces + " characters (including spaces)\n";
+            }
+
+            MessageBox.Show(
+                wordString + charStringNoSpaces + charStringSpaces + Math.Round(averageCharPerWord, 2) + " average characters per word",
+                "Word Count", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
-        /// Creates a string based on the number of words in the RTB
+        /// Calculates the number of words in MainRtb
         /// </summary>
-        /// <returns>A string that describes the number of words in the RTB</returns>
-        private string generateWordCount()
+        /// <returns>The number of words in MainRtb</returns>
+        private int getWordCount()
         {
             TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
             MatchCollection words = Regex.Matches(document.Text, @"\S+");
+            return words.Count;
+        }
 
-            string wordsPost;
-            if (words.Count == 1) {
-                wordsPost = "Word";
+        /// <summary>
+        /// Calculates the number of characters in MainRtb (with or without spaces)
+        /// </summary>
+        /// <param name="includeSpaces">True if you want to include spaces in the count, false otherwise</param>
+        /// <returns>The number of characters in MainRtb</returns>
+        private int getCharacterCount(bool includeSpaces)
+        {
+            TextRange document = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+            int characterCount;
+
+            if (includeSpaces) {
+                characterCount = document.Text.Length - 2; //does not include the "start" and "end" document characters
             } else {
-                wordsPost = "Words";
+                characterCount = document.Text.Replace(" ", "").Length - 2; //does not include the "start" and "end" characters
             }
 
-            return words.Count + " " + wordsPost;
+            if (characterCount < 0) {
+                return 0;
+            } else {
+                return characterCount;
+            }
         }
 
         /// <summary>
@@ -3586,7 +3674,17 @@ namespace KuroNote
         {
             toggleEdited(true);
             processPageWidth();
-            WordCountTb.Text = generateWordCount();
+
+            //update StatusBar word count display
+            int wordCount = getWordCount();
+            string wordString;
+
+            if (wordCount == 1) {
+                wordString = wordCount + " word";
+            } else {
+                wordString = wordCount + " words";
+            }
+            WordCountTb.Text = wordString;
         }
 
         /// <summary>
