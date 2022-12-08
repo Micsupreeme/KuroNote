@@ -551,7 +551,7 @@ You can expect all the essential features like: save as; print; find; replace; s
 
   <ItemGroup>
     <PackageReference Include="ColorPickerWPF" Version="1.0.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="WPFSpark" Version="1.5.0" />
   </ItemGroup>
 
