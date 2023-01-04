@@ -24,21 +24,12 @@ namespace KuroNote
     /// 
     /// TODO: add "open files after encryption/decryption" setting (currently you have to manually open them)
     /// 
-    /// TODO: Refactor doOpen() to handle the 3 use cases:
-    /// - open without a file (ask about unsaved changes)
-    /// - open with a file (ask about unsaved changes) *new*
-    /// - open with a file (don't ask about unsaved changes because this has to run automatically)
-    /// all 3 use cases must also automatially determine whether or not to use the plain/rtf open method
-    /// doOpen() will need to take a new int openMode parameter
-    /// currently [MainRtb_PreviewDrop] & [recentFileMi_Click] manually implement unsaved changes checks
-    /// 
     /// TODO: Detect encrypted files:
     /// 1. .kuro extension
     /// 2. 1 word
     /// 3. characters per word == characters && characters == characters(with spaces)
     /// 4. the last 2 characters are "=="
     /// 
-    /// TODO: Option within RTF Mode to toggle appling font colour automatically when it's chosen (currentlty this always happens)
     /// TODO: Vanity options? (Font Preview Text, AppName)
     /// TODO: Expand context menu
     /// TODO: Upgrade CustomThemeManager "opacitySlideDelay" to DispatcherTimer
@@ -46,6 +37,8 @@ namespace KuroNote
     /// TODO: Add more error messages to language dictionary
     /// TODO: check (again) find/replace selecting the 1st occurance of any search term twice before continuing
     /// TODO: Hashing tool
+    /// TODO: Context menu: Select All, Search with Google...
+    /// TODO: Setting(s) for: MainRtb.BorderThickness
     /// TODO: Auto-backup every 3,5,10,15 minutes? (in a seperate thread!)
     /// TODO Lo: File filter string generator
     /// TODO Lo: List maker (.kurolist)
@@ -169,7 +162,7 @@ namespace KuroNote
         public MainWindow()
         {
             InitializeComponent();
-            if(!isSetup()) {
+            if (!isSetup()) {
                 MessageBox.Show("Please run \"KuroNote Setup\" to complete installation.", "KuroNote is Not Fully Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             InitialiseSettings();
@@ -265,9 +258,9 @@ namespace KuroNote
             //Tools
             EnUIDict["ToolsMi"] = "Tools";
             EnUIDict["AESMi"] = "AES Encryption";
-            EnUIDict["AESEncMi"] = "AES Encrypt...";
+            EnUIDict["AESEncMi"] = "AES Encryptor...";
                 EnUIDict["AESEncMiTT"] = "Creates a copy of this file that is encrypted with a specified password by the Advanced Encryption Standard";
-            EnUIDict["AESDecMi"] = "AES Decrypt...";
+            EnUIDict["AESDecMi"] = "AES Decryptor...";
                 EnUIDict["AESDecMiTT"] = "Creates a copy of this file that is decrypted with a specified password by the Advanced Encryption Standard";
             EnUIDict["SpellcheckDictionaryManagerMi"] = "Spell Check Dictionary Editor...";
                 EnUIDict["SpellcheckDictionaryManagerMiTT"] = "Changes the list of custom words that Spell Check recognises";
@@ -360,6 +353,9 @@ namespace KuroNote
                 "NOTE: Text formatting data will now be added to plain text files (e.g. \".txt\") if they are overwritten.\n\n" +
                 "You can enable or disable RTF Mode whenever you want to - no restart required!";
             EnTitleDict[8] = "Welcome to RTF Mode!";
+
+            EnMsgDict[9] = "The file may have moved, or you may lack the permissions necessary to access it.";
+            EnTitleDict[9] = "File cannot be accessed";
         }
 
         /// <summary>
@@ -533,6 +529,25 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Determines whether or not the file exists and is accessible
+        /// </summary>
+        /// <param name="_path">The path to the file that will be tested</param>
+        /// <returns>True if the file exists and is accessible, false otherwise</returns>
+        private bool fileExists(string _path)
+        {
+            try {
+                if (File.Exists(_path)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (IOException) {
+                //file either doesn't exist or is not accessible
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Determines whether or not the contents of a specified file exceed KuroNote's maximum file size
         /// </summary>
         /// <param name="_path">The path to the file that will be measured</param>
@@ -587,7 +602,7 @@ namespace KuroNote
         {
             if (hasCmdLineFile()) {
                 string[] args = Environment.GetCommandLineArgs();
-                doOpen(args[1]);
+                doOpen(false, args[1]);
             }
         }
 
@@ -722,7 +737,7 @@ namespace KuroNote
                 //If RTF document is currently opened
                 if (fileName.Length > 0 && Path.GetExtension(fileName).Equals(".rtf")) {
                     //RTF document is currently opened in Plain Text mode - reload it as RTF
-                    doOpen(fileName);
+                    doOpen(false, fileName);
                 }
 
                 RtfMenu.Visibility = Visibility.Visible;
@@ -776,7 +791,7 @@ namespace KuroNote
                     //if there's a file to reopen, open it
                     if (fileName.Length > 0) {
                         appSettings.rtfMode = false;
-                        doOpen(fileName);
+                        doOpen(false, fileName);
                     } else {
                         doNew(true);
                     }
@@ -788,7 +803,7 @@ namespace KuroNote
                     //if there's a file to reopen, open it
                     if (fileName.Length > 0) {
                         appSettings.rtfMode = false;
-                        doOpen(fileName);
+                        doOpen(false, fileName);
                     } else {
                         doNew(true);
                     }
@@ -804,7 +819,7 @@ namespace KuroNote
                 //if there's a file to reopen, open it
                 if (fileName.Length > 0) {
                     appSettings.rtfMode = false;
-                    doOpen(fileName);
+                    doOpen(false, fileName);
                 } else {
                     doNew(true);
                 }
@@ -934,10 +949,12 @@ namespace KuroNote
                 case 8:
                     //World Cat Day, International Dog Day
                     if (nowDay == 8) {
-                        setStatus("Meow! Happy Cat Day " + user + "!", false);
+                        appName = "NekoNote";
+                        setStatus("Happy World Cat Day " + user + "!", false);
                         unlockAchievement(88);
                     } else if (nowDay == 26) {
-                        setStatus("Woof! Happy Dog Day " + user + "!", false);
+                        appName = "InuNote";
+                        setStatus("Happy International Dog Day " + user + "!", false);
                         unlockAchievement(826);
                     }
                     break;
@@ -975,7 +992,6 @@ namespace KuroNote
                         unlockAchievement(1225);
                     } else if (nowDay == 29) {
                         appName = "ShiroNote";
-                        setStatus("Today my creator turns " + (nowYear - 1996) + "!", false);
                     }
                     break;
             }
@@ -1548,25 +1564,29 @@ namespace KuroNote
         /// <summary>
         /// Loads a file into the RTB
         /// </summary>
-        /// <param name="path">Optional: specify file to open instead of using file open dialog</param>
-        /// <returns>True if the operation completed successfully, false otherwise</returns>
-        private bool doOpen(string _path = "")
+        /// <param name="askAboutUnsavedChanges">If true, asks about unsaved changes before opening the new file, else discards any unsaved text</param>
+        /// <param name="directOpenPath">Optional: specify file to open instead of using a file open dialog</param>
+        /// <returns></returns>
+        private bool doOpen(bool askAboutUnsavedChanges, string directOpenPath = "")
         {
-            if (_path.Equals("")) {
-                //No file specified - use dialog
-                log.addLog("Request: Open");
+            log.addLog("Request: Open");
 
-                if (editedFlag) {
-                    log.addLog("WARNING: Open before saving");
-                    var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-                    if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
-                        log.addLog("Open cancelled");
-                        if (res == MessageBoxResult.Yes) {
-                            doSave();       //save
-                        }
-                        return false;   //don't continue with open operation
+            //If set to ask about unsaved changes and there are unsaved changes
+            //ask if they want to a) proceed anyway b) proceed but save first c) cancel the operation
+            if (editedFlag && askAboutUnsavedChanges) {
+                log.addLog("WARNING: Open before saving");
+                var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
+                    log.addLog("Open cancelled");
+                    if (res == MessageBoxResult.Yes) {
+                        doSave();       //save
                     }
+                    return false;   //don't continue with open operation
                 }
+            }
+
+            if (directOpenPath.Equals("")) {
+                //No file specified - use dialog to choose a file
 
                 OpenFileDialog dlg = new OpenFileDialog();
                 if (appSettings.rtfMode) {
@@ -1574,64 +1594,29 @@ namespace KuroNote
                 } else {
                     dlg.Filter = OPEN_FILE_FILTER;
                 }
+
                 if (dlg.ShowDialog() == true) {
                     try {
-                        if (fileTooBig(dlg.FileName)) {
-                            log.addLog("WARNING: File size exceeds limit");
-                            var res = MessageBox.Show(getMessage(1)[0], getMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                            if (res == MessageBoxResult.No) {
-                                log.addLog("Open cancelled due to file size");
-                                return false;
+                        if (fileExists(dlg.FileName)) {
+                            if (fileTooBig(dlg.FileName)) {
+                                log.addLog("WARNING: File size exceeds limit");
+                                var res = MessageBox.Show(getMessage(1)[0], getMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                if (res == MessageBoxResult.No) {
+                                    log.addLog("Open cancelled due to file size");
+                                    return false;
+                                }
                             }
+                        } else {
+                            MessageBox.Show(getMessage(9)[0], getMessage(9)[1], MessageBoxButton.OK, MessageBoxImage.Error);
+                            return false;
                         }
 
                         if (appSettings.rtfMode) {
-                            //RTF-capable open method
-                            TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-                            FileStream rtfStream = new FileStream(dlg.FileName, FileMode.Open);
-                            rtfRange.Load(rtfStream, DataFormats.Rtf);
-                            rtfStream.Close();
-                            log.addLog("Successfully opened (RTF) " + dlg.FileName);
-
+                            doOpenRTF(dlg.FileName);
                         } else {
-                            //Plaintext-only open method
-                            MemoryStream ms = new MemoryStream();
-                            using (FileStream file = new FileStream(dlg.FileName, FileMode.Open, FileAccess.Read))
-                            {
-                                byte[] bytes = new byte[file.Length];
-                                file.Read(bytes, 0, (int)file.Length);
-                                ms.Write(bytes, 0, (int)file.Length);
-                            }
-
-                            //Set encoding
-                            TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-                            range.Text = selectedEncoding.GetString(ms.ToArray());
-
-                            ms.Close();
-                            log.addLog("Successfully opened " + dlg.FileName);
+                            doOpenPlain(dlg.FileName);
                         }
-
                         fileName = dlg.FileName;
-                        updateAppTitle();
-                        toggleEdited(false);
-                        setStatus("Opened", true);
-                        appRecents.addRecentFile(fileName);
-
-                        if (appSettings.gamification) {
-                            incrementAp(AP_OPEN);
-                            appSettings.achOpens++;
-                            appSettings.UpdateSettings();
-
-                            switch (appSettings.achOpens)
-                            {
-                                case 2500:
-                                    unlockAchievement(15);
-                                    break;
-                                case 7500:
-                                    unlockAchievement(16);
-                                    break;
-                            }
-                        }
 
                     } catch (Exception ex) {
                         //File cannot be accessed (e.g. used by another process)
@@ -1640,69 +1625,34 @@ namespace KuroNote
                         return false;
                     }
                 }
-            }
-            else
-            {
-                //File specified - open without using a dialog
-                log.addLog("Request: Open from cmd/drop - " + _path);
+
+            } else {
+                //File specified - open that file
+                log.addLog("Request: Open from cmd/drop - " + directOpenPath);
+
                 MemoryStream ms = new MemoryStream();
                 try {
-                    if (fileTooBig(_path)) {
-                        log.addLog("WARNING: File size exceeds limit");
-                        var res = MessageBox.Show(getMessage(1)[0], getMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        if (res == MessageBoxResult.No) {
-                            log.addLog("Open cancelled due to file size");
-                            return false;
+                    if (fileExists(directOpenPath)) {
+                        if (fileTooBig(directOpenPath)) {
+                            log.addLog("WARNING: File size exceeds limit");
+                            var res = MessageBox.Show(getMessage(1)[0], getMessage(1)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            if (res == MessageBoxResult.No) {
+                                log.addLog("Open cancelled due to file size");
+                                return false;
+                            }
                         }
+                    } else {
+                        MessageBox.Show(getMessage(9)[0], getMessage(9)[1], MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
                     }
 
                     if (appSettings.rtfMode) {
-                        //RTF-capable open method
-                        TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-                        FileStream rtfStream = new FileStream(_path, FileMode.Open);
-                        rtfRange.Load(rtfStream, DataFormats.Rtf);
-                        rtfStream.Close();
-                        log.addLog("Successfully opened (RTF) " + _path);
-
+                        doOpenRTF(directOpenPath);
                     } else {
-                        //Plaintext-only open method
-                        using (FileStream file = new FileStream(_path, FileMode.Open, FileAccess.Read))
-                        {
-                            byte[] bytes = new byte[file.Length];
-                            file.Read(bytes, 0, (int)file.Length);
-                            ms.Write(bytes, 0, (int)file.Length);
-                        }
-
-                        //Set encoding
-                        TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-                        range.Text = selectedEncoding.GetString(ms.ToArray());
-
-                        ms.Close();
-                        log.addLog("Successfully opened " + _path);
+                        doOpenPlain(directOpenPath);
                     }
-
-                    fileName = _path;
-                    updateAppTitle();
-                    toggleEdited(false);
-                    setStatus("Opened", true);
-                    appRecents.addRecentFile(fileName);
-
-                    if (appSettings.gamification) {
-                        incrementAp(AP_OPEN);
-                        appSettings.achOpens++;
-                        appSettings.UpdateSettings();
-
-                        switch (appSettings.achOpens)
-                        {
-                            case 2500:
-                                unlockAchievement(15);
-                                break;
-                            case 7500:
-                                unlockAchievement(16);
-                                break;
-                        }
-                    }
-
+                    fileName = directOpenPath;
+                
                 } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
                     log.addLog(ex.ToString());
@@ -1710,7 +1660,61 @@ namespace KuroNote
                     return false;
                 }
             }
+
+            updateAppTitle();
+            toggleEdited(false);
+            setStatus("Opened", true);
+            appRecents.addRecentFile(fileName);
+
+            if (appSettings.gamification) {
+                incrementAp(AP_OPEN);
+                appSettings.achOpens++;
+                appSettings.UpdateSettings();
+
+                switch (appSettings.achOpens)
+                {
+                    case 2500:
+                        unlockAchievement(15);
+                        break;
+                    case 7500:
+                        unlockAchievement(16);
+                        break;
+                }
+            }
             return true;
+        }
+
+        /// <summary>
+        /// Opens the specified file in Plain Text mode
+        /// </summary>
+        /// <param name="path">The full path of the file to open</param>
+        private void doOpenPlain(string path)
+        {
+            MemoryStream ms = new MemoryStream();
+            using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+                byte[] bytes = new byte[file.Length];
+                file.Read(bytes, 0, (int)file.Length);
+                ms.Write(bytes, 0, (int)file.Length);
+            }
+
+            TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+            range.Text = selectedEncoding.GetString(ms.ToArray());
+
+            ms.Close();
+            log.addLog("Successfully opened " + path);
+        }
+
+        /// <summary>
+        /// Opens the specified file in RTF mode
+        /// </summary>
+        /// <param name="path">The full path of the file to open</param>
+        private void doOpenRTF(string path)
+        {
+            TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+            FileStream rtfStream = new FileStream(path, FileMode.Open);
+            rtfRange.Load(rtfStream, DataFormats.Rtf);
+            rtfStream.Close();
+            log.addLog("Successfully opened (RTF) " + path);
         }
 
         /// <summary>
@@ -1823,6 +1827,7 @@ namespace KuroNote
                     updateAppTitle();
                     toggleEdited(false);
                     setStatus("Saved", true);
+                    appRecents.addRecentFile(fileName);
 
                     if (appSettings.gamification) {
                         incrementAp(AP_SAVE_AS);
@@ -1983,36 +1988,7 @@ namespace KuroNote
         private void recentFileMi_Click(object sender, RoutedEventArgs e)
         {
             MenuItem thisRecentFileMi = (MenuItem)e.Source;
-
-            /* TODO:
-             * doOpen() has 2 use cases:
-             * - open without a file - checks for "open before saving"
-             * - open with a file - does not check editedFlag because it runs automatically
-             * but this method adds another:
-             * - open with a file - checks for "open before saving"
-             * which is currently only defined here (needs a refactor)
-             */
-            if (editedFlag) {
-                //unsaved changes
-                log.addLog("WARNING: Open (Recent) before saving");
-                var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-                if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
-                    log.addLog("Open (Recent) cancelled");
-                    if (res == MessageBoxResult.Yes)
-                    {
-                        //yes - open after saving
-                        doSave();
-                        doOpen(thisRecentFileMi.Header.ToString());
-                    }
-                    //cancel - do nothing
-                } else {
-                    //no - open without saving
-                    doOpen(thisRecentFileMi.Header.ToString());
-                }
-            } else {
-                //safe to exit
-                doOpen(thisRecentFileMi.Header.ToString());
-            }
+            doOpen(true, thisRecentFileMi.Header.ToString());
         }
 
         /// <summary>
@@ -2028,7 +2004,7 @@ namespace KuroNote
         /// </summary>
         private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            doOpen();
+            doOpen(true);
         }
 
         /// <summary>
@@ -3356,20 +3332,8 @@ namespace KuroNote
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
                 if (files.Length == 1) {                        //If there is only 1 file...
-                    if (editedFlag) {
-                        log.addLog("WARNING: Open before saving");
-                        var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-                        if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
-                            log.addLog("Open cancelled");
-                            if (res == MessageBoxResult.Yes) {
-                                doSave();   //save
-                            }
-                            return;   //don't continue with open operation
-                        }
-                    }
-
                     log.addLog("Request: Open dropped file");
-                    doOpen(files[0]);
+                    doOpen(true, files[0]);
                 } else {
                     log.addLog("WARNING: Attempted to drop multiple files");
                 }
