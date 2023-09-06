@@ -53,6 +53,7 @@ namespace KuroNote
         public int profL = 0;
         public int profAp = 0;
         public bool seenRtfWelcome = false;
+        public bool encopen = true;
 
         /// <summary>
         /// Update this object according to the settings stored in conf.json
@@ -100,12 +101,16 @@ namespace KuroNote
                     this.profL = knsFile.profL;
                     this.profAp = knsFile.profAp;
                     this.seenRtfWelcome = knsFile.seenRtfWelcome;
+                    this.encopen = knsFile.encopen;
                 }
-            } catch (Exception e) {
-                Debug.WriteLine("Error during RetrieveSettings before log initialised:");
-                Debug.WriteLine(e.ToString());
+            } catch (FileNotFoundException fnfe) {
+                Debug.WriteLine("FileNotFound error during RetrieveSettings before log initialised:");
+                Debug.WriteLine(fnfe.ToString());
                 Debug.WriteLine("Creating new conf.json!");
                 UpdateSettings(); //Creates a new conf file with default values (since the values weren't changed from the defaults)
+            }  catch (Exception e) {
+                Debug.WriteLine("Generic error during RetrieveSettings before log initialised:");
+                Debug.WriteLine(e.ToString());
             }
         }
 
@@ -143,6 +148,7 @@ namespace KuroNote
                     //Incrementing won't cause a level-up
                     this.profAp += ap;                              //add ap
                 }
+                UpdateSettings();
             }
         }
     }

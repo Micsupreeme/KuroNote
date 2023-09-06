@@ -56,7 +56,7 @@ namespace KuroNote
             appVersionTb.Text = APPLICATION_VERSION;
             appCopyrightTb.Text = "Copyright \u00A9 ";
             appPublisherTb.Text = "Micsupreeme";
-            appCopyrightYearTb.Text = " 2022";
+            appCopyrightYearTb.Text = " 2023";
             appDescriptionTxt.Text =
                 "A text editor that allows you to set any picture you like as a background!\n\n" +
 

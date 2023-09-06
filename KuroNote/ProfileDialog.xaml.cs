@@ -124,6 +124,8 @@ namespace KuroNote
         {
             if (vis) {
                 log.addLog("Open ProfileDialog");
+                settings.RetrieveSettings();    // Refreshing profile data every time profile is opened means that if the user has multiple KuroNote windows
+                populateFields();               // they will always show consistent data (e.g., gain AP in window 1 and then you can immediately see it in window 2)
                 this.Visibility = Visibility.Visible;
             } else {
                 log.addLog("Collapse ProfileDialog");

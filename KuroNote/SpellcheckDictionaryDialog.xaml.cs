@@ -93,7 +93,8 @@ namespace KuroNote
                 log.addLog(e.ToString());
             }
 
-            //If cache clearing is enabled - call for that too
+            /*There's no point in letting the user choose to not clear the cache because then the dictionary just doesn't update in real time
+             * So the checkbox is permenantly checked (the choice to clear or not clear the cache can therefore be restored whenever)*/
             if (chkClearCache.IsChecked == true) {
                 clearLocalDictionaryCache();
             }
@@ -194,6 +195,45 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Calls for the dictionary text to be prepared, written to the file, and then to refresh the spellcheck dictionary
+        /// </summary>
+        private void saveAndRefresh()
+        {
+            processDictionaryText();
+            updateDictionary();
+            if (editedFlag)
+            {
+                //Changes were made - refresh the dictionary for MainRtb
+                main.ToggleCustomSpellcheckDictionaries(false);
+                main.ToggleCustomSpellcheckDictionaries(true);
+            }
+            editedFlag = false;
+            toggleSaveState(1);
+        }
+
+        /// <summary>
+        /// Handles unsaved changes by asking the user if they wish to save their changes, then exits
+        /// </summary>
+        private void handleExit()
+        {
+            if (editedFlag) {
+                //There are unsaved changes and there are no spaces - offer to save changes
+                var res = MessageBox.Show("You have made changes to your custom dictionary that have not been saved. Would you like to save before exiting?", "Save before exit?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (res == MessageBoxResult.Yes) {
+                    //Yes - exit and save changes
+                    saveAndRefresh();
+                    toggleVisibility(false);
+                } else if (res == MessageBoxResult.No) {
+                    //No - exit without saving changes
+                    toggleVisibility(false);
+                }
+            } else {
+                //Safe to exit
+                toggleVisibility(false);
+            }
+        }
+
+        /// <summary>
         /// When the user edits the dictionary textbox
         /// </summary>
         private void txtDictionary_TextChanged(object sender, TextChangedEventArgs e)
@@ -212,15 +252,7 @@ namespace KuroNote
         /// </summary>
         private void btnDictionarySave_Click(object sender, RoutedEventArgs e)
         {
-            processDictionaryText();
-            updateDictionary();
-            if (editedFlag) {
-                //Changes were made - refresh the dictionary for MainRtb
-                main.ToggleCustomSpellcheckDictionaries(false);
-                main.ToggleCustomSpellcheckDictionaries(true);
-            }
-            editedFlag = false;
-            toggleSaveState(1);
+            saveAndRefresh();
         }
 
         /// <summary>
@@ -228,21 +260,7 @@ namespace KuroNote
         /// </summary>
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (editedFlag) {
-                //There are unsaved changes and there are no spaces - offer to save changes
-                var res = MessageBox.Show("There are unsaved changes. Would you like to save before exiting?", "Save before exit?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-                if (res == MessageBoxResult.Yes) {
-                    //Yes - exit and save changes
-                    updateDictionary();
-                    toggleVisibility(false);
-                } else if (res == MessageBoxResult.No) {
-                    //No - exit without saving changes
-                    toggleVisibility(false);
-                }
-            } else {
-                //Safe to exit
-                toggleVisibility(false);
-            }
+            handleExit();
         }
 
         /// <summary>
@@ -250,6 +268,7 @@ namespace KuroNote
         /// </summary>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            handleExit();
             log.addLog("Close SpellcheckDictionaryDialog");
         }
     }

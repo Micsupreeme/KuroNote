@@ -22,7 +22,8 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: add "open files after encryption/decryption" setting (currently you have to manually open them)
+    /// TODO: If a "recent file" fails to open, remove it from the recent files list
+    /// TODO: Context menu: Select All
     /// 
     /// TODO: Detect encrypted files:
     /// 1. .kuro extension
@@ -31,15 +32,15 @@ namespace KuroNote
     /// 4. the last 2 characters are "=="
     /// 
     /// TODO: Vanity options? (Font Preview Text, AppName)
-    /// TODO: Expand context menu
     /// TODO: Upgrade CustomThemeManager "opacitySlideDelay" to DispatcherTimer
     /// TODO: AES Salt Manager... (random salt, custom salt?, or default) (add global secret key?)
     /// TODO: Add more error messages to language dictionary
     /// TODO: check (again) find/replace selecting the 1st occurance of any search term twice before continuing
     /// TODO: Hashing tool
-    /// TODO: Context menu: Select All, Search with Google...
+    /// TODO: Context menu: Search with Google...
     /// TODO: Setting(s) for: MainRtb.BorderThickness
     /// TODO: Auto-backup every 3,5,10,15 minutes? (in a seperate thread!)
+    /// 
     /// TODO Lo: File filter string generator
     /// TODO Lo: List maker (.kurolist)
     /// TODO Lo: Some kind of PDF tool
@@ -113,7 +114,6 @@ namespace KuroNote
         private const double PAGE_WIDTH_RIGHT_MARGIN = 25;          //Number of width units to add (as a padding/buffer) in addition to the measured width of the content
         private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
         private const int SPELL_CHECK_SUGGESTION_LIMIT = 3;         //Up to this number of spellcheck suggestions can be shown in the context menu at any given time
-        private const int SPELL_CHECK_CUSTOM_DICTIONARY_ID = 1;     //ID number for the user-controlled custom spellcheck dictionary
 
         //RTF constants
         private const string RTF_DEFAULT_FONT_FAMILY = "Verdana";
@@ -448,28 +448,28 @@ namespace KuroNote
             {
                 new KuroNoteRank(0, "Apprentice Wordcrafter", 1000, "#FFEEEEEE"),
                 new KuroNoteRank(1, "Wordcrafter Initiate", 1200, "#FFF3F3FF"),
-                new KuroNoteRank(2, "Wordwrapper", 1440, "#FFE3E3FF"),
-                new KuroNoteRank(3, ".TXT Enthusiast", 1728, "#FFD3D3FF"),
-                new KuroNoteRank(4, "Wordcrafter", 1987, "#FFC3C3FF"),
-                new KuroNoteRank(5, "ASCII Associate", 2285, "#FFC3FFC3"),
-                new KuroNoteRank(6, ".TXT Specialist", 2628, "#FFB9FFB9"),
-                new KuroNoteRank(7, "Master Wordcrafter", 3022, "#FFAFFFAF"),
-                new KuroNoteRank(8, "ASCIIKnight", 3476, "#FFA5FFA5"),
-                new KuroNoteRank(9, "Unicoder", 3997, "#FF9BFF9B"),
-                new KuroNoteRank(10, ".TXT Aficionado", 4317, "#FF91FF91"),
-                new KuroNoteRank(11, "Apex ASCIIKnight", 4662, "#FFFFFFC3"),
-                new KuroNoteRank(12, "Notemaster Novitiate", 5035, "#FFFFFFB9"),
-                new KuroNoteRank(13, "ANSINaut", 5438, "#FFFFFFAF"),
-                new KuroNoteRank(14, "UTF-7 Supremo", 5873, "#FFFFFFA5"),
-                new KuroNoteRank(15, "UTF-8 Ultima", 6343, "#FFFFFF9B"),
-                new KuroNoteRank(16, "Notemaster", 7294, "#FFFFFF91"),
-                new KuroNoteRank(17, "Expert Encoder", 8388, "#FFFFC3C3"),
-                new KuroNoteRank(18, "Editor Extraordinaire", 9646, "#FFFFB9B9"),
-                new KuroNoteRank(19, "Editor in Chief", 11093, "#FFFFAFAF"),
+                new KuroNoteRank(2, "FileMode.Open", 1440, "#FFE3E3FF"),
+                new KuroNoteRank(3, "FileMode.Create", 1728, "#FFD3D3FF"),
+                new KuroNoteRank(4, ".TXT Enthusiast", 1987, "#FFC3C3FF"),
+                new KuroNoteRank(5, "Wordcrafter", 2285, "#FFC3FFC3"),
+                new KuroNoteRank(6, "ASCII Associate", 2628, "#FFB9FFB9"),
+                new KuroNoteRank(7, ".TXT Specialist", 3022, "#FFAFFFAF"),
+                new KuroNoteRank(8, "Master Wordcrafter", 3476, "#FFA5FFA5"),
+                new KuroNoteRank(9, "ASCIIknight", 3997, "#FF9BFF9B"),
+                new KuroNoteRank(10, "Unicoder", 4317, "#FF91FF91"),
+                new KuroNoteRank(11, ".TXT Aficionado", 4662, "#FFFFFFC3"),
+                new KuroNoteRank(12, "Apex ASCIIknight", 5035, "#FFFFFFB9"),
+                new KuroNoteRank(13, "Notemaster", 5438, "#FFFFFFAF"),
+                new KuroNoteRank(14, "UTF-8 Supremo", 5873, "#FFFFFFA5"),
+                new KuroNoteRank(15, "Plain Text Pro", 6343, "#FFFFFF9B"),
+                new KuroNoteRank(16, "Veteran Notemaster", 7294, "#FFFFFF91"),
+                new KuroNoteRank(17, "Editor Extraordinaire", 8388, "#FFFFC3C3"),
+                new KuroNoteRank(18, "Editor in Chief", 9646, "#FFFFB9B9"),
+                new KuroNoteRank(19, "IO", 11093, "#FFFFAFAF"),
                 new KuroNoteRank(20, "Plain Text Paragon", 12757, "#FFFFA5A5"),
                 new KuroNoteRank(21, "Notemaster Shiro", 14671, "#FFFF9B9B"),
                 new KuroNoteRank(22, "Notemaster Kuro", 16872, "#FFFF9191"),
-                new KuroNoteRank(23, "Infinite ISONaut", 25000, "#FFFF8787"),
+                new KuroNoteRank(23, "Infinite ISOnaut", 25000, "#FFFF8787"),
                 new KuroNoteRank(24, "Grand Notemaster", 25000, "#FFFF87FF"),
                 new KuroNoteRank(25, "Grand Notemaster +", 25000, "#FFFF5FFF")
             };
@@ -1030,7 +1030,14 @@ namespace KuroNote
         /// </summary>
         private void purgeOrphanedThemeImages()
         {
-            string[] customThemeFiles = Directory.GetFiles(customThemePath);
+            string[] customThemeFiles;
+            try {
+                customThemeFiles = Directory.GetFiles(customThemePath);
+            } catch (DirectoryNotFoundException) {
+                log.addLog("WARN: \"CustomThemes\" directory does not exist, creating it");
+                Directory.CreateDirectory(customThemePath);
+                customThemeFiles = Directory.GetFiles(customThemePath);
+            }
 
             for (int i = 0; i < customThemeFiles.Length; i++) {
                 //Is the file an image?

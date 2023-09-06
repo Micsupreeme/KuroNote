@@ -60,7 +60,7 @@
                             </StackPanel>
                         </Expander.Content>
                     </Expander>
-                    <Expander Name="newtonsoftExp" Header="Newtonsoft.Json 13.0.1" FontSize="14" Background="#00404040" Foreground="#FFFFFF" Margin="0,0,0,10">
+                    <Expander Name="newtonsoftExp" Header="Newtonsoft.Json 13.0.2" FontSize="14" Background="#00404040" Foreground="#FFFFFF" Margin="0,0,0,10">
                         <Expander.Content>
                             <StackPanel Margin="25,8,25,8">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,8">

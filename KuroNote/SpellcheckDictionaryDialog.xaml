@@ -17,7 +17,7 @@
             <Label Name="lblDictionaryBadFormat" Content="*Dictionary does not recognise SPACEs, separate words with ENTER" Grid.Column="0" Grid.Row="0" Foreground="#FF0000" FontSize="12" Visibility="Collapsed"/>
         </StackPanel>
         <StackPanel DockPanel.Dock="Bottom">
-            <CheckBox Name="chkClearCache" IsChecked="True" Content="Clear local WPF dictionary cache during save" Margin="10,0,10,10" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Foreground="#EEEEEE" FontSize="12"/>
+            <CheckBox Visibility="Collapsed" Name="chkClearCache" IsChecked="True" Content="Clear local WPF dictionary cache during save" Margin="10,0,10,10" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Foreground="#EEEEEE" FontSize="12"/>
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="10,0,10,10">
                 <Button Name="btnOk" Click="btnOk_Click"  Width="80" Padding="0,4,0,4" Content="OK" IsDefault="True" IsCancel="True" FontSize="14"/>
                 <Button Name="btnDictionarySave" IsEnabled="False" Margin="10,0,0,0" Padding="0,4,0,4" Width="80" Click="btnDictionarySave_Click" Content="Saved" Grid.Column="1" Grid.Row="0" FontSize="14"/>

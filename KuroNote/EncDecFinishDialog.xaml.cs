@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -130,6 +131,27 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Executes the specified file, optionally with admin permissions
+        /// </summary>
+        /// <param name="_fileName">The filepath to execute</param>
+        /// <param name="_asAdmin">Optional: specify true to run as admin</param>
+        private void startProcess(string _fileName, bool _asAdmin = false)
+        {
+            try {
+                log.addLog("Launching " + _fileName);
+                Process process = new Process();
+                process.StartInfo.FileName = _fileName;
+                process.StartInfo.UseShellExecute = true; //enables opening things like folders without specifying the program to use
+                if (_asAdmin) {
+                    process.StartInfo.Verb = "runas";
+                }
+                process.Start();
+            } catch (Exception e) {
+                log.addLog("ERROR: " + e.ToString());
+            }
+        }
+
+        /// <summary>
         /// Saves a new file with the processed content, using a file selection dialog
         /// </summary>
         private void doSaveAs()
@@ -167,6 +189,10 @@ namespace KuroNote
                         file.Write(bytes, 0, bytes.Length);
                         log.addLog("Successfully saved " + dlg.FileName);
                         ms.Close();
+                    }
+                    //Automatically opens the recently encrypted/decrypted file if the corresponding option is enabled
+                    if (settings.encopen) {
+                        startProcess(dlg.FileName);
                     }
                 } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)

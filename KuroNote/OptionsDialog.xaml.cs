@@ -73,6 +73,7 @@ namespace KuroNote
             rememberfontupdnTs.IsChecked = settings.rememberFontUpDn;
             rememberrecentfilesTs.IsChecked = settings.rememberRecentFiles;
             rtfmodeTs.IsChecked = settings.rtfMode;
+            encopenTs.IsChecked = settings.encopen;
         }
 
         /// <summary>
@@ -94,6 +95,7 @@ namespace KuroNote
             settings.rememberFontUpDn = (bool)rememberfontupdnTs.IsChecked;
             settings.rememberRecentFiles = (bool)rememberrecentfilesTs.IsChecked;
             settings.rtfMode = (bool)rtfmodeTs.IsChecked;
+            settings.encopen = (bool)encopenTs.IsChecked;
             settings.UpdateSettings();
         }
 

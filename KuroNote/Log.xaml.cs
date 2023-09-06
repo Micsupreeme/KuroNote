@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
@@ -100,11 +101,14 @@ namespace KuroNote
         {
             try {
                 //Append to today's file if it exists, otherwise create a new one
-                using (StreamWriter sw = File.AppendText(logPath + generateLogFileName())) {
-                    sw.Write(logEntry);
-                }
-            } catch(Exception e) {
-                addLog(e.ToString());
+                using StreamWriter sw = File.AppendText(logPath + generateLogFileName());
+                sw.Write(logEntry);
+            } catch (DirectoryNotFoundException) {
+                //WARN: "Logs" directory does not exist, creating it
+                Directory.CreateDirectory(logPath);
+                //Append to today's file if it exists, otherwise create a new one
+                using StreamWriter sw = File.AppendText(logPath + generateLogFileName());
+                sw.Write(logEntry);
             }
         }
 
