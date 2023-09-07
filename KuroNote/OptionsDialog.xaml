@@ -148,7 +148,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="0" Grid.Row="1" Background="#303030">
                         <StackPanel Orientation="Horizontal" >
-                            <Label Content="Show full file paths" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
+                            <Label Content="Full file path in window title" FontSize="14" Margin="0,0,0,5" Foreground="#EEEEEE"/>
                         </StackPanel>
                         <spark:ToggleSwitch Name="fullfilepathTs" Margin="5,0,0,0" HorizontalAlignment="Left" Style="{StaticResource {ComponentResourceKey TypeInTargetAssembly=spark:ToggleSwitch, ResourceId=ToggleSwitch.UWP.Dark.Style}}" Checked="optionTs_Checked"  Unchecked="optionTs_Unchecked"/>
                     </StackPanel>

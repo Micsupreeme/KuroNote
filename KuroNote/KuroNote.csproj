@@ -239,6 +239,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\recent_file_pink_18dp.png" />
     <None Remove="img\icons\recent_file_purple_18dp.png" />
     <None Remove="img\icons\recent_file_red_18dp.png" />
+    <None Remove="img\icons\recent_file_rtf_18dp.png" />
     <None Remove="img\icons\recent_file_sky_18dp.png" />
     <None Remove="img\icons\recent_file_white_18dp.png" />
     <None Remove="img\icons\recent_file_yellow_18dp.png" />
@@ -534,6 +535,9 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\recent_file_red_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\recent_file_rtf_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\recent_file_sky_18dp.png">

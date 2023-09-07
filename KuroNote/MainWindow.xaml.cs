@@ -22,7 +22,8 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: If a "recent file" fails to open, remove it from the recent files list
+    /// TODO: Offer to enable RTF Mode if the user attempts to open an RTF file while not in RTF mode (in "recentFileMi_Click" method) - write the message in EnMsgDict
+    /// TODO: Confirmation before "Clear recent files" - write the message in EnMsgDict
     /// TODO: Context menu: Select All
     /// 
     /// TODO: Detect encrypted files:
@@ -1623,7 +1624,6 @@ namespace KuroNote
                         } else {
                             doOpenPlain(dlg.FileName);
                         }
-                        fileName = dlg.FileName;
 
                     } catch (Exception ex) {
                         //File cannot be accessed (e.g. used by another process)
@@ -1658,7 +1658,6 @@ namespace KuroNote
                     } else {
                         doOpenPlain(directOpenPath);
                     }
-                    fileName = directOpenPath;
                 
                 } catch (Exception ex) {
                     //File cannot be accessed (e.g. used by another process)
@@ -1695,33 +1694,51 @@ namespace KuroNote
         /// Opens the specified file in Plain Text mode
         /// </summary>
         /// <param name="path">The full path of the file to open</param>
-        private void doOpenPlain(string path)
+        private bool doOpenPlain(string path)
         {
-            MemoryStream ms = new MemoryStream();
-            using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read)) {
-                byte[] bytes = new byte[file.Length];
-                file.Read(bytes, 0, (int)file.Length);
-                ms.Write(bytes, 0, (int)file.Length);
+            try {
+                MemoryStream ms = new MemoryStream();
+                using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+                    byte[] bytes = new byte[file.Length];
+                    file.Read(bytes, 0, (int)file.Length);
+                    ms.Write(bytes, 0, (int)file.Length);
+                }
+
+                TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                range.Text = selectedEncoding.GetString(ms.ToArray());
+
+                ms.Close();
+                log.addLog("Successfully opened " + path);
+                fileName = path;
+                return true;
+
+            } catch (Exception e) {
+                log.addLog(e.ToString());
+                MessageBox.Show(getMessage(9)[0], getMessage(9)[1], MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
-
-            TextRange range = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-            range.Text = selectedEncoding.GetString(ms.ToArray());
-
-            ms.Close();
-            log.addLog("Successfully opened " + path);
         }
 
         /// <summary>
         /// Opens the specified file in RTF mode
         /// </summary>
         /// <param name="path">The full path of the file to open</param>
-        private void doOpenRTF(string path)
+        private bool doOpenRTF(string path)
         {
-            TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
-            FileStream rtfStream = new FileStream(path, FileMode.Open);
-            rtfRange.Load(rtfStream, DataFormats.Rtf);
-            rtfStream.Close();
-            log.addLog("Successfully opened (RTF) " + path);
+            try {
+                TextRange rtfRange = new TextRange(MainRtb.Document.ContentStart, MainRtb.Document.ContentEnd);
+                FileStream rtfStream = new FileStream(path, FileMode.Open);
+                rtfRange.Load(rtfStream, DataFormats.Rtf);
+                rtfStream.Close();
+                log.addLog("Successfully opened (RTF) " + path);
+                fileName = path;
+                return true;
+
+            } catch (Exception e) {
+                log.addLog(e.ToString());
+                MessageBox.Show(getMessage(9)[0], getMessage(9)[1], MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
         }
 
         /// <summary>
@@ -1871,10 +1888,13 @@ namespace KuroNote
 
             switch (extensionString) {
                 case ".txt":
-                    iconFileName = "recent_file_sky_18dp.png";
+                    iconFileName = "recent_file_inverted_18dp.png";
                     break;
                 case ".kuro":
                     iconFileName = "recent_file_inverted_18dp.png";
+                    break;
+                case ".rtf":
+                    iconFileName = "recent_file_rtf_18dp.png";
                     break;
                 case ".bat":
                     iconFileName = "recent_file_red_18dp.png";
@@ -1892,7 +1912,7 @@ namespace KuroNote
                     iconFileName = "recent_file_purple_18dp.png";
                     break;
                 case ".json":
-                    iconFileName = "recent_file_gold_18dp.png";
+                    iconFileName = "recent_file_sky_18dp.png";
                     break;
                 case ".md":
                     iconFileName = "recent_file_green_18dp.png";
@@ -1995,7 +2015,11 @@ namespace KuroNote
         private void recentFileMi_Click(object sender, RoutedEventArgs e)
         {
             MenuItem thisRecentFileMi = (MenuItem)e.Source;
-            doOpen(true, thisRecentFileMi.Header.ToString());
+            if (doOpen(true, thisRecentFileMi.Header.ToString()) != true) {
+                //Recent file failed to open
+                log.addLog("WARN: Recent File \"" + thisRecentFileMi.Header.ToString() + "\" failed to open - removing it");
+                appRecents.deleteRecentFile(thisRecentFileMi.Header.ToString());
+            }           
         }
 
         /// <summary>

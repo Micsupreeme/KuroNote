@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace KuroNote
 {
@@ -63,6 +65,20 @@ namespace KuroNote
             //add the new Recent File on top
             this.recentFiles.Enqueue(fileToBeAdded);
             log.addLog("Added \"" + fileToBeAdded + "\" to Recent Files (count: " + this.recentFiles.Count + ")");
+            updateRecentFiles();
+        }
+
+        /// <summary>
+        /// Deletes the specified file name from Recent files, a FIFO queue with a capacity of 10
+        /// This method is not part of the normal workflow for recent files,
+        /// It only exists to remove broken links (i.e., the user clicks a recent file but it doesn't successfully open)
+        /// </summary>
+        /// <param name="fileToBeRemoved"></param>
+        public void deleteRecentFile(string fileToBeRemoved)
+        {
+            //deletes the specified Recent File by replacing the queue with a copy of queue that omits the specified files
+            this.recentFiles = new Queue<string>(this.recentFiles.Where(x => x != fileToBeRemoved));
+            log.addLog("Removed \"" + fileToBeRemoved + "\" from Recent Files (count: " + this.recentFiles.Count + ")");
             updateRecentFiles();
         }
 
