@@ -22,7 +22,6 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Offer to enable RTF Mode if the user attempts to open an RTF file while not in RTF mode (in "recentFileMi_Click" method) - write the message in EnMsgDict
     /// TODO: Confirmation before "Clear recent files" - write the message in EnMsgDict
     /// TODO: Context menu: Select All
     /// 
@@ -357,6 +356,9 @@ namespace KuroNote
 
             EnMsgDict[9] = "The file may have moved, or you may lack the permissions necessary to access it.";
             EnTitleDict[9] = "File cannot be accessed";
+
+            EnMsgDict[10] = "RTF mode is currently disabled, but you are attempting to open an RTF file. Would you like to enable RTF mode before opening the file?";
+            EnTitleDict[10] = "Enable RTF mode before open?";
         }
 
         /// <summary>
@@ -695,10 +697,11 @@ namespace KuroNote
         /// 1a). UNSAVED CHANGES: must offer to save any outstanding changes as Plain
         /// 1b). NO UNSAVED CHANGES: must reload the existing document as RTF if it has .rtf extension
         /// 2). must make rtfMenu visible
+        /// <param name="enableRtfModeInOptions">Whether or not to update the options to enable RTF mode, if the transition completes</param>
         /// </summary>
-        private void handlePlainToRtfModeTransition()
+        private void handlePlainToRtfModeTransition(bool showMessageBoxes = true, bool enableRtfModeInOptions = false)
         {
-            if (editedFlag) {
+            if (editedFlag && showMessageBoxes) {
                 //rtf mode enabled while there are unsaved changes
 
                 var res = MessageBox.Show(getMessage(7)[0], getMessage(7)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
@@ -711,6 +714,10 @@ namespace KuroNote
                     RtfMenu.Visibility = Visibility.Visible;
                     FontMi.IsEnabled = false;
                     populateRtfMenu();
+                    if (enableRtfModeInOptions) {
+                        appSettings.rtfMode = true;
+                        appSettings.UpdateSettings();
+                    }
                     if (!appSettings.seenRtfWelcome) {
                         //if first time toggling RTF Mode - show introductory message
                         MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
@@ -723,6 +730,10 @@ namespace KuroNote
                     RtfMenu.Visibility = Visibility.Visible;
                     FontMi.IsEnabled = false;
                     populateRtfMenu();
+                    if (enableRtfModeInOptions) {
+                        appSettings.rtfMode = true;
+                        appSettings.UpdateSettings();
+                    }
                     if (!appSettings.seenRtfWelcome) {
                         //if first time toggling RTF Mode - show introductory message
                         MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
@@ -736,7 +747,7 @@ namespace KuroNote
                 }
             } else {
                 //If RTF document is currently opened
-                if (fileName.Length > 0 && Path.GetExtension(fileName).Equals(".rtf")) {
+                if (fileName.Length > 0 && isRTFFile(fileName)) {
                     //RTF document is currently opened in Plain Text mode - reload it as RTF
                     doOpen(false, fileName);
                 }
@@ -744,7 +755,11 @@ namespace KuroNote
                 RtfMenu.Visibility = Visibility.Visible;
                 FontMi.IsEnabled = false;
                 populateRtfMenu();
-                if (!appSettings.seenRtfWelcome) {
+                if (enableRtfModeInOptions) {
+                    appSettings.rtfMode = true;
+                    appSettings.UpdateSettings();
+                }
+                if (!appSettings.seenRtfWelcome && showMessageBoxes) {
                     //if first time toggling RTF Mode - show introductory message
                     MessageBox.Show(getMessage(8)[0], getMessage(8)[1], MessageBoxButton.OK, MessageBoxImage.Information);
                     appSettings.seenRtfWelcome = true;
@@ -768,7 +783,7 @@ namespace KuroNote
                 if (resErr5 == MessageBoxResult.Yes) {
                     //**save changes, reopen
 
-                    if (Path.GetExtension(fileName).Equals(".rtf")) {
+                    if (isRTFFile(fileName)) {
                         //the currently open file is an RTF file
                         //obviously save changes to an RTF file AS an RTF file
                         appSettings.rtfMode = true; //temporarily re-enable rtfMode so RTF-friendly save can be done
@@ -1570,18 +1585,59 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Returns true if the specified file name ends with ".rtf", false otherwise
+        /// </summary>
+        /// <param name="fileName">The file name to test</param>
+        /// <returns>True if the specified file name ends with ".rtf", false otherwise</returns>
+        public bool isRTFFile(string fileName)
+        {
+            return Path.GetExtension(fileName).Equals(".rtf");
+        }
+
+        /// <summary>
+        /// Asks the user if they wish to enable RTF mode before opening the RTF file. Depending on the response, this method either:
+        /// 1) Enables RTF mode, then opens the RTF file
+        /// 2) Opens the RTF file in plain text mode
+        /// 3) Cancels the open operation
+        /// </summary>
+        /// <param name="rtfFileName"></param>
+        /// <returns>True if the RTF file was opened, false otherwise</returns>
+        private bool handleOpenRtfFileInPlainMode(string rtfFileName)
+        {
+            //RTF mode is OFF but the user is attempting to open an RTF file
+            log.addLog("WARNING: Open RTF file while RTF Mode is disabled");
+            var res = MessageBox.Show(getMessage(10)[0], getMessage(10)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+            if (res == MessageBoxResult.Yes) {
+                //enable RTF mode, then open the RTF file
+                log.addLog("Enabling RTF mode before opening the file");
+                handlePlainToRtfModeTransition(false, true);
+                doOpenRTF(rtfFileName);
+                return true;
+            } else if (res == MessageBoxResult.No) {
+                //proceed with opening RTF file in plain text mode
+                log.addLog("Proceed with opening the RTF file in plain text mode");
+                doOpenPlain(rtfFileName);
+                return true;
+            } else {
+                //do not proceed with operation
+                log.addLog("Open operation cancelled");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Loads a file into the RTB
         /// </summary>
-        /// <param name="askAboutUnsavedChanges">If true, asks about unsaved changes before opening the new file, else discards any unsaved text</param>
+        /// <param name="showOptionalWarnings">If true, asks about unsaved changes and/or enabling RTF mode when attempting to open an RTF file, before opening</param>
         /// <param name="directOpenPath">Optional: specify file to open instead of using a file open dialog</param>
         /// <returns></returns>
-        private bool doOpen(bool askAboutUnsavedChanges, string directOpenPath = "")
-        {
+        private bool doOpen(bool showOptionalWarnings, string directOpenPath = "")
+        {            
             log.addLog("Request: Open");
 
             //If set to ask about unsaved changes and there are unsaved changes
             //ask if they want to a) proceed anyway b) proceed but save first c) cancel the operation
-            if (editedFlag && askAboutUnsavedChanges) {
+            if (editedFlag && showOptionalWarnings) {
                 log.addLog("WARNING: Open before saving");
                 var res = MessageBox.Show(getMessage(3)[0], getMessage(3)[1], MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                 if (res == MessageBoxResult.Yes || res == MessageBoxResult.Cancel) {
@@ -1615,6 +1671,7 @@ namespace KuroNote
                                 }
                             }
                         } else {
+                            log.addLog("ERROR: \"" + dlg.FileName + "\" cannot be accessed - cancel open");
                             MessageBox.Show(getMessage(9)[0], getMessage(9)[1], MessageBoxButton.OK, MessageBoxImage.Error);
                             return false;
                         }
@@ -1622,7 +1679,14 @@ namespace KuroNote
                         if (appSettings.rtfMode) {
                             doOpenRTF(dlg.FileName);
                         } else {
-                            doOpenPlain(dlg.FileName);
+                            if (isRTFFile(dlg.FileName) && showOptionalWarnings) {
+                                if (handleOpenRtfFileInPlainMode(dlg.FileName) == false) {
+                                    //User cancelled the open operation, return early
+                                    return false;
+                                }
+                            } else {
+                                doOpenPlain(dlg.FileName);
+                            }
                         }
 
                     } catch (Exception ex) {
@@ -1649,6 +1713,7 @@ namespace KuroNote
                             }
                         }
                     } else {
+                        log.addLog("ERROR: \"" + directOpenPath + "\" cannot be accessed - cancel open");
                         MessageBox.Show(getMessage(9)[0], getMessage(9)[1], MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
@@ -1656,7 +1721,14 @@ namespace KuroNote
                     if (appSettings.rtfMode) {
                         doOpenRTF(directOpenPath);
                     } else {
-                        doOpenPlain(directOpenPath);
+                        if (isRTFFile(directOpenPath) && showOptionalWarnings) {
+                            if (handleOpenRtfFileInPlainMode(directOpenPath) == false) {
+                                //User cancelled the open operation, return early
+                                return false;
+                            }
+                        } else {
+                            doOpenPlain(directOpenPath);
+                        }
                     }
                 
                 } catch (Exception ex) {
@@ -1670,7 +1742,9 @@ namespace KuroNote
             updateAppTitle();
             toggleEdited(false);
             setStatus("Opened", true);
-            appRecents.addRecentFile(fileName);
+            if (!fileName.Equals("") && !fileName.Equals(null)) {
+                appRecents.addRecentFile(fileName);
+            }
 
             if (appSettings.gamification) {
                 incrementAp(AP_OPEN);
