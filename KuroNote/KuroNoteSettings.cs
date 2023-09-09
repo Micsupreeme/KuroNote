@@ -55,13 +55,18 @@ namespace KuroNote
         public bool seenRtfWelcome = false;
         public bool encopen = true;
 
+        private string settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote";
+        private string settingsFile = "\\conf.json";
+
         /// <summary>
         /// Update this object according to the settings stored in conf.json
         /// </summary>
         public void RetrieveSettings()
         {
-            try {
-                using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\conf.json")) {
+            try
+            {
+                using (StreamReader sr = new StreamReader(settingsPath + settingsFile))
+                {
                     string json = sr.ReadToEnd();
                     KuroNoteSettings knsFile = JsonConvert.DeserializeObject<KuroNoteSettings>(json);
 
@@ -103,11 +108,20 @@ namespace KuroNote
                     this.seenRtfWelcome = knsFile.seenRtfWelcome;
                     this.encopen = knsFile.encopen;
                 }
+            } catch (DirectoryNotFoundException dnfe) {
+                //WARN: "Logs" directory does not exist, creating it
+                Debug.WriteLine("WARN: \"Kuronote\" directory does not exist, creating it");
+                Debug.WriteLine(dnfe.ToString());
+                Directory.CreateDirectory(settingsPath);
+                Debug.WriteLine("Creating new conf.json!");
+                UpdateSettings(); //Creates a new conf file with default values (since the values weren't changed from the defaults)
+                RetrieveSettings();
             } catch (FileNotFoundException fnfe) {
                 Debug.WriteLine("FileNotFound error during RetrieveSettings before log initialised:");
                 Debug.WriteLine(fnfe.ToString());
                 Debug.WriteLine("Creating new conf.json!");
                 UpdateSettings(); //Creates a new conf file with default values (since the values weren't changed from the defaults)
+                RetrieveSettings();
             }  catch (Exception e) {
                 Debug.WriteLine("Generic error during RetrieveSettings before log initialised:");
                 Debug.WriteLine(e.ToString());
@@ -120,7 +134,7 @@ namespace KuroNote
         public void UpdateSettings()
         {
             try {
-                using (StreamWriter sw = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote\\conf.json")) {
+                using (StreamWriter sw = new StreamWriter(settingsPath + settingsFile)) {
                     string json = JsonConvert.SerializeObject(this);
 
                     sw.Write(json);

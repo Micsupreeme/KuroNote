@@ -22,7 +22,6 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Confirmation before "Clear recent files" - write the message in EnMsgDict
     /// TODO: Context menu: Select All
     /// 
     /// TODO: Detect encrypted files:
@@ -359,6 +358,13 @@ namespace KuroNote
 
             EnMsgDict[10] = "RTF mode is currently disabled, but you are attempting to open an RTF file. Would you like to enable RTF mode before opening the file?";
             EnTitleDict[10] = "Enable RTF mode before open?";
+
+            EnMsgDict[11] = "Are you sure you want to clear all recent files?";
+            EnTitleDict[11] = "Clear recent files?";
+
+            EnMsgDict[12] = "The list of recent files has been reset.\n\n" +
+                "NOTE: You can enable or disable recent files in Options.";
+            EnTitleDict[12] = "Recent files cleared";
         }
 
         /// <summary>
@@ -2101,7 +2107,14 @@ namespace KuroNote
         /// </summary>
         private void ClearRecentMi_Click(object sender, RoutedEventArgs e)
         {
-            appRecents.clearRecentFiles();
+            log.addLog("Request: Clear Recent Files");
+            var res = MessageBox.Show(getMessage(11)[0], getMessage(11)[1], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (res == MessageBoxResult.Yes) {
+                appRecents.clearRecentFiles();
+                MessageBox.Show(getMessage(12)[0], getMessage(12)[1], MessageBoxButton.OK, MessageBoxImage.Information);
+            } else {
+                log.addLog("Clear recent files cancelled");
+            }
         }
 
         /// <summary>

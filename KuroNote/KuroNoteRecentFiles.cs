@@ -138,7 +138,6 @@ namespace KuroNote
         /// </summary>
         public void clearRecentFiles()
         {
-            log.addLog("Request: Clear Recent Files");
             this.recentFiles.Clear();
             updateRecentFiles();
             log.addLog("Recent Files cleared and updated");
