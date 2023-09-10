@@ -22,7 +22,7 @@ namespace KuroNote
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
-    /// TODO: Context menu: Select All
+    /// TODO: Context menu: Search with Google...
     /// 
     /// TODO: Detect encrypted files:
     /// 1. .kuro extension
@@ -2181,7 +2181,10 @@ namespace KuroNote
             }
         }
 
-        #region Spell Check
+        #region Context Menu
+        /*
+         THE FOLLOWING METHOD IS NOW OBSELETE SINCE ALL CONTEXT MENU ITEMS NOW REFRESH WHEN THE CONTEXT MENU OPENS
+
         /// <summary>
         /// Deletes existing spellcheck items (so that new ones can be added)
         /// NOTE: this method actually just deletes all context menu items that have a tag (because spellcheck items always have tags)
@@ -2219,11 +2222,14 @@ namespace KuroNote
             }
         }
 
+        */
+
         /// <summary>
         /// If there is a spelling error at the caret,
         /// adds any available spellcheck suggestion context menu items to MainRtbContext
         /// </summary>
-        private void addNewSpellcheckItems()
+        /// <returns>True if there is a spelling error at the caret, false otherwise</returns>
+        private bool addSpellcheckContextItems()
         {
             SpellingError se = MainRtb.GetSpellingError(MainRtb.CaretPosition);
 
@@ -2231,8 +2237,6 @@ namespace KuroNote
             if (se != null)
             {
                 //there is a spelling error
-                MainRtbContext.Items.Add(new Separator());
-
                 short suggestionCounter = 0;
                 foreach (string suggestion in se.Suggestions) {
                     //add suggestion context menu items up until the suggestion limit
@@ -2251,6 +2255,9 @@ namespace KuroNote
                 MainRtbContext.Items.Add(new Separator());
                 MainRtbContext.Items.Add(generateIgnoreAllItem(se));
                 MainRtbContext.Items.Add(generateAddToDictionaryItem(se));
+                return true;
+            } else {
+                return false;
             }
         }
 
@@ -2317,12 +2324,108 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// Adds the context menu items that precede the spellcheck items to MainRtbContext
+        /// </summary>
+        private void addUpperContextItems()
+        {
+            MainRtbContext.Items.Add(generateUndoItem());
+            MainRtbContext.Items.Add(new Separator());
+            MainRtbContext.Items.Add(generateCutItem());
+            MainRtbContext.Items.Add(generateCopyItem());
+            MainRtbContext.Items.Add(generatePasteItem());
+        }
+
+        /// <summary>
+        /// Creates a context menu item that does a default "Undo"
+        /// </summary>
+        /// <returns>An "Undo" context menu item</returns>
+        private MenuItem generateUndoItem()
+        {
+            MenuItem undoItem = new MenuItem();
+            undoItem.Header = EnUIDict["UndoMi"];
+            undoItem.ToolTip = EnUIDict["UndoMiTT"];
+            undoItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_undo_black_18dp.png")) };
+            undoItem.Command = ApplicationCommands.Undo;
+            return undoItem;
+        }
+
+        /// <summary>
+        /// Creates a context menu item that does a default "Cut"
+        /// </summary>
+        /// <returns>A "Cut" context menu item</returns>
+        private MenuItem generateCutItem()
+        {
+            MenuItem cutItem = new MenuItem();
+            cutItem.Header = EnUIDict["CutMi"];
+            cutItem.ToolTip = EnUIDict["CutMiTT"];
+            cutItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_content_cut_black_18dp.png")) };
+            cutItem.Command = ApplicationCommands.Cut;
+            return cutItem;
+        }
+
+        /// <summary>
+        /// Creates a context menu item that does a default "Copy"
+        /// </summary>
+        /// <returns>A "Copy" context menu item</returns>
+        private MenuItem generateCopyItem()
+        {
+            MenuItem copyItem = new MenuItem();
+            copyItem.Header = EnUIDict["CopyMi"];
+            copyItem.ToolTip = EnUIDict["CopyMiTT"];
+            copyItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_content_copy_black_18dp.png")) };
+            copyItem.Command = ApplicationCommands.Copy;
+            return copyItem;
+        }
+
+        /// <summary>
+        /// Creates a context menu item that does a default "Paste"
+        /// </summary>
+        /// <returns>A "Paste" context menu item</returns>
+        private MenuItem generatePasteItem()
+        {
+            MenuItem pasteItem = new MenuItem();
+            pasteItem.Header = EnUIDict["PasteMi"];
+            pasteItem.ToolTip = EnUIDict["PasteMiTT"];
+            pasteItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_content_paste_black_18dp.png")) };
+            pasteItem.Command = ApplicationCommands.Paste;
+            return pasteItem;
+        }
+
+        /// <summary>
+        /// Adds the context menu items that proceed the spellcheck items to MainRtbContext
+        /// </summary>
+        private void addLowerContextItems()
+        {
+            MainRtbContext.Items.Add(generateSelectAllItem());
+        }
+
+        /// <summary>
+        /// Creates a context menu item that does a default "Select All"
+        /// </summary>
+        /// <returns>A "Select All" context menu item</returns>
+        private MenuItem generateSelectAllItem()
+        {
+            MenuItem selectAllItem = new MenuItem();
+            selectAllItem.Header = EnUIDict["SelectAllMi"];
+            selectAllItem.ToolTip = EnUIDict["SelectAllMiTT"];
+            selectAllItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_select_all_black_18dp.png")) };
+            selectAllItem.Command = ApplicationCommands.SelectAll;
+            return selectAllItem;
+        }
+
+        /// <summary>
         /// When the context menu opens (i.e. the user right-clicks in MainRtb)
         /// </summary>
         private void MainRtbContext_Opened(object sender, RoutedEventArgs e)
         {
-            purgePreviousSpellcheckItems();
-            addNewSpellcheckItems();
+            MainRtbContext.Items.Clear(); //The context menu repopulates every time it is opened
+            addUpperContextItems();
+            MainRtbContext.Items.Add(new Separator());
+            if (addSpellcheckContextItems()) {
+                //Spell check context menu items were added, need an extra separator
+                MainRtbContext.Items.Add(new Separator());
+            }         
+            addLowerContextItems();
         }
 
         /// <summary>

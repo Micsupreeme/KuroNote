@@ -151,6 +151,7 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\outline_content_cut_black_18dp.png" />
     <None Remove="img\icons\outline_content_paste_black_18dp.png" />
     <None Remove="img\icons\outline_create_black_18dp.png" />
+    <None Remove="img\icons\outline_delete_black_18dp.png" />
     <None Remove="img\icons\outline_delete_outline_black_18dp.png" />
     <None Remove="img\icons\outline_description_black_18dp.png" />
     <None Remove="img\icons\outline_done_outline_black_18dp.png" />
@@ -415,6 +416,9 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_check_circle_eee_48dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\outline_delete_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\outline_error_outline_black_18dp.png">

@@ -346,23 +346,7 @@
         </StatusBar>
         <RichTextBox Name="MainRtb" Background="#EEEEEE" AcceptsTab="True" AllowDrop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="MainRtb_PreviewMouseWheel" PreviewDragEnter="MainRtb_PreviewDragEnterOver" PreviewDragOver="MainRtb_PreviewDragEnterOver" PreviewDrop="MainRtb_PreviewDrop" TextChanged="MainRtb_TextChanged" SelectionChanged="MainRtb_SelectionChanged" CommandManager.PreviewExecuted="rtbEditor_PreviewExecuted">
             <RichTextBox.ContextMenu>
-                <ContextMenu Name="MainRtbContext" Opened="MainRtbContext_Opened">
-                    <MenuItem Header="Cut" ToolTip="{Binding [CutMiTT], Mode=OneTime}" Command="ApplicationCommands.Cut">
-                        <MenuItem.Icon>
-                            <Image Source="pack://application:,,,/img/icons/outline_content_cut_black_18dp.png"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Copy" ToolTip="{Binding [CopyMiTT], Mode=OneTime}" Command="ApplicationCommands.Copy">
-                        <MenuItem.Icon>
-                            <Image Source="pack://application:,,,/img/icons/outline_content_copy_black_18dp.png"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Paste" ToolTip="{Binding [PasteMiTT], Mode=OneTime}" Command="ApplicationCommands.Paste">
-                        <MenuItem.Icon>
-                            <Image Source="pack://application:,,,/img/icons/outline_content_paste_black_18dp.png"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </ContextMenu>
+                <ContextMenu Name="MainRtbContext" Opened="MainRtbContext_Opened"/>
             </RichTextBox.ContextMenu>
             <FlowDocument/>
         </RichTextBox>
