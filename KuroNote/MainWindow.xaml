@@ -207,7 +207,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Name="EditMi" Header="{Binding [EditMi], Mode=OneTime}">
+                    <MenuItem Name="EditMi" Header="{Binding [EditMi], Mode=OneTime}" SubmenuOpened="EditMi_SubmenuOpened">
                         <MenuItem Name="CutMi" Header="{Binding [CutMi], Mode=OneTime}" ToolTip="{Binding [CutMiTT], Mode=OneTime}" Command="ApplicationCommands.Cut" FontWeight="DemiBold">
                             <MenuItem.Icon>
                                 <Image Source="pack://application:,,,/img/icons/outline_content_cut_black_18dp.png"/>

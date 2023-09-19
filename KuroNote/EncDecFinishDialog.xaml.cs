@@ -191,7 +191,7 @@ namespace KuroNote
                         ms.Close();
                     }
                     //Automatically opens the recently encrypted/decrypted file if the corresponding option is enabled
-                    if (settings.encopen) {
+                    if (settings.encOpen) {
                         startProcess(dlg.FileName);
                     }
                 } catch (Exception ex) {

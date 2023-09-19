@@ -119,10 +119,15 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\alt\kuro_icon.ico" />
     <None Remove="img\icons\alt\shadow_icon.ico" />
     <None Remove="img\icons\alt\shiro_icon.ico" />
+    <None Remove="img\icons\bing.png" />
+    <None Remove="img\icons\brave.png" />
     <None Remove="img\icons\clear_recent_outline_black_18dp.png" />
     <None Remove="img\icons\cropped_arrow_drop_down_black_18dp.png" />
     <None Remove="img\icons\cropped_format_color_text_black_18dp.png" />
+    <None Remove="img\icons\duckduckgo.png" />
     <None Remove="img\icons\filled_star_eee_48dp.png" />
+    <None Remove="img\icons\google.png" />
+    <None Remove="img\icons\googlescholar.png" />
     <None Remove="img\icons\kuronote_48_admin_icon_250.png" />
     <None Remove="img\icons\kuronote_48_admin_icon_36.png" />
     <None Remove="img\icons\kuronote_48_admin_inv_icon_250.png" />
@@ -244,6 +249,11 @@ You can expect all the essential features like: save as; print; find; replace; s
     <None Remove="img\icons\recent_file_sky_18dp.png" />
     <None Remove="img\icons\recent_file_white_18dp.png" />
     <None Remove="img\icons\recent_file_yellow_18dp.png" />
+    <None Remove="img\icons\stackoverflow.png" />
+    <None Remove="img\icons\startpage.png" />
+    <None Remove="img\icons\wikipedia.png" />
+    <None Remove="img\icons\yahoo.png" />
+    <None Remove="img\icons\youtube.png" />
     <None Remove="img\ranks\0.png" />
     <None Remove="img\ranks\0b.png" />
     <None Remove="img\ranks\1.png" />
@@ -367,6 +377,12 @@ You can expect all the essential features like: save as; print; find; replace; s
     <Resource Include="img\icons\alt\shiro_icon.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="img\icons\bing.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\brave.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\icons\clear_recent_outline_black_18dp.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -374,6 +390,15 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\cropped_format_color_text_black_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\duckduckgo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\google.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\googlescholar.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\kuronote_48_admin_icon_250.png">
@@ -551,6 +576,21 @@ You can expect all the essential features like: save as; print; find; replace; s
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\icons\recent_file_yellow_18dp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\stackoverflow.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\startpage.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\wikipedia.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\yahoo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icons\youtube.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\ranks\6b.png">

@@ -73,7 +73,17 @@ namespace KuroNote
             rememberfontupdnTs.IsChecked = settings.rememberFontUpDn;
             rememberrecentfilesTs.IsChecked = settings.rememberRecentFiles;
             rtfmodeTs.IsChecked = settings.rtfMode;
-            encopenTs.IsChecked = settings.encopen;
+            encopenTs.IsChecked = settings.encOpen;
+            searchbingTs.IsChecked = settings.searchBing;
+            searchbraveTs.IsChecked = settings.searchBrave;
+            searchduckduckgoTs.IsChecked = settings.searchDuckDuckGo;
+            searchgoogleTs.IsChecked = settings.searchGoogle;
+            searchgooglescholarTs.IsChecked = settings.searchGoogleScholar;
+            searchstackoverflowTs.IsChecked = settings.searchStackOverflow;
+            searchstartpageTs.IsChecked = settings.searchStartpage;
+            searchwikipediaTs.IsChecked = settings.searchWikipedia;
+            searchyahooTs.IsChecked = settings.searchYahoo;
+            searchyoutubeTs.IsChecked = settings.searchYouTube;
         }
 
         /// <summary>
@@ -95,7 +105,17 @@ namespace KuroNote
             settings.rememberFontUpDn = (bool)rememberfontupdnTs.IsChecked;
             settings.rememberRecentFiles = (bool)rememberrecentfilesTs.IsChecked;
             settings.rtfMode = (bool)rtfmodeTs.IsChecked;
-            settings.encopen = (bool)encopenTs.IsChecked;
+            settings.encOpen = (bool)encopenTs.IsChecked;
+            settings.searchBing = (bool)searchbingTs.IsChecked;
+            settings.searchBrave = (bool)searchbraveTs.IsChecked;
+            settings.searchDuckDuckGo = (bool)searchduckduckgoTs.IsChecked;
+            settings.searchGoogle = (bool)searchgoogleTs.IsChecked;
+            settings.searchGoogleScholar = (bool)searchgooglescholarTs.IsChecked;
+            settings.searchStackOverflow = (bool)searchstackoverflowTs.IsChecked;
+            settings.searchStartpage = (bool)searchstartpageTs.IsChecked;
+            settings.searchWikipedia = (bool)searchwikipediaTs.IsChecked;
+            settings.searchYahoo = (bool)searchyahooTs.IsChecked;
+            settings.searchYouTube = (bool)searchyoutubeTs.IsChecked;
             settings.UpdateSettings();
         }
 

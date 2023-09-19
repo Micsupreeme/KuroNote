@@ -16,13 +16,13 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Collections;
+using System.Text.Encodings.Web;
+using File = System.IO.File;
 
 namespace KuroNote
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// 
-    /// TODO: Context menu: Search with Google...
     /// 
     /// TODO: Detect encrypted files:
     /// 1. .kuro extension
@@ -36,7 +36,6 @@ namespace KuroNote
     /// TODO: Add more error messages to language dictionary
     /// TODO: check (again) find/replace selecting the 1st occurance of any search term twice before continuing
     /// TODO: Hashing tool
-    /// TODO: Context menu: Search with Google...
     /// TODO: Setting(s) for: MainRtb.BorderThickness
     /// TODO: Auto-backup every 3,5,10,15 minutes? (in a seperate thread!)
     /// 
@@ -113,6 +112,31 @@ namespace KuroNote
         private const double PAGE_WIDTH_RIGHT_MARGIN = 25;          //Number of width units to add (as a padding/buffer) in addition to the measured width of the content
         private const int DEFAULT_THEME_ID = 0;                     //if a custom theme file cannot be accessed, revert back to this theme
         private const int SPELL_CHECK_SUGGESTION_LIMIT = 3;         //Up to this number of spellcheck suggestions can be shown in the context menu at any given time
+
+        //"Search with" constants
+        public const string BING_SEARCH_DOMAIN = "https://www.bing.com/";
+        public const string BRAVE_SEARCH_DOMAIN = "https://search.brave.com/";
+        public const string DUCKDUCKGO_SEARCH_DOMAIN = "https://duckduckgo.com/";
+        public const string GOOGLE_SEARCH_DOMAIN = "https://www.google.com/";
+        public const string GOOGLESCHOLAR_SEARCH_DOMAIN = "https://scholar.google.com/";
+        public const string STACKOVERFLOW_SEARCH_DOMAIN = "https://stackoverflow.com/";
+        public const string STARTPAGE_SEARCH_DOMAIN = "https://www.startpage.com/";
+        public const string WIKIPEDIA_SEARCH_DOMAIN = "https://en.wikipedia.org/";
+        public const string YAHOO_SEARCH_DOMAIN = "https://search.yahoo.com/";
+        public const string YOUTUBE_SEARCH_DOMAIN = "https://www.youtube.com/";
+        public const string BING_SEARCH_PREFIX = "search?q=";
+        public const string BRAVE_SEARCH_PREFIX = "search?q=";
+        public const string DUCKDUCKGO_SEARCH_PREFIX = "?q=";
+        public const string GOOGLE_SEARCH_PREFIX = "search?q=";
+        public const string GOOGLESCHOLAR_SEARCH_PREFIX = "scholar?q=";
+        public const string STACKOVERFLOW_SEARCH_PREFIX = "search?q=";
+        public const string STARTPAGE_SEARCH_PREFIX = "sp/search?q=";
+        public const string WIKIPEDIA_SEARCH_PREFIX = "wiki/";
+        public const string YAHOO_SEARCH_PREFIX = "search?p=";
+        public const string YOUTUBE_SEARCH_PREFIX = "results?search_query=";
+
+        public const int SEARCH_WITH_MAX_QUERY_LENGTH = 3000;
+        public const int SEARCH_WITH_MAX_TOOLTIP_LENGTH = 300;
 
         //RTF constants
         private const string RTF_DEFAULT_FONT_FAMILY = "Verdana";
@@ -236,6 +260,36 @@ namespace KuroNote
                 EnUIDict["CopyMiTT"] = "Copies any selected text to the clipboard";
             EnUIDict["PasteMi"] = "Paste";
                 EnUIDict["PasteMiTT"] = "Pastes text from the clipboard over any selected text";
+            EnUIDict["BingMi"] = "Search with Bing...";
+                EnUIDict["BingMiTT1"] = "Searches for \"\" on Bing";
+                EnUIDict["BingMiTT2"] = "Opens the Bing homepage";
+            EnUIDict["BraveMi"] = "Search with Brave...";
+                EnUIDict["BraveMiTT1"] = "Searches for \"\" on Brave";
+                EnUIDict["BraveMiTT2"] = "Opens the Brave homepage";
+            EnUIDict["DuckDuckGoMi"] = "Search with DuckDuckGo...";
+                EnUIDict["DuckDuckGoMiTT1"] = "Searches for \"\" on DuckDuckGo";
+                EnUIDict["DuckDuckGoMiTT2"] = "Opens the DuckDuckGo homepage";
+            EnUIDict["GoogleMi"] = "Search with Google...";
+                EnUIDict["GoogleMiTT1"] = "Searches for \"\" on Google";
+                EnUIDict["GoogleMiTT2"] = "Opens the Google homepage";
+            EnUIDict["GoogleScholarMi"] = "Search with Google Scholar...";
+                EnUIDict["GoogleScholarMiTT1"] = "Searches for \"\" on Google Scholar";
+                EnUIDict["GoogleScholarMiTT2"] = "Opens the Google Scholar homepage";
+            EnUIDict["StackOverflowMi"] = "Search with Stack Overflow...";
+                EnUIDict["StackOverflowMiTT1"] = "Searches for \"\" on Stack Overflow";
+                EnUIDict["StackOverflowMiTT2"] = "Opens the Stack Overflow homepage";
+            EnUIDict["StartpageMi"] = "Search with Startpage...";
+                EnUIDict["StartpageMiTT1"] = "Searches for \"\" on Startpage";
+                EnUIDict["StartpageMiTT2"] = "Opens the Startpage homepage";
+            EnUIDict["WikipediaMi"] = "Search with Wikipedia...";
+                EnUIDict["WikipediaMiTT1"] = "Searches for \"\" on Wikipedia";
+                EnUIDict["WikipediaMiTT2"] = "Opens the Wikipedia homepage";
+            EnUIDict["YahooMi"] = "Search with Yahoo!...";
+                EnUIDict["YahooMiTT1"] = "Searches for \"\" on Yahoo!";
+                EnUIDict["YahooMiTT2"] = "Opens the Yahoo! homepage";
+            EnUIDict["YouTubeMi"] = "Search with YouTube...";
+                EnUIDict["YouTubeMiTT1"] = "Searches for \"\" on YouTube";
+                EnUIDict["YouTubeMiTT2"] = "Opens the YouTube homepage";
             EnUIDict["UndoMi"] = "Undo";
                 EnUIDict["UndoMiTT"] = "Undoes the last change made to this file";
             EnUIDict["RedoMi"] = "Redo";
@@ -1042,7 +1096,7 @@ namespace KuroNote
 
             Random rnd = new Random();
             int luckyStartup = rnd.Next(1, 101); //Random between 1 and 100
-            if(luckyStartup == 42) {
+            if (luckyStartup == 42) {
                 unlockAchievement(42);
             }
         }
@@ -2181,7 +2235,6 @@ namespace KuroNote
             }
         }
 
-        #region Context Menu
         /*
          THE FOLLOWING METHOD IS NOW OBSELETE SINCE ALL CONTEXT MENU ITEMS NOW REFRESH WHEN THE CONTEXT MENU OPENS
 
@@ -2397,6 +2450,84 @@ namespace KuroNote
         private void addLowerContextItems()
         {
             MainRtbContext.Items.Add(generateSelectAllItem());
+            addSearchWithMenuItems(true);
+        }
+
+        /// <summary>
+        /// Adds "Search with..." MenuItems - those specified by appSettings, to either the context menu, or the "Edit" menu
+        /// </summary>
+        /// <param name="forContextMenu">If true, adds MenuItems to the context menu, otherwise adds MenuItems to the "Edit" menu</param>
+        private void addSearchWithMenuItems(bool forContextMenu)
+        {
+            if (forContextMenu) {
+                //Context menu
+                MainRtbContext.Items.Add(new Separator());
+                if (appSettings.searchBing) {
+                    MainRtbContext.Items.Add(generateBingItem());
+                }
+                if (appSettings.searchBrave) {
+                    MainRtbContext.Items.Add(generateBraveItem());
+                }
+                if (appSettings.searchDuckDuckGo) {
+                    MainRtbContext.Items.Add(generateDuckDuckGoItem());
+                }
+                if (appSettings.searchGoogle) {
+                    MainRtbContext.Items.Add(generateGoogleItem());
+                }
+                if (appSettings.searchGoogleScholar) {
+                    MainRtbContext.Items.Add(generateGoogleScholarItem());
+                }
+                if (appSettings.searchStackOverflow) {
+                    MainRtbContext.Items.Add(generateStackOverflowItem());
+                }
+                if (appSettings.searchStartpage) {
+                    MainRtbContext.Items.Add(generateStartpageItem());
+                }
+                if (appSettings.searchWikipedia) {
+                    MainRtbContext.Items.Add(generateWikipediaItem());
+                }
+                if (appSettings.searchYahoo) {
+                    MainRtbContext.Items.Add(generateYahooItem());
+                }
+                if (appSettings.searchYouTube) {
+                    MainRtbContext.Items.Add(generateYouTubeItem());
+                }
+            } else {
+                //Edit menu
+                Separator searchWithSep = new Separator();
+                searchWithSep.Tag = "Search"; //This tag groups this separator with other "Search with..." items, preventing duplicate separators in the "Edit" menu
+                EditMi.Items.Add(searchWithSep);
+                if (appSettings.searchBing) {
+                    EditMi.Items.Add(generateBingItem());
+                }
+                if (appSettings.searchBrave) {
+                    EditMi.Items.Add(generateBraveItem());
+                }
+                if (appSettings.searchDuckDuckGo) {
+                    EditMi.Items.Add(generateDuckDuckGoItem());
+                }
+                if (appSettings.searchGoogle) {
+                    EditMi.Items.Add(generateGoogleItem());
+                }
+                if (appSettings.searchGoogleScholar) {
+                    EditMi.Items.Add(generateGoogleScholarItem());
+                }
+                if (appSettings.searchStackOverflow) {
+                    EditMi.Items.Add(generateStackOverflowItem());
+                }
+                if (appSettings.searchStartpage) {
+                    EditMi.Items.Add(generateStartpageItem());
+                }
+                if (appSettings.searchWikipedia) {
+                    EditMi.Items.Add(generateWikipediaItem());
+                }
+                if (appSettings.searchYahoo) {
+                    EditMi.Items.Add(generateYahooItem());
+                }
+                if (appSettings.searchYouTube) {
+                    EditMi.Items.Add(generateYouTubeItem());
+                }
+            }
         }
 
         /// <summary>
@@ -2411,6 +2542,252 @@ namespace KuroNote
             selectAllItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/outline_select_all_black_18dp.png")) };
             selectAllItem.Command = ApplicationCommands.SelectAll;
             return selectAllItem;
+        }
+
+        /// <summary>
+        /// Removes all "Search with..." MenuItems from the "Edit" menu
+        /// </summary>
+        private void purgeSearchWithMenuItems()
+        {
+            log.addLog("Purging existing \"Search with...\" menu items");
+            int index = 0;
+            while (index < EditMi.Items.Count) {
+                MenuItem menuItem;
+                try {
+                    menuItem = (MenuItem)EditMi.Items[index];
+                    string menuItemTag = (string)menuItem.Tag;
+                    if (menuItemTag != null && menuItemTag.Contains("Search")) {
+                        //Found "Search with..." MenuItem, remove it so it can be re-added later
+                        EditMi.Items.RemoveAt(index); //this item was removed, don't increment index otherwise it will skip over some items
+                    } else {
+                        index++; //this item was ignored, increment index
+                    }
+                } catch (InvalidCastException) {
+                    //This is a "Separator" menu item - ignore all except the "Search with..." separator
+                    Separator sepItem = (Separator)EditMi.Items[index];
+                    string sepItemTag = (string)sepItem.Tag;
+                    if (sepItemTag != null && sepItemTag.Contains("Search")) {
+                        //Found "Search with..." Separator, remove it so it can be re-added later
+                        EditMi.Items.RemoveAt(index); //this item was removed, don't increment index otherwise it will skip over some items
+                    } else {
+                        index++; //this item was ignored, increment index
+                    }
+                } catch (Exception e) {
+                    log.addLog("ERROR: " + e.ToString());
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Create a "Search with Bing" context menu item that opens a Bing search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Bing" context menu item</returns>
+        private MenuItem generateBingItem()
+        {
+            MenuItem bingItem = new MenuItem();
+            bingItem.Header = EnUIDict["BingMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                bingItem.ToolTip = EnUIDict["BingMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            }
+            else {
+                //There is no selection
+                bingItem.ToolTip = EnUIDict["BingMiTT2"];
+            }
+            bingItem.Tag = "Search Bing";
+            bingItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/bing.png")) };
+            bingItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return bingItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with Brave" context menu item that opens a Brave search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Brave" context menu item</returns>
+        private MenuItem generateBraveItem()
+        {
+            MenuItem braveItem = new MenuItem();
+            braveItem.Header = EnUIDict["BraveMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                braveItem.ToolTip = EnUIDict["BraveMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                braveItem.ToolTip = EnUIDict["BraveMiTT2"];
+            }
+            braveItem.Tag = "Search Brave";
+            braveItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/brave.png")) };
+            braveItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return braveItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with DuckDuckGo" context menu item that opens a DuckDuckGo search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with DuckDuckGo" context menu item</returns>
+        private MenuItem generateDuckDuckGoItem()
+        {
+            MenuItem duckDuckGoItem = new MenuItem();
+            duckDuckGoItem.Header = EnUIDict["DuckDuckGoMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                duckDuckGoItem.ToolTip = EnUIDict["DuckDuckGoMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                duckDuckGoItem.ToolTip = EnUIDict["DuckDuckGoMiTT2"];
+            }
+            duckDuckGoItem.Tag = "Search DuckDuckGo";
+            duckDuckGoItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/duckduckgo.png")) };
+            duckDuckGoItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return duckDuckGoItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with Google" context menu item that opens a Google search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Google" context menu item</returns>
+        private MenuItem generateGoogleItem()
+        {
+            MenuItem googleItem = new MenuItem();
+            googleItem.Header = EnUIDict["GoogleMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                googleItem.ToolTip = EnUIDict["GoogleMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                googleItem.ToolTip = EnUIDict["GoogleMiTT2"];
+            }
+            googleItem.Tag = "Search Google";
+            googleItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/google.png")) };
+            googleItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return googleItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with Google Scholar" context menu item that opens a Google Scholar search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Google Scholar" context menu item</returns>
+        private MenuItem generateGoogleScholarItem()
+        {
+            MenuItem googleScholarItem = new MenuItem();
+            googleScholarItem.Header = EnUIDict["GoogleScholarMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                googleScholarItem.ToolTip = EnUIDict["GoogleScholarMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                googleScholarItem.ToolTip = EnUIDict["GoogleScholarMiTT2"];
+            }
+            googleScholarItem.Tag = "Search Google Scholar";
+            googleScholarItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/googlescholar.png")) };
+            googleScholarItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return googleScholarItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with Stack Overflow" context menu item that opens a Stack Overflow search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Stack Overflow" context menu item</returns>
+        private MenuItem generateStackOverflowItem()
+        {
+            MenuItem stackOverflowItem = new MenuItem();
+            stackOverflowItem.Header = EnUIDict["StackOverflowMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                stackOverflowItem.ToolTip = EnUIDict["StackOverflowMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                stackOverflowItem.ToolTip = EnUIDict["StackOverflowMiTT2"];
+            }
+            stackOverflowItem.Tag = "Search StackOverflow";
+            stackOverflowItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/stackoverflow.png")) };
+            stackOverflowItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return stackOverflowItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with Startpage" context menu item that opens a Startpage search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Startpage" context menu item</returns>
+        private MenuItem generateStartpageItem()
+        {
+            MenuItem startpageItem = new MenuItem();
+            startpageItem.Header = EnUIDict["StartpageMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                startpageItem.ToolTip = EnUIDict["StartpageMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                startpageItem.ToolTip = EnUIDict["StartpageMiTT2"];
+            }
+            startpageItem.Tag = "Search Startpage";
+            startpageItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/startpage.png")) };
+            startpageItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return startpageItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with Wikipedia" context menu item that opens a Wikipedia search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Wikipedia" context menu item</returns>
+        private MenuItem generateWikipediaItem()
+        {
+            MenuItem wikipediaItem = new MenuItem();
+            wikipediaItem.Header = EnUIDict["WikipediaMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                wikipediaItem.ToolTip = EnUIDict["WikipediaMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                wikipediaItem.ToolTip = EnUIDict["WikipediaMiTT2"];
+            }
+            wikipediaItem.Tag = "Search Wikipedia";
+            wikipediaItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/wikipedia.png")) };
+            wikipediaItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return wikipediaItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with Yahoo!" context menu item that opens a Yahoo! search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with Yahoo!" context menu item</returns>
+        private MenuItem generateYahooItem()
+        {
+            MenuItem yahooItem = new MenuItem();
+            yahooItem.Header = EnUIDict["YahooMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                yahooItem.ToolTip = EnUIDict["YahooMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                yahooItem.ToolTip = EnUIDict["YahooMiTT2"];
+            }
+            yahooItem.Tag = "Search Yahoo!";
+            yahooItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/yahoo.png")) };
+            yahooItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return yahooItem;
+        }
+
+        /// <summary>
+        /// Create a "Search with YouTube" context menu item that opens a YouTube search URL for any specified text
+        /// </summary>
+        /// <returns>A "Search with YouTube" context menu item</returns>
+        private MenuItem generateYouTubeItem()
+        {
+            MenuItem youtubeItem = new MenuItem();
+            youtubeItem.Header = EnUIDict["YouTubeMi"];
+            if (MainRtb.Selection.Text.Length > 0) {
+                //There is a selection
+                youtubeItem.ToolTip = EnUIDict["YouTubeMiTT1"].Insert(14, limitString(MainRtb.Selection.Text, SEARCH_WITH_MAX_TOOLTIP_LENGTH, true));
+            } else {
+                //There is no selection
+                youtubeItem.ToolTip = EnUIDict["YouTubeMiTT2"];
+            }
+            youtubeItem.Tag = "Search YouTube";
+            youtubeItem.Icon = new Image() { Source = new BitmapImage(new Uri("pack://application:,,,/img/icons/youtube.png")) };
+            youtubeItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(searchWith_Click));
+            return youtubeItem;
         }
 
         /// <summary>
@@ -2459,6 +2836,118 @@ namespace KuroNote
         }
 
         /// <summary>
+        /// When a dynamic "Search with..." menu item is clicked
+        /// Opens the default browser with a search link for the specified search engine
+        /// </summary>
+        private void searchWith_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem sourceMenuItem = (MenuItem)sender;
+            string menuItemTag = (string)sourceMenuItem.Tag;
+            string rawSearchTerm = MainRtb.Selection.Text;
+            string encodedSearchTerm = "";
+            if (rawSearchTerm.Length > 0) {
+                log.addLog("Search term: " + rawSearchTerm);
+                encodedSearchTerm = UrlEncoder.Create().Encode(rawSearchTerm);
+                log.addLog("Encoded search term: " + encodedSearchTerm);
+            } else {
+                log.addLog("No search term provided");
+            }
+
+            switch(menuItemTag) {
+                case "Search Bing":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(BING_SEARCH_DOMAIN + BING_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(BING_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search Brave":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(BRAVE_SEARCH_DOMAIN + BRAVE_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(BRAVE_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search DuckDuckGo":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(DUCKDUCKGO_SEARCH_DOMAIN + DUCKDUCKGO_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(DUCKDUCKGO_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search Google":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(GOOGLE_SEARCH_DOMAIN + GOOGLE_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(GOOGLE_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search Google Scholar":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(GOOGLESCHOLAR_SEARCH_DOMAIN + GOOGLESCHOLAR_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(GOOGLESCHOLAR_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search StackOverflow":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(STACKOVERFLOW_SEARCH_DOMAIN + STACKOVERFLOW_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(STACKOVERFLOW_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search Startpage":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(STARTPAGE_SEARCH_DOMAIN + STARTPAGE_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(STARTPAGE_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search Wikipedia":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(WIKIPEDIA_SEARCH_DOMAIN + WIKIPEDIA_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(WIKIPEDIA_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search Yahoo!":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(YAHOO_SEARCH_DOMAIN + YAHOO_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(YAHOO_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+                case "Search YouTube":
+                    if (rawSearchTerm.Length > 0) {
+                        //search with search term
+                        startProcess(limitString(YOUTUBE_SEARCH_DOMAIN + YOUTUBE_SEARCH_PREFIX + encodedSearchTerm, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    } else {
+                        //search without search term
+                        startProcess(limitString(YOUTUBE_SEARCH_DOMAIN, SEARCH_WITH_MAX_QUERY_LENGTH, false));
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
         /// When a dynamic spellcheck "Add to Dictionary" menu item is clicked
         /// (this adds the error phrase to the dictionary,
         /// then removes and re-adds the dictionary to MainRtb so the new additions are immediately recognised)
@@ -2504,7 +2993,29 @@ namespace KuroNote
             SpellcheckDictionaryDialog spellcheckDictionaryDialog = new SpellcheckDictionaryDialog(this, appSettings, log);
             spellcheckDictionaryDialog.toggleVisibility(true);
         }
-        #endregion
+
+        /// <summary>
+        /// Takes a string and returns a string limited to X number of characters, optionally with elipses
+        /// </summary>
+        /// <param name="maxLength">The maximum character length of the string to be returned (not including the 3 characters for optional elipses)</param>
+        /// <param name="withElipses">Whether or not to append elipses to the returned limited string</param>
+        /// <returns></returns>
+        private string limitString(string inputString, int maxLength, bool withElipses)
+        {
+            try {
+                if (withElipses) {
+                    return inputString.Substring(0, maxLength) + "...";
+                } else {
+                    return inputString.Substring(0, maxLength);
+                }
+            } catch (ArgumentOutOfRangeException) {
+                //string was less than maxLength
+                return inputString;
+            } catch (Exception e) {
+                log.addLog("ERROR: " + e.ToString());
+                return inputString;
+            }
+        }
 
         /// <summary>
         /// Executes the specified file, optionally with admin permissions
@@ -3850,6 +4361,15 @@ namespace KuroNote
                 rtfFontSizeCmb.Items.Add(item);
             }
             rtfFontSizeReadyFlag = true; //the user opened the font size drop down menu, allow a font size to be applied
+        }
+
+        /// <summary>
+        /// When the "Edit" menu is opened
+        /// </summary>
+        private void EditMi_SubmenuOpened(object sender, RoutedEventArgs e)
+        {
+            purgeSearchWithMenuItems();
+            addSearchWithMenuItems(false);
         }
 
         /// <summary>

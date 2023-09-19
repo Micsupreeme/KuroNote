@@ -53,7 +53,17 @@ namespace KuroNote
         public int profL = 0;
         public int profAp = 0;
         public bool seenRtfWelcome = false;
-        public bool encopen = true;
+        public bool encOpen = true;
+        public bool searchBing = false;
+        public bool searchBrave = false;
+        public bool searchDuckDuckGo = false;
+        public bool searchGoogle = true;
+        public bool searchGoogleScholar = false;
+        public bool searchStackOverflow = false;
+        public bool searchStartpage = false;
+        public bool searchWikipedia = false;
+        public bool searchYahoo = false;
+        public bool searchYouTube = false;
 
         private string settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\KuroNote";
         private string settingsFile = "\\conf.json";
@@ -106,7 +116,17 @@ namespace KuroNote
                     this.profL = knsFile.profL;
                     this.profAp = knsFile.profAp;
                     this.seenRtfWelcome = knsFile.seenRtfWelcome;
-                    this.encopen = knsFile.encopen;
+                    this.encOpen = knsFile.encOpen;
+                    this.searchBing = knsFile.searchBing;
+                    this.searchBrave = knsFile.searchBrave;
+                    this.searchDuckDuckGo = knsFile.searchDuckDuckGo;
+                    this.searchGoogle = knsFile.searchGoogle;
+                    this.searchGoogleScholar = knsFile.searchGoogleScholar;
+                    this.searchStackOverflow = knsFile.searchStackOverflow;
+                    this.searchStartpage = knsFile.searchStartpage;
+                    this.searchWikipedia = knsFile.searchWikipedia;
+                    this.searchYahoo = knsFile.searchYahoo;
+                    this.searchYouTube = knsFile.searchYouTube;
                 }
             } catch (DirectoryNotFoundException dnfe) {
                 //WARN: "Logs" directory does not exist, creating it
