@@ -3,7 +3,7 @@
 # Summary
 **A text editor that lets you to set any picture you like as a background!**
 
-With a focus on customisability and intuitiveness, KuroNote is a Notepad-like text editor with personality. It's designed for the quick creation of beautiful notes. Custom theme profiles and optional gamification elements like ranks and achievements make note-writing more enjoyable. You can expect all the essential features like: save as; recent files; print; find; replace; spell check; word wrap; and word count. Additionally, KuroNote offers AES encryption which enables you to password-protect your notes, and a fullscreen mode which does what you think it does.
+With a focus on customisability and intuitiveness, KuroNote is a Notepad-like text editor with personality. It's designed for the quick creation of beautiful notes. Custom theme profiles and optional gamification elements like ranks and achievements make note-writing more enjoyable. You can expect all the essential features like: save as; recent files; print; find; replace; spell check; word wrap; and word count. Additionally, KuroNote offers AES encryption which enables you to password-protect your notes, and a fullscreen mode that does what you think it does.
 
 Version 2.1.0.0 introduced the RTF Mode option; KuroNote can toggle between plain text and rich text procedures for editing, opening/saving files, and copying/pasting text. RTF Mode provides the essential rich text customisation controls, so you can keep using KuroNote even when you need to open or create an ".rtf" file.
 
@@ -12,7 +12,7 @@ Version 2.1.0.0 introduced the RTF Mode option; KuroNote can toggle between plai
 # Download
 If you have a previous version of KuroNote installed, use Control Panel or Settings to uninstall it first. Your user data will not be affected.
 
-Download the latest installer `KuroNote.2.1.0.1.64bit.Installer.exe` for Windows 10/11 **[here](https://github.com/Micsupreeme/KuroNote/releases/download/2.2/KuroNote.2.2.0.0.64bit.Installer.exe)**, or from the [releases page](https://github.com/Micsupreeme/KuroNote/releases/latest).
+Download the latest installer `KuroNote.2.2.0.0.64bit.Installer.exe` for Windows 10/11 **[here](https://github.com/Micsupreeme/KuroNote/releases/download/2.2/KuroNote.2.2.0.0.64bit.Installer.exe)**, or from the [releases page](https://github.com/Micsupreeme/KuroNote/releases/latest).
 
 ![KuroNote Installer](https://i.imgur.com/ZgN39b1.png)
 
